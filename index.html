@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ascension - Main Menu</title>
+    <style>
+        /* استيراد خطوط سينمائية مميزة وحادة تشبه ألعاب بلايستيشن */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;800&family=Cairo:wght@700&display=swap');
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050508;
+        }
+
+        /* شاشة اللعبة الرئيسية مع ربط خلفيتك النظيفة مباشرة بالملف المحلي */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /* هنا تم ربط الصورة التي أرفقتها بدقة وبدون مشاكل */
+            background: url('background1.web.png') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            align-items: flex-end; /* القائمة في الأسفل لمحاكاة ألعاب AAA */
+            justify-content: flex-end; /* دفع القائمة لليمين لتبقى الشخصية واضحة بالكامل */
+            padding-bottom: 8%;
+            padding-right: 10%;
+        }
+
+        /* تأثير سينمائي: تعتيم احترافي لأطراف الشاشة لتركيز الرؤية */
+        .game-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* الشاشات والقوائم */
+        .screen {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 2;
+            transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: translateX(0);
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(40px); /* تأثير اختفاء وانزلاق جانبي فخم */
+        }
+
+        /* ستايل أزرار ألعاب سوني وانشارتد المتطورة الحرة */
+        .sony-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Orbitron', 'Cinzel', 'Cairo', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            cursor: pointer;
+            text-align: right;
+            position: relative;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* إضافة الخط المضيء السفلي (المؤشر النشط) عند تمرير الماوس */
+        .sony-btn::after {
+            content: '';
+            width: 0;
+            height: 3px;
+            background-color: #00f0ff; /* توهج أزرق بلايستيشن نيون */
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+
+        /* تأثير الـ Hover الاحترافي للزر عند التحديد */
+        .sony-btn:hover {
+            color: #ffffff;
+            transform: translateX(-8px); /* حركة دخول طفيفة لليسار عند وضع الماوس */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        .sony-btn:hover::after {
+            width: 100%; /* تمدد الخط المضيء تحت الكلمة بسلاسة */
+        }
+
+        /* تخصيص كلمة START لتكون أكبر وأبرز */
+        .start-title {
+            font-size: 3.5rem;
+            letter-spacing: 8px;
+            color: #ffffff;
+        }
+
+        /* قائمة إدخال الاسم بستايل Uncharted (بدون صناديق مشوهة، مجرد سطر سفلي أنيق) */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Orbitron', 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .sony-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 8px 5px;
+            font-size: 1.4rem;
+            font-family: 'Cairo', 'Orbitron', sans-serif;
+            text-align: right;
+            outline: none;
+            width: 320px;
+            transition: all 0.4s ease;
+        }
+
+        .sony-input:focus {
+            border-bottom-color: #00f0ff;
+            box-shadow: 0 4px 12px -4px rgba(0, 240, 255, 0.4);
+        }
+
+        /* زر الرجوع المتناسق */
+        .back-btn {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 15px;
+            letter-spacing: 3px;
+        }
+        .back-btn:hover {
+            color: #ff4a4a;
+        }
+        .back-btn:hover::after {
+            background-color: #ff4a4a;
+            box-shadow: 0 0 10px #ff4a4a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <div id="start-screen" class="screen">
+            <button class="sony-btn start-title" onclick="goToMenu()">START</button>
+        </div>
+
+        <div id="menu-screen" class="screen hidden">
+            
+            <div class="input-group">
+                <span class="input-label">PLAYER IDENTITY</span>
+                <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="15">
+            </div>
+            
+            <button class="sony-btn" onclick="createRoom()">CREATE ROOM</button>
+            <button class="sony-btn" onclick="joinRoom()">JOIN ROOM</button>
+            
+            <button class="sony-btn back-btn" onclick="goBack()">BACK</button>
+        </div>
+
+    </div>
+
+    <script>
+        // الانتقال السلس للقائمة الثانية
+        function goToMenu() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+        }
+
+        // الرجوع لشاشة البداية
+        function goBack() {
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        // إنشاء غرفة
+        function createRoom() {
+            const name = document.getElementById('player-name').value.trim();
+            if(name === "") {
+                alert("Please enter your name first!");
+                return;
+            }
+            alert("Room created successfully for: " + name);
+        }
+
+        // الانضمام لغرفة
+        function joinRoom() {
+            const name = document.getElementById('player-name').value.trim();
+            if(name === "") {
+                alert("Please enter your name first!");
+                return;
+            }
+            alert("Searching for available rooms for: " + name);
+        }
+    </script>
+</body>
+</html>
