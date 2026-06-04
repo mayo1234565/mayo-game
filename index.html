@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ascension - Premium Network Lobby</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -135,7 +135,6 @@
 
         .sony-input:focus { border-bottom-color: #00f0ff; }
 
-        /* 🎭 واجهة التخصيص الاحترافية المخفية والعائمة */
         .free-customizer {
             display: flex;
             align-items: center;
@@ -152,7 +151,6 @@
             width: 45%;
         }
 
-        /* ستايل أزرار فتح القوائم المنسدلة الاحترافية */
         .select-trigger-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -175,7 +173,6 @@
             box-shadow: 0 0 10px rgba(0,240,255,0.2);
         }
 
-        /* حاويات القوائم المخفية التي تظهر فقط عند الضغط */
         .pop-menu {
             display: none;
             flex-direction: column;
@@ -212,7 +209,6 @@
             gap: 25px;
         }
 
-        /* 👑 هندسة الزخارف اللاصقة تماماً بحواف الصورة */
         .avatar-frame-wrapper {
             position: relative;
             width: 140px;
@@ -234,21 +230,19 @@
 
         .ornament-border {
             position: absolute;
-            width: 100px; /* نفس عرض الصورة بالظبط للالتصاق المثالي */
-            height: 100px; /* نفس ارتفاع الصورة بالظبط */
+            width: 100px; 
+            height: 100px; 
             z-index: 3;
             pointer-events: none;
             border-radius: 50%;
             transition: all 0.2s ease;
         }
 
-        /* 🟫 1. طراز زخارف خشبية مطورة لاصقة */
         .ornament-wood {
             border: 5px double #6b3e23;
             box-shadow: 0 0 0 3px #3a1e0e, 0 0 15px rgba(0,0,0,0.7);
         }
 
-        /* 🥉 2. طراز برونزي بالأجنحة الممتدة من الحافة */
         .ornament-bronze {
             border: 4px solid #cd7f32;
         }
@@ -258,7 +252,6 @@
         .ornament-bronze::before { left: -15px; transform: scaleX(-1); }
         .ornament-bronze::after { right: -15px; }
 
-        /* 🥈 3. طراز فضي ملكي مع التاج المدمج بالحافة */
         .ornament-silver {
             border: 4px solid #e5e7eb;
             box-shadow: 0 0 10px rgba(255,255,255,0.1);
@@ -269,7 +262,6 @@
             text-shadow: 0 0 8px rgba(255,255,255,0.4);
         }
 
-        /* 🥇 4. طراز ذهبي أسطوري مليء بالزخارف (أجنحة لاصقة + 5 نجوم مدمجة أسفل الحافة) */
         .ornament-gold {
             border: 5px solid #ffd700;
             box-shadow: 0 0 20px rgba(255,215,0,0.3);
@@ -300,7 +292,6 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* اللوبي المركزي */
         .central-lobby {
             display: flex;
             flex-direction: column;
@@ -365,22 +356,18 @@
 
     <div class="game-container">
         
-        <!-- صفحة 1: START الأصلي الحر -->
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
 
-        <!-- صفحة 2: التخصيص الغامض والمحترف (القوائم مخفية داخل أزرار اختيار) -->
         <div id="screen-identity" class="screen hidden">
             <div class="free-customizer">
-                
                 <div class="controls-column">
                     <div class="input-group" style="align-items: flex-start; width: 100%; margin-bottom: 10px;">
                         <span class="input-label">PLAYER NAME</span>
                         <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" style="text-align: left; width: 100%;">
                     </div>
                     
-                    <!-- خانة اختيار البطل المنسدلة المخفية بالداخل -->
                     <div style="position: relative;">
                         <button class="select-trigger-btn" onclick="toggleMenu('pop-hero')">
                             <span>CHOOSE HERO AVATAR</span> <i class="fa-solid fa-chevron-down"></i>
@@ -393,7 +380,6 @@
                         </div>
                     </div>
 
-                    <!-- خانة اختيار الزخرفة المنسدلة المخفية بالداخل -->
                     <div style="position: relative;">
                         <button class="select-trigger-btn" onclick="toggleMenu('pop-tier')">
                             <span>CHOOSE BORDER ORNAMENT</span> <i class="fa-solid fa-chevron-down"></i>
@@ -415,12 +401,10 @@
                     </div>
                     <button class="sony-btn" onclick="confirmIdentity()" style="font-size:1.4rem; margin-top:20px;">CONFIRM</button>
                 </div>
-
             </div>
             <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-start')">BACK</button>
         </div>
 
-        <!-- صفحة 3: شاشة الاتصال -->
         <div id="screen-choice" class="screen hidden">
             <div class="input-group">
                 <span class="input-label">JOIN TARGET LOBBY</span>
@@ -432,17 +416,14 @@
             <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-identity')">BACK</button>
         </div>
 
-        <!-- صفحة 4: اللوبي المركزي بالزخارف الملتصقة في المنتصف -->
         <div id="screen-lobby" class="screen hidden">
             <div class="central-lobby">
                 <div style="text-align: center;">
                     <span class="input-label" style="opacity:0.4;">MULTIPLAYER TOURNAMENT</span>
-                    <div id="room-id-display" class="room-badge" onclick="copyCode()">ROOM-0000</div>
+                    <div id="room-id-display" class="room-badge" onclick="copyCode()">room-0000</div>
                 </div>
 
-                <div class="central-player-grid" id="player-mesh">
-                    <!-- تظهر الشخصيات المزخرفة هنا بالكامل -->
-                </div>
+                <div class="central-player-grid" id="player-mesh"></div>
 
                 <div class="lobby-buttons">
                     <button class="sony-btn" style="color: #00ff88;" id="host-start-trigger" onclick="alert('Launching Match Instance...')">LAUNCH MATCH</button>
@@ -465,9 +446,11 @@
         let currentOrnament = 'wood';
         let peer = null, connections = [], pName = "", globalPlayers = [];
 
-        const iceConfig = { config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] } };
+        // خوادم جوجل السريعة لتسهيل الربط لتخطي جدران الحماية
+        const networkOptions = {
+            config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
+        };
 
-        // دوال التحكم بفتح وإغلاق القوائم العائمة المخفية
         function toggleMenu(menuId) {
             const menu = document.getElementById(menuId);
             const isVisible = menu.style.display === 'flex';
@@ -476,7 +459,6 @@
             event.stopPropagation();
         }
 
-        // إغلاق القوائم عند الضغط في أي مكان خارجها
         document.addEventListener('click', () => {
             document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none');
         });
@@ -497,7 +479,6 @@
             event.target.classList.add('selected');
         }
 
-        // تعيين قيم المعاينة الافتراضية عند التشغيل
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
         function switchScreen(screenId) {
@@ -511,18 +492,22 @@
             switchScreen('screen-choice');
         }
 
-        // إعداد شبكة الأونلاين (تم إصلاح مشكلة الضغط المزدوج)
+        // 🚀 الكود المصلح لإنشاء الغرف والربط الفوري
         function initNetwork(mode) {
-            // تعطيل الأزرار مؤقتاً لمنع التكرار وضمان الاستجابة الفورية من أول ضغطة
+            // قفل الأزرار فوراً لحماية الاتصال من الضغط المتكرر
             document.getElementById('btn-join-lobby').disabled = true;
             document.getElementById('btn-create-lobby').disabled = true;
 
+            // إنهاء أي اتصال قديم معلق لتفادي المشاكل
+            if(peer) { peer.destroy(); }
+
             if(mode === 'host') {
-                const roomCode = 'ROOM-' + Math.floor(1000 + Math.random() * 9000);
+                // تعديل جوهري: توليد كود بحروف صغيرة (lowercase) لأن سيرفر peerjs يفضلها للاتصال الفوري
+                const roomCode = 'room-' + Math.floor(1000 + Math.random() * 9000);
                 document.getElementById('room-id-display').innerText = roomCode;
                 document.getElementById('host-start-trigger').style.display = 'block';
 
-                peer = new Peer(roomCode, iceConfig);
+                peer = new Peer(roomCode, networkOptions);
                 
                 peer.on('open', () => {
                     enableButtons();
@@ -539,8 +524,13 @@
                         }
                     });
                 });
+
+                peer.on('error', (err) => {
+                    alert("Network Error: " + err.type + "\nPlease try creating the room again.");
+                    enableButtons();
+                });
             } else {
-                const code = document.getElementById('join-code').value.trim().toUpperCase();
+                const code = document.getElementById('join-code').value.trim().toLowerCase(); // تحويل الحروف لصغيرة تلقائياً
                 if(!code) { 
                     alert("Please provide a lobby key!"); 
                     enableButtons();
@@ -548,7 +538,7 @@
                 }
 
                 document.getElementById('host-start-trigger').style.display = 'none';
-                peer = new Peer(iceConfig);
+                peer = new Peer(networkOptions);
 
                 peer.on('open', () => {
                     const conn = peer.connect(code);
@@ -563,6 +553,11 @@
                     conn.on('data', (data) => {
                         if(data.type === 'sync-resp') drawCentralGrid(data.list);
                     });
+                });
+
+                peer.on('error', (err) => {
+                    alert("Could not connect to this room. Please double check the code!");
+                    enableButtons();
                 });
             }
         }
