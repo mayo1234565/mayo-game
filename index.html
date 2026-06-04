@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ascension - Ultimate Custom Lobby</title>
+    <title>The Ascension - Elite Tournament Lobby</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -21,7 +21,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #050508;
+            background-color: #030305;
         }
 
         /* حاوية اللعبة المعتمدة على خلفيتك النظيفة */
@@ -34,12 +34,12 @@
             display: flex;
         }
 
-        /* تعتيم سينمائي */
+        /* تعتيم سينمائي داكن للأطراف لبروز التوهج والزخارف */
         .game-container::after {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0) 25%, rgba(0,0,0,0.65) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.75) 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -50,7 +50,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 25px;
+            gap: 30px;
             z-index: 2;
             width: 100%;
             height: 100%;
@@ -60,10 +60,10 @@
         .hidden {
             opacity: 0;
             pointer-events: none;
-            transform: scale(0.95); 
+            transform: scale(0.97); 
         }
 
-        /* إرجاع شاشة البداية لتكون في الأسفل اليمين كما كانت وبمظهر فخم */
+        /* شاشة البداية الحرة أسفل اليمين */
         #screen-start {
             align-items: flex-end;
             justify-content: flex-end;
@@ -83,8 +83,8 @@
             letter-spacing: 4px;
             cursor: pointer;
             position: relative;
-            transition: all 0.3s ease;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
             padding: 5px 15px;
         }
 
@@ -102,161 +102,220 @@
 
         .sony-btn:hover {
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 1);
             transform: translateX(-5px);
         }
 
         .sony-btn:hover::after { width: 100%; }
         .start-title { font-size: 3.5rem; letter-spacing: 8px; color: #ffffff; }
 
-        /* التنسيقات العامة للمدخلات */
         .input-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .input-label {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px #000;
         }
 
         .sony-input {
             background: transparent;
             border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             color: #fff;
             padding: 10px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-family: 'Cairo', 'Orbitron', sans-serif;
             text-align: center;
             outline: none;
-            width: 340px;
+            width: 350px;
+            transition: border-color 0.3s;
         }
 
         .sony-input:focus { border-bottom-color: #00f0ff; }
 
-        /* 🎭 لوحة اختيار الشخصيات والإطارات الفخمة */
-        .customizer-box {
+        /* 🎭 واجهة التخصيص الاحترافية الحرة (بدور أي مربعات شفافة!) */
+        .free-customizer {
             display: flex;
-            gap: 40px;
-            background: rgba(10, 10, 15, 0.75);
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            max-width: 800px;
+            align-items: center;
+            justify-content: center;
+            gap: 80px; /* مسافة مريحة بين خيارات التحكم والمعاينة */
             width: 90%;
+            max-width: 1100px;
         }
 
-        .selection-panel {
+        .controls-column {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            width: 50%;
+            gap: 25px;
+            width: 45%;
         }
 
-        .grid-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .opt-item {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 10px;
-            font-family: 'Orbitron', 'Cairo', sans-serif;
+        .selection-title {
+            color: #00f0ff;
+            font-family: 'Orbitron', sans-serif;
             font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .free-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .free-opt {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 14px;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
         }
 
-        .opt-item:hover, .opt-item.selected {
+        .free-opt:hover, .free-opt.selected {
             border-color: #00f0ff;
-            background: rgba(0, 240, 255, 0.15);
-            box-shadow: 0 0 10px rgba(0,240,255,0.3);
+            color: #ffffff;
+            background: rgba(0, 240, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0,240,255,0.2);
         }
 
-        /* 👑 ستايل الإطارات الدائرية والزخارف (Overwatch Style) */
-        .avatar-container {
+        .preview-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 45%;
+            gap: 25px;
+        }
+
+        /* 👑 تصميم الزخارف الثقيلة المليئة بالتفاصيل (Overwatch Style) */
+        .avatar-frame-wrapper {
             position: relative;
-            width: 110px;
-            height: 110px;
+            width: 170px;
+            height: 170px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .inner-avatar {
-            width: 84px;
-            height: 84px;
+        .core-avatar {
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
             background-size: cover;
             background-position: center;
             z-index: 2;
+            border: 2px solid #000;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
 
-        /* زخارف حواف الطرازات الفخمة */
-        .tier-border {
+        /* الطبقة الأساسية للزخارف المعقدة المحيطة بالدائرة */
+        .ornament-border {
             position: absolute;
             width: 100%;
             height: 100%;
-            border-radius: 50%;
             z-index: 3;
             pointer-events: none;
-            transition: all 0.3s;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s ease;
         }
 
-        /* 🟫 1. طراز زخارف خشبية */
-        .border-wood {
-            border: 6px double #8B4513;
-            box-shadow: inset 0 0 10px #5c2c0b, 0 0 8px rgba(0,0,0,0.8);
+        /* 🟫 1. طراز زخارف خشبية مطورة */
+        .ornament-wood {
+            border: 5px solid #6b3e23;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px #422210, 0 0 20px rgba(0,0,0,0.9);
+        }
+        .ornament-wood::before {
+            content: '▲'; font-size: 10px; color: #422210; position: absolute; top: -10px; left: 47%;
         }
 
-        /* 🥉 2. طراز برونزي حاد */
-        .border-bronze {
-            border: 5px solid #CD7F32;
-            box-shadow: 0 0 12px rgba(205,127,50,0.5), inset 0 0 8px rgba(0,0,0,0.5);
+        /* 🥉 2. طراز برونزي بالأجنحة الجانبية الحادة */
+        .ornament-bronze {
+            border: 4px solid #cd7f32;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #000;
+        }
+        .ornament-bronze::before, .ornament-bronze::after {
+            content: ''; position: absolute; top: 35%; width: 20px; height: 40px; background: #cd7f32; clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        .ornament-bronze::before { left: -15px; transform: scaleX(-1); }
+        .ornament-bronze::after { right: -15px; }
+
+        /* 🥈 3. طراز فضي ملكي مع التاج العلوي والزخارف الممتدة */
+        .ornament-silver {
+            border: 4px solid #e5e7eb;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        /* تصميم التاج والزخرفة العلوية الفضية */
+        .ornament-silver::before {
+            content: '👑'; font-size: 1.5rem; position: absolute; top: -24px; left: 41%; text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
-        /* 🥈 3. طراز فضي متوهج */
-        .border-silver {
-            border: 4px solid #d1d5db;
-            outline: 2px dashed #9ca3af;
-            outline-offset: -6px;
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        /* 🥇 4. طراز ذهبي أسطوري فخم جداً (أجنحة حادة + 5 نجوم متوهجة في الأسفل) */
+        .ornament-gold {
+            border: 5px solid #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(255,215,0,0.4), inset 0 0 15px rgba(255,215,0,0.2);
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent);
+            background-size: 200% 100%;
+            animation: lightShine 2.5s infinite linear;
+        }
+        /* الأجنحة الذهبية الجانبية الحادة */
+        .ornament-gold::before {
+            content: ''; position: absolute; top: 15%; left: -25px; right: -25px; bottom: 35%;
+            border: 4px solid #ffd700; border-bottom: none; border-radius: 50px 50px 0 0; z-index: -1;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        /* صف الـ 5 نجوم المتراصة في الأسفل تماماً مثل الصورة */
+        .ornament-gold::after {
+            content: '★ ★ ★ ★ ★';
+            font-size: 0.85rem;
+            color: #ffd700;
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px #ffd700, 2px 2px 2px #000;
+            font-weight: 900;
         }
 
-        /* 🥇 4. طراز ذهبي أسطوري متوهج بالكامل بنجوم سفلية */
-        .border-gold {
-            border: 5px solid #FFD700;
-            background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 50%, transparent 60%);
-            background-size: 200% 200%;
-            animation: goldShine 3s infinite linear;
-            box-shadow: 0 0 25px rgba(255,215,0,0.5), inset 0 0 10px rgba(255,215,0,0.3);
+        .player-tag-name {
+            font-family: 'Cairo', sans-serif;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-shadow: 1px 1px 2px #000;
         }
 
-        .preview-zone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 50%;
-            border-left: 1px solid rgba(255,255,255,0.1);
-            gap: 15px;
-        }
-
-        /* شبكة اللوبي المركزية الفخمة */
+        /* شبكة اللوبي المركزية الاحترافية */
         .central-lobby {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 35px;
+            gap: 40px;
             width: 100%;
         }
 
@@ -264,49 +323,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
+            gap: 60px; /* مسافة ممتازة تمنع تداخل الأجنحة والزخارف */
             flex-wrap: wrap;
-            width: 85%;
+            width: 90%;
         }
 
-        .player-card {
+        .lobby-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             position: relative;
         }
 
-        .player-name-tag {
-            font-family: 'Cairo', sans-serif;
-            color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 3px 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .room-badge {
+            font-family: 'Orbitron', sans-serif;
+            color: #00f0ff;
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            cursor: pointer;
+            margin-top: 5px;
         }
 
         .host-indicator {
             position: absolute;
-            top: -15px;
+            top: -20px;
             background: #00f0ff;
             color: #000;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.65rem;
             font-weight: 900;
-            padding: 2px 7px;
+            padding: 2px 8px;
             border-radius: 3px;
-            box-shadow: 0 0 8px #00f0ff;
+            box-shadow: 0 0 10px #00f0ff;
             z-index: 10;
         }
 
-        .back-mini-btn { font-size: 1.3rem; color: rgba(255, 255, 255, 0.4); }
+        .back-mini-btn { font-size: 1.3rem; color: rgba(255, 255, 255, 0.3); }
         .back-mini-btn:hover { color: #ff4a4a; }
         .back-mini-btn:hover::after { background-color: #ff4a4a; }
 
-        @keyframes goldShine {
+        @keyframes lightShine {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
@@ -321,34 +380,38 @@
         </div>
 
         <div id="screen-identity" class="screen hidden">
-            <div class="customizer-box">
+            <div class="free-customizer">
                 
-                <div class="selection-panel">
-                    <div class="input-group" style="align-items: flex-start;">
-                        <span class="input-label">PLAYER NAME</span>
+                <div class="controls-column">
+                    <div class="input-group" style="align-items: flex-start; width: 100%;">
+                        <span class="input-label">PLAYER IDENTITY NAME</span>
                         <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" style="text-align: left; width: 100%;">
                     </div>
                     
-                    <span class="input-label" style="margin-top:10px;">SELECT HERO AVATAR</span>
-                    <div class="grid-options" id="hero-grid">
-                        </div>
+                    <div>
+                        <div class="selection-title">SELECT HERO</div>
+                        <div class="free-grid" id="hero-select-mesh">
+                            </div>
+                    </div>
 
-                    <span class="input-label" style="margin-top:10px;">SELECT BORDER TIER</span>
-                    <div class="grid-options" id="tier-grid">
-                        <div class="opt-item selected" onclick="selectTier('wood')">WOODEN</div>
-                        <div class="opt-item" onclick="selectTier('bronze')">BRONZE</div>
-                        <div class="opt-item" onclick="selectTier('silver')">SILVER</div>
-                        <div class="opt-item" onclick="selectTier('gold')">MYTHIC GOLD</div>
+                    <div>
+                        <div class="selection-title">SELECT BORDER ORNAMENT</div>
+                        <div class="free-grid">
+                            <div class="free-opt selected" onclick="changeOrnament('wood')">WOOD ROYAL</div>
+                            <div class="free-opt" onclick="changeOrnament('bronze')">BRONZE WINGS</div>
+                            <div class="free-opt" onclick="changeOrnament('silver')">SILVER CROWN</div>
+                            <div class="free-opt" onclick="changeOrnament('gold')">MYTHIC GOLD ★</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="preview-zone">
-                    <span class="input-label">HERO PREVIEW</span>
-                    <div class="avatar-container">
-                        <div id="tier-preview" class="tier-border border-wood"></div>
-                        <div id="avatar-preview" class="inner-avatar"></div>
+                <div class="preview-column">
+                    <span class="input-label">LOBBY AVATAR PREVIEW</span>
+                    <div class="avatar-frame-wrapper">
+                        <div id="ornament-live-border" class="ornament-border ornament-wood"></div>
+                        <div id="avatar-live-core" class="core-avatar"></div>
                     </div>
-                    <button class="sony-btn" onclick="confirmIdentity()" style="font-size:1.4rem; margin-top:20px;">CONFIRM</button>
+                    <button class="sony-btn" onclick="confirmIdentity()" style="font-size:1.4rem; margin-top:25px;">CONFIRM IDENTITY</button>
                 </div>
 
             </div>
@@ -357,11 +420,11 @@
 
         <div id="screen-choice" class="screen hidden">
             <div class="input-group">
-                <span class="input-label">JOIN EXISTING LOBBY</span>
+                <span class="input-label">JOIN TARGET LOBBY</span>
                 <input type="text" id="join-code" class="sony-input" placeholder="ENTER ROOM CODE..." style="font-family:'Orbitron'; letter-spacing:2px;">
             </div>
             <button class="sony-btn" onclick="initNetwork('join')"><i class="fa-solid fa-right-to-bracket"></i> JOIN LOBBY</button>
-            <div style="color: rgba(255,255,255,0.1); font-family:'Orbitron'; font-size:0.9rem;">— OR —</div>
+            <div style="color: rgba(255,255,255,0.08); font-family:'Orbitron'; font-size:0.9rem;">— OR —</div>
             <button class="sony-btn" onclick="initNetwork('host')"><i class="fa-solid fa-plus"></i> CREATE LOBBY</button>
             <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-identity')">BACK</button>
         </div>
@@ -369,7 +432,7 @@
         <div id="screen-lobby" class="screen hidden">
             <div class="central-lobby">
                 <div style="text-align: center;">
-                    <span class="input-label" style="opacity:0.5;">MULTIPLAYER MATCHMAKING</span>
+                    <span class="input-label" style="opacity:0.4;">MULTIPLAYER TOURNAMENT</span>
                     <div id="room-id-display" class="room-badge" onclick="copyCode()">ROOM-0000</div>
                 </div>
 
@@ -377,7 +440,7 @@
                     </div>
 
                 <div class="lobby-buttons">
-                    <button class="sony-btn" style="color: #00ff88;" id="host-start-trigger" onclick="alert('Launching Match...')">LAUNCH MATCH</button>
+                    <button class="sony-btn" style="color: #00ff88;" id="host-start-trigger" onclick="alert('Launching Match Instance...')">LAUNCH MATCH</button>
                     <button class="sony-btn back-mini-btn" onclick="disconnectLobby()">LEAVE LOBBY</button>
                 </div>
             </div>
@@ -386,48 +449,49 @@
     </div>
 
     <script>
-        // 6 شخصيات أنمي مبتكرة ومولدة بألوان فخمة وعناصر حادة تناسب اللعبة
         const animeHeroes = {
             'shadow': { name: 'Shadow Ninja', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shadow&backgroundColor=312e81' },
             'blaze': { name: 'Blaze Samurai', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=blaze&backgroundColor=991b1b' },
             'frost': { name: 'Frost Mage', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=frost&backgroundColor=065f46' },
-            'volt': { name: 'Volt Striker', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' },
-            'phantom': { name: 'Phantom Assassin', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=phantom&backgroundColor=581c87' },
-            'sakura': { name: 'Sakura Ronin', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=sakura&backgroundColor=9d174d' }
+            'volt': { name: 'Volt Striker', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
         };
 
-        let selectedHero = 'shadow';
-        let selectedTier = 'wood';
+        let currentHero = 'shadow';
+        let currentOrnament = 'wood';
         let peer = null, connections = [], pName = "", globalPlayers = [];
 
         const iceConfig = { config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] } };
 
-        // بناء قائمة اختيار الشخصيات
-        const heroGrid = document.getElementById('hero-grid');
+        // ملء قائمة الشخصيات المتاحة
+        const meshContainer = document.getElementById('hero-select-mesh');
         Object.keys(animeHeroes).forEach((key, index) => {
-            const activeClass = index === 0 ? 'selected' : '';
-            heroGrid.innerHTML += `<div class="opt-item ${activeClass}" id="hero-${key}" onclick="selectHero('${key}')">${animeHeroes[key].name}</div>`;
+            const active = index === 0 ? 'selected' : '';
+            meshContainer.innerHTML += `<div class="free-opt ${active}" id="opt-hero-${key}" onclick="changeHero('${key}')">${animeHeroes[key].name}</div>`;
         });
 
-        function selectHero(key) {
-            document.querySelectorAll('#hero-grid .opt-item').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`hero-${key}`).classList.add('selected');
-            selectedHero = key;
-            document.getElementById('avatar-preview').style.backgroundImage = `url('${animeHeroes[key].url}')`;
+        function changeHero(key) {
+            document.querySelectorAll('#hero-select-mesh .free-opt').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`opt-hero-${key}`).classList.add('selected');
+            currentHero = key;
+            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`;
         }
 
-        function selectTier(tier) {
-            document.querySelectorAll('#tier-grid .opt-item').forEach(el => el.classList.remove('selected'));
+        function changeOrnament(tier) {
+            document.querySelectorAll('.free-opt').forEach(el => {
+                if(el.innerText.includes('ROYAL') || el.innerText.includes('WINGS') || el.innerText.includes('CROWN') || el.innerText.includes('MYTHIC')) {
+                    el.classList.remove('selected');
+                }
+            });
             event.target.classList.add('selected');
-            selectedTier = tier;
+            currentOrnament = tier;
             
-            const preview = document.getElementById('tier-preview');
-            preview.className = 'tier-border';
-            preview.classList.add(`border-${tier}`);
+            const border = document.getElementById('ornament-live-border');
+            border.className = 'ornament-border';
+            border.classList.add(`ornament-${tier}`);
         }
 
-        // تعيين البداية الافتراضية للمعاينه
-        selectHero('shadow');
+        // تشغيل المعاينة المبدئية
+        changeHero('shadow');
 
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -436,78 +500,78 @@
 
         function confirmIdentity() {
             pName = document.getElementById('player-name').value.trim();
-            if(!pName) { alert("Please declare your name identity!"); return; }
+            if(!pName) { alert("Identity validation required!"); return; }
             switchScreen('screen-choice');
         }
 
         function initNetwork(mode) {
             if(mode === 'host') {
-                const generatedRoom = 'ROOM-' + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('room-id-display').innerText = generatedRoom;
+                const roomCode = 'ROOM-' + Math.floor(1000 + Math.random() * 9000);
+                document.getElementById('room-id-display').innerText = roomCode;
                 document.getElementById('host-start-trigger').style.display = 'block';
 
-                peer = new Peer(generatedRoom, iceConfig);
+                peer = new Peer(roomCode, iceConfig);
                 peer.on('open', () => {
                     switchScreen('screen-lobby');
-                    syncLobbyArray(pName, selectedHero, selectedTier, true);
+                    syncLobbyData(pName, currentHero, currentOrnament, true);
                 });
 
                 peer.on('connection', (conn) => {
                     connections.push(conn);
                     conn.on('data', (data) => {
-                        if(data.type === 'register') {
-                            syncLobbyArray(data.name, data.hero, data.tier, false);
-                            broadcastData({type: 'sync', list: globalPlayers});
+                        if(data.type === 'sync-req') {
+                            syncLobbyData(data.name, data.hero, data.tier, false);
+                            broadcastLobby({type: 'sync-resp', list: globalPlayers});
                         }
                     });
                 });
             } else {
-                const enteredCode = document.getElementById('join-code').value.trim().toUpperCase();
-                if(!enteredCode) { alert("Room code field is required!"); return; }
+                const code = document.getElementById('join-code').value.trim().toUpperCase();
+                if(!code) { alert("Please provide a lobby key!"); return; }
 
                 document.getElementById('host-start-trigger').style.display = 'none';
                 peer = new Peer(iceConfig);
 
                 peer.on('open', () => {
-                    const conn = peer.connect(enteredCode);
+                    const conn = peer.connect(code);
                     conn.on('open', () => {
                         connections.push(conn);
-                        conn.send({type: 'register', name: pName, hero: selectedHero, tier: selectedTier});
-                        document.getElementById('room-id-display').innerText = enteredCode;
+                        conn.send({type: 'sync-req', name: pName, hero: currentHero, tier: currentOrnament});
+                        document.getElementById('room-id-display').innerText = code;
                         switchScreen('screen-lobby');
                     });
 
                     conn.on('data', (data) => {
-                        if(data.type === 'sync') drawCentralGrid(data.list);
+                        if(data.type === 'sync-resp') drawCentralGrid(data.list);
                     });
                 });
             }
         }
 
-        function syncLobbyArray(name, hero, tier, isHost) {
+        function syncLobbyData(name, hero, tier, isHost) {
             globalPlayers.push({name: name, hero: hero, tier: tier, isHost: isHost});
             drawCentralGrid(globalPlayers);
         }
 
-        // رسم بطاقات اللاعبين الفخمة في المنتصف تماماً (Overwatch Style)
+        // رسم بطاقات اللاعبين مع الأجنحة والزخارف والـ 5 نجوم الذهبية في منتصف الشاشة بالكامل
         function drawCentralGrid(list) {
             const grid = document.getElementById('player-mesh');
             grid.innerHTML = "";
             list.forEach(player => {
                 grid.innerHTML += `
-                    <div class="player-card">
+                    <div class="lobby-card">
                         ${player.isHost ? '<span class="host-indicator">HOST</span>' : ''}
-                        <div class="avatar-container">
-                            <div class="tier-border border-${player.tier}"></div>
-                            <div class="inner-avatar" style="background-image: url('${animeHeroes[player.hero].url}')"></div>
+                        <div class="avatar-frame-wrapper">
+                            <div class="ornament-border ornament-${player.tier}"></div>
+                            <div class="core-avatar" style="background-image: url('${animeHeroes[player.hero].url}')"></div>
                         </div>
-                        <div class="player-name-tag">${player.name}</div>
+                        <div class="player-tag-name">${player.name}</div>
                     </div>
                 `;
             });
         }
 
-        function broadcastData(payload) {
+        function broadcastLobby(payload) {
             connections.forEach(c => { if(c.open) c.send(payload); });
         }
 
@@ -518,9 +582,9 @@
         }
 
         function copyCode() {
-            const c = document.getElementById('room-id-display').innerText;
-            navigator.clipboard.writeText(c);
-            alert("Lobby ID Copied: " + c);
+            const code = document.getElementById('room-id-display').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Lobby ID copied to clipboard: " + code);
         }
     </script>
 </body>
