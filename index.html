@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ascension - Main Menu</title>
+    <title>The Ascension - Multiplayer Lobby</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* استيراد خطوط سينمائية مميزة وحادة تشبه ألعاب بلايستيشن و Uncharted */
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght=600;800&family=Orbitron:wght=500;800&family=Cairo:wght=700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
 
         * {
             box-sizing: border-box;
@@ -22,32 +24,31 @@
             background-color: #050508;
         }
 
-        /* شاشة اللعبة الرئيسية - تم ربطها بملفك الجديد background2.png */
+        /* الخلفية المربوطة بصورتك */
         .game-container {
             position: relative;
             width: 100%;
             height: 100%;
-            /* الكود يقرأ الآن صورتك المرفوعة مباشرة بجانبه */
             background: url('background2.png') no-repeat center center;
             background-size: cover;
             display: flex;
-            align-items: flex-end; /* القائمة في الأسفل لمحاكاة ألعاب AAA */
-            justify-content: flex-end; /* دفع القائمة لليمين لتبقى الشخصية واضحة بالكامل */
-            padding-bottom: 8%;
-            padding-right: 10%;
+            align-items: flex-end; 
+            justify-content: flex-end; 
+            padding-bottom: 5%;
+            padding-right: 8%;
         }
 
-        /* تأثير سينمائي: تعتيم احترافي لأطراف الشاشة لتركيز الرؤية على المنتصف والشخصية */
+        /* تعتيم سينمائي لأطراف الشاشة */
         .game-container::after {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.6) 100%);
             pointer-events: none;
             z-index: 1;
         }
 
-        /* الشاشات والقوائم الجانبية */
+        /* الشاشات والقوائم */
         .screen {
             position: absolute;
             display: flex;
@@ -61,19 +62,19 @@
         .hidden {
             opacity: 0;
             pointer-events: none;
-            transform: translateX(40px); /* تأثير انزلاق جانبي ناعم عند الاختفاء */
+            transform: translateX(50px); 
         }
 
-        /* ستايل أزرار ألعاب سوني الحرة والنقية بدون مربعات مزعجة */
+        /* أزرار بلايستيشن الحرة */
         .sony-btn {
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.7);
-            font-family: 'Orbitron', 'Cinzel', 'Cairo', sans-serif;
-            font-size: 2rem;
+            font-family: 'Orbitron', 'Cinzel', sans-serif;
+            font-size: 1.8rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 5px;
+            letter-spacing: 4px;
             cursor: pointer;
             text-align: right;
             position: relative;
@@ -82,14 +83,14 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            gap: 10px;
         }
 
-        /* الخط المضيء السفلي (المؤشر النشط) عند تمرير الماوس فوق الزر */
         .sony-btn::after {
             content: '';
             width: 0;
             height: 3px;
-            background-color: #00f0ff; /* توهج أزرق بلايستيشن نيون */
+            background-color: #00f0ff; 
             position: absolute;
             bottom: -5px;
             right: 0;
@@ -97,39 +98,36 @@
             box-shadow: 0 0 10px #00f0ff;
         }
 
-        /* تأثير الـ Hover الاحترافي عند التحديد */
         .sony-btn:hover {
             color: #ffffff;
-            transform: translateX(-8px); /* حركة دخول خفيفة لليسار تعطي شعوراً بالتفاعل */
+            transform: translateX(-8px); 
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.9);
         }
 
         .sony-btn:hover::after {
-            width: 100%; /* تمدد الخط المضيء تحت الكلمة بسلاسة */
+            width: 100%; 
         }
 
-        /* تخصيص كلمة START لتكون أضخم وأفخم */
         .start-title {
             font-size: 3.5rem;
             letter-spacing: 8px;
             color: #ffffff;
         }
 
-        /* قائمة إدخال الاسم بستايل Uncharted (مدمجة تماماً مع الخلفية عبر سطر سفلي أنيق) */
+        /* خانات الإدخال بستايل Uncharted */
         .input-group {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .input-label {
             color: rgba(255, 255, 255, 0.5);
-            font-family: 'Orbitron', 'Cairo', sans-serif;
-            font-size: 0.9rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
             letter-spacing: 2px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
+            margin-bottom: 6px;
         }
 
         .sony-input {
@@ -138,7 +136,7 @@
             border-bottom: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
             padding: 8px 5px;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-family: 'Cairo', 'Orbitron', sans-serif;
             text-align: right;
             outline: none;
@@ -151,20 +149,114 @@
             box-shadow: 0 4px 12px -4px rgba(0, 240, 255, 0.4);
         }
 
-        /* زر الرجوع المتناسق هرمياً */
-        .back-btn {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 15px;
+        /* 👑 تصميم اللوبي الفخم (Lobby Panel) */
+        .lobby-panel {
+            background: rgba(10, 10, 15, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 4px solid #00f0ff; /* خط نيون جانبي للتمييز */
+            padding: 30px;
+            width: 420px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .lobby-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            text-align: right;
+        }
+
+        .lobby-title {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .room-code-display {
+            font-family: 'Orbitron', sans-serif;
+            color: #00f0ff;
+            font-size: 1.8rem;
+            font-weight: 900;
             letter-spacing: 3px;
+            margin-top: 5px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            cursor: pointer;
         }
-        .back-btn:hover {
-            color: #ff4a4a;
+
+        /* قائمة اللاعبين */
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-left: 5px;
         }
-        .back-btn:hover::after {
-            background-color: #ff4a4a;
-            box-shadow: 0 0 10px #ff4a4a;
+
+        .player-slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
         }
+
+        .player-slot:hover {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.2);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+        }
+
+        .player-info i {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: #00ff88;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+        }
+
+        .lobby-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .back-btn {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .back-btn:hover { color: #ff4a4a; }
+        .back-btn:hover::after { background-color: #ff4a4a; box-shadow: 0 0 10px #ff4a4a; }
     </style>
 </head>
 <body>
@@ -176,51 +268,165 @@
         </div>
 
         <div id="menu-screen" class="screen hidden">
-            
             <div class="input-group">
                 <span class="input-label">PLAYER IDENTITY</span>
-                <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="15">
+                <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12">
+            </div>
+
+            <div class="input-group" style="margin-top: 10px;">
+                <span class="input-label">JOIN VIA CODE</span>
+                <input type="text" id="join-code" class="sony-input" placeholder="ENTER ROOM CODE..." style="font-family:'Orbitron'; font-size:1.1rem; letter-spacing:2px;">
             </div>
             
-            <button class="sony-btn" onclick="createRoom()">CREATE ROOM</button>
-            <button class="sony-btn" onclick="joinRoom()">JOIN ROOM</button>
-            
-            <button class="sony-btn back-btn" onclick="goBack()">BACK</button>
+            <button class="sony-btn" onclick="initMultiplayer('host')"><i class="fa-solid incentive fa-plus"></i> CREATE ROOM</button>
+            <button class="sony-btn" onclick="initMultiplayer('join')"><i class="fa-solid fa-right-to-bracket"></i> JOIN ROOM</button>
+            <button class="sony-btn back-btn" onclick="goBack('menu')">BACK</button>
+        </div>
+
+        <div id="lobby-screen" class="screen hidden">
+            <div class="lobby-panel">
+                <div class="lobby-header">
+                    <div class="lobby-title">MULTIPLAYER LOBBY</div>
+                    <div id="room-id-text" class="room-code-display" title="Click to copy code" onclick="copyRoomCode()">GEN-0000</div>
+                </div>
+
+                <div class="player-list" id="lobby-player-list">
+                    </div>
+
+                <div class="lobby-actions">
+                    <button class="sony-btn" style="color: #00ff88;" id="start-game-btn" onclick="alert('Starting Match...')">START MATCH</button>
+                    <button class="sony-btn back-btn" onclick="leaveLobby()">LEAVE LOBBY</button>
+                </div>
+            </div>
         </div>
 
     </div>
 
     <script>
-        // الانتقال السلس للقائمة الثانية
+        let peer = null;
+        let connections = [];
+        let myName = "";
+        let playerList = [];
+
         function goToMenu() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('menu-screen').classList.remove('hidden');
         }
 
-        // الرجوع لشاشة البداية
-        function goBack() {
+        function goBack(current) {
+            if(current === 'menu') {
+                document.getElementById('menu-screen').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+            }
+        }
+
+        // 🌐 معالجة نظام الأونلاين الحقيقي واللوبي
+        function initMultiplayer(mode) {
+            myName = document.getElementById('player-name').value.trim();
+            if(!myName) {
+                alert("Please enter your identity name first!");
+                return;
+            }
+
+            if(mode === 'host') {
+                // توليد كود عشوائي فخم ومميز للغرفة
+                const randomId = 'ROOM-' + Math.floor(1000 + Math.random() * 9000);
+                document.getElementById('room-id-text').innerText = randomId;
+                document.getElementById('start-game-btn').style.display = 'block';
+
+                peer = new Peer(randomId);
+                
+                peer.on('open', (id) => {
+                    setupLobbyScreen();
+                    addPlayerToLobby(myName, true);
+                });
+
+                peer.on('connection', (conn) => {
+                    connections.push(conn);
+                    conn.on('data', (data) => {
+                        if(data.type === 'join') {
+                            addPlayerToLobby(data.name, false);
+                            // إرسال قائمة اللاعبين الحالية لكل من بداخل اللوبي
+                            broadcast({type: 'update-list', list: playerList});
+                        }
+                    });
+                });
+
+            } else {
+                const targetId = document.getElementById('join-code').value.trim().toUpperCase();
+                if(!targetId) {
+                    alert("Please enter a valid room code!");
+                    return;
+                }
+
+                document.getElementById('start-game-btn').style.display = 'none';
+                peer = new Peer();
+
+                peer.on('open', () => {
+                    const conn = peer.connect(targetId);
+                    conn.on('open', () => {
+                        connections.push(conn);
+                        conn.send({type: 'join', name: myName});
+                        document.getElementById('room-id-text').innerText = targetId;
+                        setupLobbyScreen();
+                    });
+
+                    conn.on('data', (data) => {
+                        if(data.type === 'update-list') {
+                            renderPlayerList(data.list);
+                        }
+                    });
+                });
+            }
+        }
+
+        function setupLobbyScreen() {
             document.getElementById('menu-screen').classList.add('hidden');
-            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('lobby-screen').classList.remove('hidden');
         }
 
-        // إنشاء غرفة
-        function createRoom() {
-            const name = document.getElementById('player-name').value.trim();
-            if(name === "") {
-                alert("Please enter your name first!");
-                return;
-            }
-            alert("Room created successfully for: " + name);
+        function addPlayerToLobby(name, isHost) {
+            playerList.push({name: name, isHost: isHost});
+            renderPlayerList(playerList);
         }
 
-        // الانضمام لغرفة
-        function joinRoom() {
-            const name = document.getElementById('player-name').value.trim();
-            if(name === "") {
-                alert("Please enter your name first!");
-                return;
-            }
-            alert("Searching for available rooms for: " + name);
+        function renderPlayerList(list) {
+            const container = document.getElementById('lobby-player-list');
+            container.innerHTML = "";
+            list.forEach(player => {
+                container.innerHTML += `
+                    <div class="player-slot">
+                        <div class="status-badge">
+                            <div class="status-dot"></div>
+                            READY
+                        </div>
+                        <div class="player-info">
+                            ${player.name} ${player.isHost ? '<span style="color:#00f0ff; font-size:0.8rem; font-family:\'Orbitron\'">[HOST]</span>' : ''}
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function broadcast(data) {
+            connections.forEach(conn => {
+                if(conn.open) conn.send(data);
+            });
+        }
+
+        function leaveLobby() {
+            if(peer) peer.destroy();
+            connections = [];
+            playerList = [];
+            document.getElementById('lobby-screen').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+        }
+
+        function copyRoomCode() {
+            const code = document.getElementById('room-id-text').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Room code copied: " + code + "\nSend it to your friends!");
         }
     </script>
 </body>
