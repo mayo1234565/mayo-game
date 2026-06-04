@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ascension - Main Menu</title>
     <style>
-        /* استيراد خطوط سينمائية مميزة وحادة تشبه ألعاب بلايستيشن */
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;800&family=Cairo:wght@700&display=swap');
+        /* استيراد خطوط سينمائية مميزة وحادة تشبه ألعاب بلايستيشن و Uncharted */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght=600;800&family=Orbitron:wght=500;800&family=Cairo:wght=700&display=swap');
 
         * {
             box-sizing: border-box;
@@ -22,13 +22,13 @@
             background-color: #050508;
         }
 
-        /* شاشة اللعبة الرئيسية مع ربط خلفيتك النظيفة مباشرة بالملف المحلي */
+        /* شاشة اللعبة الرئيسية - تم ربطها بملفك الجديد background2.png */
         .game-container {
             position: relative;
             width: 100%;
             height: 100%;
-            /* هنا تم ربط الصورة التي أرفقتها بدقة وبدون مشاكل */
-            background: url('background1.web.png') no-repeat center center;
+            /* الكود يقرأ الآن صورتك المرفوعة مباشرة بجانبه */
+            background: url('background2.png') no-repeat center center;
             background-size: cover;
             display: flex;
             align-items: flex-end; /* القائمة في الأسفل لمحاكاة ألعاب AAA */
@@ -37,7 +37,7 @@
             padding-right: 10%;
         }
 
-        /* تأثير سينمائي: تعتيم احترافي لأطراف الشاشة لتركيز الرؤية */
+        /* تأثير سينمائي: تعتيم احترافي لأطراف الشاشة لتركيز الرؤية على المنتصف والشخصية */
         .game-container::after {
             content: '';
             position: absolute;
@@ -47,7 +47,7 @@
             z-index: 1;
         }
 
-        /* الشاشات والقوائم */
+        /* الشاشات والقوائم الجانبية */
         .screen {
             position: absolute;
             display: flex;
@@ -61,10 +61,10 @@
         .hidden {
             opacity: 0;
             pointer-events: none;
-            transform: translateX(40px); /* تأثير اختفاء وانزلاق جانبي فخم */
+            transform: translateX(40px); /* تأثير انزلاق جانبي ناعم عند الاختفاء */
         }
 
-        /* ستايل أزرار ألعاب سوني وانشارتد المتطورة الحرة */
+        /* ستايل أزرار ألعاب سوني الحرة والنقية بدون مربعات مزعجة */
         .sony-btn {
             background: none;
             border: none;
@@ -84,7 +84,7 @@
             justify-content: flex-end;
         }
 
-        /* إضافة الخط المضيء السفلي (المؤشر النشط) عند تمرير الماوس */
+        /* الخط المضيء السفلي (المؤشر النشط) عند تمرير الماوس فوق الزر */
         .sony-btn::after {
             content: '';
             width: 0;
@@ -97,10 +97,10 @@
             box-shadow: 0 0 10px #00f0ff;
         }
 
-        /* تأثير الـ Hover الاحترافي للزر عند التحديد */
+        /* تأثير الـ Hover الاحترافي عند التحديد */
         .sony-btn:hover {
             color: #ffffff;
-            transform: translateX(-8px); /* حركة دخول طفيفة لليسار عند وضع الماوس */
+            transform: translateX(-8px); /* حركة دخول خفيفة لليسار تعطي شعوراً بالتفاعل */
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.9);
         }
 
@@ -108,14 +108,14 @@
             width: 100%; /* تمدد الخط المضيء تحت الكلمة بسلاسة */
         }
 
-        /* تخصيص كلمة START لتكون أكبر وأبرز */
+        /* تخصيص كلمة START لتكون أضخم وأفخم */
         .start-title {
             font-size: 3.5rem;
             letter-spacing: 8px;
             color: #ffffff;
         }
 
-        /* قائمة إدخال الاسم بستايل Uncharted (بدون صناديق مشوهة، مجرد سطر سفلي أنيق) */
+        /* قائمة إدخال الاسم بستايل Uncharted (مدمجة تماماً مع الخلفية عبر سطر سفلي أنيق) */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -151,7 +151,7 @@
             box-shadow: 0 4px 12px -4px rgba(0, 240, 255, 0.4);
         }
 
-        /* زر الرجوع المتناسق */
+        /* زر الرجوع المتناسق هرمياً */
         .back-btn {
             font-size: 1.3rem;
             color: rgba(255, 255, 255, 0.4);
