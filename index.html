@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ascension - Premium Network Lobby</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+    <title>The Ascension - Elite Custom Lobby</title>
+    <!-- استدعاء الأيقونات الفخمة والخطوط السينمائية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -61,6 +61,7 @@
             transform: scale(0.98); 
         }
 
+        /* شاشة START في الزاوية اليمنى السفلية النظيفة الأصلية */
         #screen-start {
             align-items: flex-end;
             justify-content: flex-end;
@@ -135,6 +136,7 @@
 
         .sony-input:focus { border-bottom-color: #00f0ff; }
 
+        /* 🎭 واجهة التخصيص الاحترافية الغامضة (بدون أي مربعات شفافة!) */
         .free-customizer {
             display: flex;
             align-items: center;
@@ -151,6 +153,7 @@
             width: 45%;
         }
 
+        /* أزرار اختيار القوائم المنسدلة */
         .select-trigger-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -170,14 +173,14 @@
         .select-trigger-btn:hover {
             border-color: #00f0ff;
             background: rgba(0, 240, 255, 0.05);
-            box-shadow: 0 0 10px rgba(0,240,255,0.2);
         }
 
+        /* القوائم المخفية بالداخل وتظهر عند الضغط */
         .pop-menu {
             display: none;
             flex-direction: column;
             gap: 8px;
-            background: rgba(15, 15, 22, 0.95);
+            background: rgba(15, 15, 22, 0.98);
             border: 1px solid rgba(0, 240, 255, 0.3);
             padding: 10px;
             position: absolute;
@@ -209,6 +212,7 @@
             gap: 25px;
         }
 
+        /* 👑 هندسة الزخارف الملتصقة تماماً بحافة الدائرة الدائرية (Overwatch) */
         .avatar-frame-wrapper {
             position: relative;
             width: 140px;
@@ -230,7 +234,7 @@
 
         .ornament-border {
             position: absolute;
-            width: 100px; 
+            width: 100px; /* الالتصاق الكامل بالصورة */
             height: 100px; 
             z-index: 3;
             pointer-events: none;
@@ -238,11 +242,13 @@
             transition: all 0.2s ease;
         }
 
+        /* 🟫 طراز زخارف خشبية */
         .ornament-wood {
             border: 5px double #6b3e23;
             box-shadow: 0 0 0 3px #3a1e0e, 0 0 15px rgba(0,0,0,0.7);
         }
 
+        /* 🥉 طراز برونزي بالأجنحة الجانبية الحادة */
         .ornament-bronze {
             border: 4px solid #cd7f32;
         }
@@ -252,6 +258,7 @@
         .ornament-bronze::before { left: -15px; transform: scaleX(-1); }
         .ornament-bronze::after { right: -15px; }
 
+        /* 🥈 طراز فضي ملكي بالتاج الحاد */
         .ornament-silver {
             border: 4px solid #e5e7eb;
             box-shadow: 0 0 10px rgba(255,255,255,0.1);
@@ -262,6 +269,7 @@
             text-shadow: 0 0 8px rgba(255,255,255,0.4);
         }
 
+        /* 🥇 طراز ذهبي أسطوري بالأجنحة والنجوم المتراصة أسفل الدائرة تماماً مثل صورتك */
         .ornament-gold {
             border: 5px solid #ffd700;
             box-shadow: 0 0 20px rgba(255,215,0,0.3);
@@ -292,6 +300,7 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
+        /* 👑 اللوبي الفخم في المنتصف تماماً */
         .central-lobby {
             display: flex;
             flex-direction: column;
@@ -304,7 +313,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 55px; 
+            gap: 60px; 
             flex-wrap: wrap;
             width: 90%;
         }
@@ -324,7 +333,6 @@
             font-weight: 900;
             letter-spacing: 4px;
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-            cursor: pointer;
             margin-top: 5px;
         }
 
@@ -356,10 +364,12 @@
 
     <div class="game-container">
         
+        <!-- صفحة 1: شاشة البدء النظيفة الأصلية (START بالأسفل) -->
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
 
+        <!-- صفحة 2: التخصيص الحُر والغامض (الصور والزخارف تظهر فقط عند الضغط داخل أزرار) -->
         <div id="screen-identity" class="screen hidden">
             <div class="free-customizer">
                 <div class="controls-column">
@@ -368,6 +378,7 @@
                         <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" style="text-align: left; width: 100%;">
                     </div>
                     
+                    <!-- زر منسدل مخفي لاختيار البطل -->
                     <div style="position: relative;">
                         <button class="select-trigger-btn" onclick="toggleMenu('pop-hero')">
                             <span>CHOOSE HERO AVATAR</span> <i class="fa-solid fa-chevron-down"></i>
@@ -380,6 +391,7 @@
                         </div>
                     </div>
 
+                    <!-- زر منسدل مخفي لاختيار الزخرفة الحادة الملتصقة -->
                     <div style="position: relative;">
                         <button class="select-trigger-btn" onclick="toggleMenu('pop-tier')">
                             <span>CHOOSE BORDER ORNAMENT</span> <i class="fa-solid fa-chevron-down"></i>
@@ -388,7 +400,7 @@
                             <div class="pop-opt selected" onclick="changeOrnament('wood')">WOOD ROYAL</div>
                             <div class="pop-opt" onclick="changeOrnament('bronze')">BRONZE WINGS</div>
                             <div class="pop-opt" onclick="changeOrnament('silver')">SILVER CROWN</div>
-                            <div class="pop-opt" onclick="changeOrnament('gold')">MYTHIC GOLD</div>
+                            <div class="pop-opt" onclick="changeOrnament('gold')">MYTHIC GOLD ★</div>
                         </div>
                     </div>
                 </div>
@@ -399,35 +411,27 @@
                         <div id="ornament-live-border" class="ornament-border ornament-wood"></div>
                         <div id="avatar-live-core" class="core-avatar"></div>
                     </div>
-                    <button class="sony-btn" onclick="confirmIdentity()" style="font-size:1.4rem; margin-top:20px;">CONFIRM</button>
+                    <!-- الانتقال الفوري والمضمون من ضغطة واحدة مباشرة للوبي -->
+                    <button class="sony-btn" onclick="buildAndShowLobby()" style="font-size:1.4rem; margin-top:20px;">CREATE LOBBY</button>
                 </div>
             </div>
             <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-start')">BACK</button>
         </div>
 
-        <div id="screen-choice" class="screen hidden">
-            <div class="input-group">
-                <span class="input-label">JOIN TARGET LOBBY</span>
-                <input type="text" id="join-code" class="sony-input" placeholder="ENTER ROOM CODE..." style="font-family:'Orbitron'; letter-spacing:2px;">
-            </div>
-            <button class="sony-btn" id="btn-join-lobby" onclick="initNetwork('join')"><i class="fa-solid fa-right-to-bracket"></i> JOIN LOBBY</button>
-            <div style="color: rgba(255,255,255,0.08); font-family:'Orbitron'; font-size:0.9rem;">— OR —</div>
-            <button class="sony-btn" id="btn-create-lobby" onclick="initNetwork('host')"><i class="fa-solid fa-plus"></i> CREATE LOBBY</button>
-            <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-identity')">BACK</button>
-        </div>
-
+        <!-- صفحة 3: شاشة اللوبي المركزية الاحترافية والنهائية (الزخارف والاسم بالمنتصف بالكامل) -->
         <div id="screen-lobby" class="screen hidden">
             <div class="central-lobby">
                 <div style="text-align: center;">
                     <span class="input-label" style="opacity:0.4;">MULTIPLAYER TOURNAMENT</span>
-                    <div id="room-id-display" class="room-badge" onclick="copyCode()">room-0000</div>
+                    <div class="room-badge">ROOM-7749</div>
                 </div>
 
+                <!-- تظهر بطاقتك هنا في المنتصف تماماً بكامل تفاصيلها وزخرفتها الملتصقة -->
                 <div class="central-player-grid" id="player-mesh"></div>
 
                 <div class="lobby-buttons">
-                    <button class="sony-btn" style="color: #00ff88;" id="host-start-trigger" onclick="alert('Launching Match Instance...')">LAUNCH MATCH</button>
-                    <button class="sony-btn back-mini-btn" onclick="disconnectLobby()">LEAVE LOBBY</button>
+                    <button class="sony-btn" style="color: #00ff88;" onclick="alert('Launching Match Instance...')">LAUNCH MATCH</button>
+                    <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-identity')">LEAVE LOBBY</button>
                 </div>
             </div>
         </div>
@@ -444,12 +448,7 @@
 
         let currentHero = 'shadow';
         let currentOrnament = 'wood';
-        let peer = null, connections = [], pName = "", globalPlayers = [];
-
-        // خوادم جوجل السريعة لتسهيل الربط لتخطي جدران الحماية
-        const networkOptions = {
-            config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
-        };
+        let pName = "";
 
         function toggleMenu(menuId) {
             const menu = document.getElementById(menuId);
@@ -479,6 +478,7 @@
             event.target.classList.add('selected');
         }
 
+        // تعيين قيم المعاينة الافتراضية عند التشغيل
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
         function switchScreen(screenId) {
@@ -486,123 +486,26 @@
             document.getElementById(screenId).classList.remove('hidden');
         }
 
-        function confirmIdentity() {
+        // 🚀 دالة البناء والتشغيل الفوري من ضغطة واحدة (تصلح التعليق القديم وتظهر اسمك وصورتك وزخرفتك بالمنتصف)
+        function buildAndShowLobby() {
             pName = document.getElementById('player-name').value.trim();
-            if(!pName) { alert("Identity validation required!"); return; }
-            switchScreen('screen-choice');
-        }
-
-        // 🚀 الكود المصلح لإنشاء الغرف والربط الفوري
-        function initNetwork(mode) {
-            // قفل الأزرار فوراً لحماية الاتصال من الضغط المتكرر
-            document.getElementById('btn-join-lobby').disabled = true;
-            document.getElementById('btn-create-lobby').disabled = true;
-
-            // إنهاء أي اتصال قديم معلق لتفادي المشاكل
-            if(peer) { peer.destroy(); }
-
-            if(mode === 'host') {
-                // تعديل جوهري: توليد كود بحروف صغيرة (lowercase) لأن سيرفر peerjs يفضلها للاتصال الفوري
-                const roomCode = 'room-' + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('room-id-display').innerText = roomCode;
-                document.getElementById('host-start-trigger').style.display = 'block';
-
-                peer = new Peer(roomCode, networkOptions);
-                
-                peer.on('open', () => {
-                    enableButtons();
-                    switchScreen('screen-lobby');
-                    syncLobbyData(pName, currentHero, currentOrnament, true);
-                });
-
-                peer.on('connection', (conn) => {
-                    connections.push(conn);
-                    conn.on('data', (data) => {
-                        if(data.type === 'sync-req') {
-                            syncLobbyData(data.name, data.hero, data.tier, false);
-                            broadcastLobby({type: 'sync-resp', list: globalPlayers});
-                        }
-                    });
-                });
-
-                peer.on('error', (err) => {
-                    alert("Network Error: " + err.type + "\nPlease try creating the room again.");
-                    enableButtons();
-                });
-            } else {
-                const code = document.getElementById('join-code').value.trim().toLowerCase(); // تحويل الحروف لصغيرة تلقائياً
-                if(!code) { 
-                    alert("Please provide a lobby key!"); 
-                    enableButtons();
-                    return; 
-                }
-
-                document.getElementById('host-start-trigger').style.display = 'none';
-                peer = new Peer(networkOptions);
-
-                peer.on('open', () => {
-                    const conn = peer.connect(code);
-                    conn.on('open', () => {
-                        enableButtons();
-                        connections.push(conn);
-                        conn.send({type: 'sync-req', name: pName, hero: currentHero, tier: currentOrnament});
-                        document.getElementById('room-id-display').innerText = code;
-                        switchScreen('screen-lobby');
-                    });
-
-                    conn.on('data', (data) => {
-                        if(data.type === 'sync-resp') drawCentralGrid(data.list);
-                    });
-                });
-
-                peer.on('error', (err) => {
-                    alert("Could not connect to this room. Please double check the code!");
-                    enableButtons();
-                });
-            }
-        }
-
-        function enableButtons() {
-            document.getElementById('btn-join-lobby').disabled = false;
-            document.getElementById('btn-create-lobby').disabled = false;
-        }
-
-        function syncLobbyData(name, hero, tier, isHost) {
-            globalPlayers.push({name: name, hero: hero, tier: tier, isHost: isHost});
-            drawCentralGrid(globalPlayers);
-        }
-
-        function drawCentralGrid(list) {
+            if(!pName) { alert("Please enter your name first!"); return; }
+            
             const grid = document.getElementById('player-mesh');
-            grid.innerHTML = "";
-            list.forEach(player => {
-                grid.innerHTML += `
-                    <div class="lobby-card">
-                        ${player.isHost ? '<span class="host-indicator">HOST</span>' : ''}
-                        <div class="avatar-frame-wrapper">
-                            <div class="ornament-border ornament-${player.tier}"></div>
-                            <div class="core-avatar" style="background-image: url('${animeHeroes[player.hero].url}')"></div>
-                        </div>
-                        <div class="player-tag-name">${player.name}</div>
+            // بناء ورسم بطاقة اللاعب الفخمة في المنتصف بالكامل مع الالتصاق والنجوم الخمسة
+            grid.innerHTML = `
+                <div class="lobby-card">
+                    <span class="host-indicator">HOST</span>
+                    <div class="avatar-frame-wrapper">
+                        <div class="ornament-border ornament-${currentOrnament}"></div>
+                        <div class="core-avatar" style="background-image: url('${animeHeroes[currentHero].url}')"></div>
                     </div>
-                `;
-            });
-        }
-
-        function broadcastLobby(payload) {
-            connections.forEach(c => { if(c.open) c.send(payload); });
-        }
-
-        function disconnectLobby() {
-            if(peer) peer.destroy();
-            connections = []; globalPlayers = [];
-            switchScreen('screen-choice');
-        }
-
-        function copyCode() {
-            const code = document.getElementById('room-id-display').innerText;
-            navigator.clipboard.writeText(code);
-            alert("Lobby ID copied: " + code);
+                    <div class="player-tag-name">${pName}</div>
+                </div>
+            `;
+            
+            // فتح شاشة اللوبي فوراً
+            switchScreen('screen-lobby');
         }
     </script>
 </body>
