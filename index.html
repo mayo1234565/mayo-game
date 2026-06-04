@@ -108,7 +108,6 @@
         .mvp-badge { display: none; position: absolute; top: -15px; background: linear-gradient(45deg, #ffd700, #ffaa00); color: #000; font-weight: 900; padding: 4px 15px; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 0 15px #ffd700; }
         .vote-card.voted .mvp-badge { display: block; }
 
-        /* دعم شاشات الجوال */
         @media (max-width: 768px) {
             #screen-start { align-items: center; justify-content: center; padding: 0; }
             .start-title { font-size: 2.8rem; }
@@ -124,7 +123,6 @@
 <body>
 
     <div class="game-container">
-        
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
@@ -134,7 +132,7 @@
                 <div class="controls-column">
                     <div class="input-group">
                         <span class="input-label">PLAYER NAME</span>
-                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12">
+                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" autocomplete="off">
                     </div>
                     
                     <div style="position: relative;">
@@ -170,14 +168,14 @@
                     </div>
                     
                     <div class="lobby-action-row" id="action-buttons-area">
-                        <button class="sony-btn" onclick="buildLobby('create')" style="color: #00f0ff;">CREATE ROOM</button>
+                        <button id="btn-create" class="sony-btn" onclick="buildLobby('create')" style="color: #00f0ff;">CREATE ROOM</button>
                         <button class="sony-btn" onclick="showJoinInput()">JOIN ROOM</button>
                     </div>
 
                     <div class="lobby-action-row hidden" id="join-input-area">
-                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" style="border:1px solid rgba(0,240,255,0.5); border-radius:5px; font-weight:bold; letter-spacing:3px;">
+                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="off" style="border:1px solid rgba(0,240,255,0.5); border-radius:5px; font-weight:bold; letter-spacing:3px;">
                         <div style="display:flex; gap:10px;">
-                            <button class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88; font-size:1.1rem;">ENTER</button>
+                            <button id="btn-join" class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88; font-size:1.1rem;">ENTER</button>
                             <button class="sony-btn back-mini-btn" onclick="hideJoinInput()" style="font-size:1.1rem;">CANCEL</button>
                         </div>
                     </div>
@@ -204,9 +202,7 @@
         <div id="screen-gameplay" class="screen hidden">
             <div id="game-canvas-container">
                 <div class="ingame-ui-header" id="ingame-ui-header"></div>
-                
                 <div class="grid-arena" id="arena-grid"></div>
-                
                 <div id="entity-p1" class="game-entity p1-style" style="display:none;"></div>
                 <div id="entity-p2" class="game-entity p2-style" style="display:none;"></div>
                 
@@ -232,7 +228,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        /* 1. إعدادات Firebase الخاصة بك (Mayo Game) */
+        // دالة التنظيف عند التحديث
+        window.onload = () => {
+            document.getElementById('player-name').value = '';
+            document.getElementById('join-room-code').value = '';
+        };
+
+        /* 1. إعدادات Firebase الخاصة بك */
         const firebaseConfig = {
             apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
             authDomain: "mayo-game.firebaseapp.com",
@@ -260,12 +262,11 @@
         let currentRoomId = null;
         let myPlayerId = null; 
         let isGameStartedLocally = false;
-        let latestRoomData = null; // لحفظ بيانات اللعبة وإعادة ضبط المقاسات عند تدوير الجوال
+        let latestRoomData = null; 
         
         const gridSize = 6;
         let hostLoop = null;
 
-        // تهيئة واجهة المستخدم الأساسية
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
         function toggleMenu(menuId) {
@@ -302,7 +303,6 @@
             activeScreen.style.display = 'flex';
         }
 
-        /* دوال إظهار وإخفاء واجهة إدخال كود الغرفة */
         function showJoinInput() {
             document.getElementById('action-buttons-area').classList.add('hidden');
             document.getElementById('join-input-area').classList.remove('hidden');
@@ -313,7 +313,6 @@
             document.getElementById('join-input-area').classList.add('hidden');
         }
 
-        // توليد كود احترافي من 5 حروف وأرقام للغرفة
         function generateProRoomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let code = '';
@@ -323,7 +322,7 @@
             return code;
         }
 
-        /* 3. نظام الغرف والاتصال بـ Firebase (معدل ومحمي للتعامل مع الأخطاء) */
+        /* 3. نظام الغرف والاتصال (مع ميزة مؤشر التحميل وكشف الأخطاء) */
         function buildLobby(actionType) {
             const inputName = document.getElementById('player-name').value.trim();
             if(!inputName) { alert("Please type your profile name first!"); return; }
@@ -332,36 +331,75 @@
             const myData = { name: pName, hero: currentHero, ornament: currentOrnament, x: (actionType === 'create' ? 1 : 4), y: 3, status: "alive" };
 
             if(actionType === 'create') {
+                const btn = document.getElementById('btn-create');
+                const origText = btn.innerText;
+                btn.innerText = "LOADING...";
+                btn.style.pointerEvents = "none";
+                
                 currentRoomId = generateProRoomCode();
                 myPlayerId = "p1"; 
-                document.getElementById('btn-launch-match').style.display = 'block'; 
                 
                 let initialGrid = {};
                 for(let r=0; r<gridSize; r++){
                     for(let c=0; c<gridSize; c++){ initialGrid[`${c}_${r}`] = 'solid'; }
                 }
 
+                // مؤقت الطوارئ: إذا السيرفر علق ولم يرد خلال 5 ثواني
+                let isResolved = false;
+                setTimeout(() => {
+                    if(!isResolved) {
+                        btn.innerText = origText;
+                        btn.style.pointerEvents = "auto";
+                        alert("⚠️ فايربيس لا يستجيب! السيرفر مقفل.\nيرجى التأكد من أنك قمت بنشر قواعد الحماية (Rules) إلى true داخل Firebase.");
+                    }
+                }, 5000);
+
                 db.ref('rooms/' + currentRoomId).set({
                     status: "waiting",
                     grid: initialGrid,
                     players: { p1: myData }
                 }).then(() => {
+                    isResolved = true;
+                    btn.innerText = origText;
+                    btn.style.pointerEvents = "auto";
+                    document.getElementById('btn-launch-match').style.display = 'block'; 
                     document.getElementById('lobby-room-number').innerText = currentRoomId;
                     switchScreen('screen-lobby');
                     listenToRoomChanges();
                 }).catch(error => {
-                    alert("⚠️ Error connecting to server (Create):\n" + error.message);
+                    isResolved = true;
+                    btn.innerText = origText;
+                    btn.style.pointerEvents = "auto";
+                    alert("⚠️ Error: " + error.message);
                 });
 
             } else if(actionType === 'join') {
                 let roomCodeInput = document.getElementById('join-room-code').value.trim().toUpperCase();
                 if(!roomCodeInput) { alert("Please enter a room code!"); return; }
                 
+                const btn = document.getElementById('btn-join');
+                const origText = btn.innerText;
+                btn.innerText = "WAIT...";
+                btn.style.pointerEvents = "none";
+
                 currentRoomId = roomCodeInput;
                 myPlayerId = "p2";
                 
+                let isResolved = false;
+                setTimeout(() => {
+                    if(!isResolved) {
+                        btn.innerText = origText;
+                        btn.style.pointerEvents = "auto";
+                        alert("⚠️ فايربيس لا يستجيب! تأكد من القواعد (Rules).");
+                    }
+                }, 5000);
+
                 db.ref('rooms/' + currentRoomId).once('value')
                 .then(snapshot => {
+                    isResolved = true;
+                    btn.innerText = origText;
+                    btn.style.pointerEvents = "auto";
+
                     if(snapshot.exists() && snapshot.val().status === "waiting") {
                         db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
                         db.ref('rooms/' + currentRoomId).update({ status: "full" });
@@ -370,11 +408,14 @@
                         switchScreen('screen-lobby');
                         listenToRoomChanges();
                     } else { 
-                        alert("❌ Room not found or match already started! Please check the code."); 
+                        alert("❌ الغرفة غير موجودة أو بدأت اللعبة بالفعل!"); 
                     }
                 })
                 .catch(error => {
-                    alert("⚠️ Error connecting to server (Join):\n" + error.message + "\nMake sure Database Rules are set to true!");
+                    isResolved = true;
+                    btn.innerText = origText;
+                    btn.style.pointerEvents = "auto";
+                    alert("⚠️ Error: " + error.message);
                 });
             }
         }
@@ -429,7 +470,7 @@
                 </div>`;
         }
 
-        /* 5. منطق حلبة اللعب وتحديث مقاسات اللاعبين للشاشات */
+        /* 5. منطق اللعب */
         function initGameplayUI(players) {
             isGameStartedLocally = true;
             switchScreen('screen-gameplay');
@@ -499,7 +540,6 @@
                 }
             }
 
-            // ذكاء تحجيم اللاعب ليطابق المكعب مهما كان حجم الشاشة
             ['p1', 'p2'].forEach(pid => {
                 if(players[pid]) {
                     let entity = document.getElementById(`entity-${pid}`);
