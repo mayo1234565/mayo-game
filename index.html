@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mayo Game - Ascension Towers</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     
     <style>
@@ -21,35 +21,40 @@
             font-family: 'Orbitron', 'Cairo', sans-serif; 
         }
 
-        .game-container { position: relative; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.4); display: flex; }
+        .game-container { position: relative; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.5); display: flex; }
 
         .screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 20; width: 100%; height: 100%; transition: opacity 0.3s ease; }
         .hidden { opacity: 0 !important; pointer-events: none !important; display: none !important; }
 
         #screen-start { align-items: flex-end; justify-content: flex-end; padding-bottom: 8%; padding-right: 10%; }
 
-        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.7); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 5px 15px; }
+        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 5px 15px; }
         .sony-btn::after { content: ''; width: 0; height: 3px; background-color: #00f0ff; position: absolute; bottom: -5px; right: 0; transition: width 0.3s ease; box-shadow: 0 0 10px #00f0ff; }
         .sony-btn:hover { color: #ffffff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 1); transform: translateX(-5px); }
         .sony-btn:hover::after { width: 100%; }
         
         .start-title { font-size: 3.5rem; letter-spacing: 8px; color: #ffffff; }
         .input-group { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
-        .input-label { color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; text-align: center; }
-        .sony-input { background: rgba(0,0,0,0.5); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px; font-size: 1.3rem; font-family: 'Cairo', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px; }
+        .input-label { color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; text-align: center; }
+        
+        /* تصميم خانات الإدخال */
+        .sony-input { background: rgba(0,0,0,0.6); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px; font-size: 1.3rem; font-family: 'Cairo', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px; transition: border-color 0.3s; }
         .sony-input:focus { border-bottom-color: #00f0ff; }
 
         .free-customizer { display: flex; align-items: center; justify-content: center; gap: 60px; width: 90%; max-width: 1000px; }
         .controls-column { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 400px; }
-        .select-trigger-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
-        .select-trigger-btn:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.05); }
+        .select-trigger-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
+        .select-trigger-btn:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.1); }
+        
         .pop-menu { display: none; flex-direction: column; gap: 8px; background: rgba(15, 15, 22, 0.98); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px; position: absolute; width: 100%; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .pop-opt { padding: 10px; color: rgba(255,255,255,0.7); font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-        .pop-opt:hover, .pop-opt.selected { background: rgba(0, 240, 255, 0.15); color: #fff; }
+        .pop-opt:hover, .pop-opt.selected { background: rgba(0, 240, 255, 0.2); color: #fff; }
 
         .preview-column { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; gap: 25px; }
         .avatar-frame-wrapper { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; }
-        .core-avatar { width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.6); }
+        
+        /* إعطاء لون خلفية رمادي احتياطي في حال تأخرت الصورة */
+        .core-avatar { width: 100px; height: 100px; border-radius: 50%; background-color: #222; background-size: cover; background-position: center; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.6); transition: background-image 0.3s ease; }
         .ornament-border { position: absolute; width: 100px; height: 100px; z-index: 3; pointer-events: none; border-radius: 50%; transition: all 0.2s ease; }
 
         .ornament-diamond { border: 4px solid #b9f2ff; box-shadow: 0 0 20px #00f0ff, inset 0 0 15px rgba(0, 240, 255, 0.5); }
@@ -65,10 +70,14 @@
         .lobby-card { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
         .room-badge { color: #ffdf00; font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 223, 0, 0.6), 2px 2px 4px #000; margin-top: 5px; text-align: center;}
         .host-indicator { position: absolute; top: -22px; background: #ffdf00; color: #000; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 3px; box-shadow: 0 0 10px #ffdf00; z-index: 10; }
-        .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
+        
+        .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.4); }
         .back-mini-btn:hover { color: #ff4a4a; }
+        .back-mini-btn:hover::after { background-color: #ff4a4a; }
 
-        /* نافذة التعليمات المنبثقة في اللوبي */
+        .player-tag-name { color: #ffffff; font-size: 1.1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+
+        /* نافذة التعليمات في اللوبي */
         #instructions-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .instructions-panel { background: rgba(10, 10, 15, 0.95); border: 2px solid #00f0ff; border-radius: 15px; padding: 30px; color: #fff; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,240,255,0.2); display: flex; flex-direction: column; gap: 15px; }
         .instructions-panel h2 { color: #ffdf00; font-family: 'Cairo'; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,223,0,0.5); }
@@ -76,7 +85,7 @@
         .instructions-panel span { color: #00ff88; font-family: 'Orbitron'; font-weight: bold; }
         .instructions-panel .warning { color: #ff4a4a; font-size: 0.9rem; margin-top: 10px; font-weight: bold; border: none; justify-content: center; }
 
-        /* ======== ساحة اللعب والفيزياء ======== */
+        /* ساحة اللعب والفيزياء */
         #game-canvas-container { position: relative; width: 100%; height: 100%; }
         #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
         
@@ -107,7 +116,7 @@
                 <div class="controls-column">
                     <div class="input-group">
                         <span class="input-label">PLAYER NAME</span>
-                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" autocomplete="off">
+                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" autocomplete="new-password">
                     </div>
                     
                     <div style="position: relative;">
@@ -148,7 +157,7 @@
                     </div>
 
                     <div class="lobby-action-row hidden" id="join-input-area">
-                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="off">
+                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="new-password">
                         <div style="display:flex; gap:10px;">
                             <button id="btn-join" class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88;">ENTER</button>
                             <button class="sony-btn back-mini-btn" onclick="hideJoinInput()">CANCEL</button>
@@ -208,19 +217,40 @@
 
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <script>
-        // إعدادات Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
-            authDomain: "mayo-game.firebaseapp.com",
-            databaseURL: "https://mayo-game-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "mayo-game",
-            storageBucket: "mayo-game.firebasestorage.app",
-            messagingSenderId: "153594840301",
-            appId: "1:153594840301:web:17e64f7ae8a1d7825a38e4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // الكود الهجومي لمسح خانات الإدخال بشكل قاطع عند كل تحديث للصفحة
+        function clearAllInputs() {
+            let nameIn = document.getElementById('player-name');
+            let roomIn = document.getElementById('join-room-code');
+            if (nameIn) nameIn.value = '';
+            if (roomIn) roomIn.value = '';
+        }
+        document.addEventListener("DOMContentLoaded", clearAllInputs);
+        window.addEventListener("pageshow", clearAllInputs);
+        window.onload = clearAllInputs;
+
+        // وضع التهيئة داخل Try-Catch لمنع انهيار الموقع لو واجهت مشكلة بالاتصال
+        let db;
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
+                authDomain: "mayo-game.firebaseapp.com",
+                databaseURL: "https://mayo-game-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "mayo-game",
+                storageBucket: "mayo-game.firebasestorage.app",
+                messagingSenderId: "153594840301",
+                appId: "1:153594840301:web:17e64f7ae8a1d7825a38e4"
+            };
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.database();
+        } catch (error) {
+            console.error("Firebase Error:", error);
+        }
 
         const animeHeroes = {
             'shadow': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shadow&backgroundColor=312e81' },
@@ -233,7 +263,6 @@
         let currentRoomId = null, myPlayerId = null;
         let isGameStartedLocally = false;
         
-        // إعدادات محرك الفيزياء Matter.js
         const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
               Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite;
               
@@ -246,27 +275,46 @@
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
 
-        document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
+        // تحميل الصورة الافتراضية بأمان
+        try {
+            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
+        } catch(e) {}
 
-        // تم إصلاح مشكلة القوائم هنا
-        function toggleMenu(e, menuId) { 
-            e.stopPropagation(); // منع الإغلاق التلقائي
+        // تم إصلاح الدوال المسؤولة عن القوائم (كانت تسبب الخطأ وتوقف السكربت)
+        function toggleMenu(event, menuId) { 
+            event.stopPropagation();
             const menu = document.getElementById(menuId); 
             const isVisible = menu.style.display === 'flex'; 
             document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
             menu.style.display = isVisible ? 'none' : 'flex'; 
         }
-        document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
         
-        function changeHero(key, el) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); }
-        function changeOrnament(tier, el) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); }
+        document.addEventListener('click', () => { 
+            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
+        });
         
-        function switchScreen(screenId) { document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); }); document.getElementById(screenId).classList.remove('hidden'); }
+        function changeHero(key, el) { 
+            currentHero = key; 
+            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; 
+            document.querySelectorAll('#pop-hero .pop-opt').forEach(opt => opt.classList.remove('selected')); 
+            el.classList.add('selected'); 
+        }
         
-        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); }
+        function changeOrnament(tier, el) { 
+            currentOrnament = tier; 
+            document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; 
+            document.querySelectorAll('#pop-tier .pop-opt').forEach(opt => opt.classList.remove('selected')); 
+            el.classList.add('selected'); 
+        }
+        
+        function switchScreen(screenId) { 
+            document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); }); 
+            document.getElementById(screenId).classList.remove('hidden'); 
+        }
+        
+        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); document.getElementById('join-room-code').focus(); }
         function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
 
-        // التحكم في نافذة التعليمات
         function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
         function hideInstructions() { document.getElementById('instructions-modal').classList.add('hidden'); }
 
@@ -277,40 +325,47 @@
         }
 
         function buildLobby(actionType) {
+            if(!db) return alert("خطأ: لم يتم الاتصال بقاعدة البيانات.");
+            
             const inputName = document.getElementById('player-name').value.trim();
             if(!inputName) return alert("Please type your profile name first!");
             pName = inputName;
             const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0 };
 
-            if(actionType === 'create') {
-                document.getElementById('btn-create').innerText = "LOADING...";
-                currentRoomId = generateProRoomCode();
-                myPlayerId = "p1"; 
-                db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
-                    document.getElementById('btn-launch-match').style.display = 'block'; 
-                    document.getElementById('lobby-room-number').innerText = currentRoomId;
-                    switchScreen('screen-lobby'); listenToRoomChanges();
-                });
-            } else if(actionType === 'join') {
-                let code = document.getElementById('join-room-code').value.trim().toUpperCase();
-                if(!code) return;
-                document.getElementById('btn-join').innerText = "WAIT...";
-                currentRoomId = code; myPlayerId = "p2";
-                db.ref('rooms/' + currentRoomId).once('value').then(snap => {
-                    if(snap.exists() && snap.val().status === "waiting") {
-                        db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
-                        db.ref('rooms/' + currentRoomId).update({ status: "full" });
+            try {
+                if(actionType === 'create') {
+                    document.getElementById('btn-create').innerText = "LOADING...";
+                    currentRoomId = generateProRoomCode();
+                    myPlayerId = "p1"; 
+                    db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
+                        document.getElementById('btn-launch-match').style.display = 'block'; 
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
                         switchScreen('screen-lobby'); listenToRoomChanges();
-                    } else {
-                        alert("الغرفة غير موجودة!");
-                        document.getElementById('btn-join').innerText = "ENTER";
-                    }
-                });
+                    });
+                } else if(actionType === 'join') {
+                    let code = document.getElementById('join-room-code').value.trim().toUpperCase();
+                    if(!code) return;
+                    document.getElementById('btn-join').innerText = "WAIT...";
+                    currentRoomId = code; myPlayerId = "p2";
+                    db.ref('rooms/' + currentRoomId).once('value').then(snap => {
+                        if(snap.exists() && snap.val().status === "waiting") {
+                            db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
+                            db.ref('rooms/' + currentRoomId).update({ status: "full" });
+                            document.getElementById('lobby-room-number').innerText = currentRoomId;
+                            switchScreen('screen-lobby'); listenToRoomChanges();
+                        } else {
+                            alert("الغرفة غير موجودة!");
+                            document.getElementById('btn-join').innerText = "ENTER";
+                        }
+                    });
+                }
+            } catch(err) {
+                console.error(err);
+                alert("حدث خطأ أثناء الإنشاء.");
             }
         }
 
-        function triggerGameStart() { if(myPlayerId === 'p1') db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
+        function triggerGameStart() { if(myPlayerId === 'p1' && db) db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
 
         function listenToRoomChanges() {
             db.ref('rooms/' + currentRoomId).on('value', snap => {
@@ -323,7 +378,7 @@
                 
                 if(room.status === "playing" && !isGameStartedLocally) {
                     isGameStartedLocally = true;
-                    // إغلاق التعليمات إجبارياً لو كانت مفتوحة وبدء الجيم
+                    // إخفاء التعليمات إجبارياً لو كانت مفتوحة وبدء اللعبة
                     hideInstructions();
                     initGameplayUI(room.players);
                 }
@@ -333,12 +388,11 @@
                 }
                 
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
-                    if(runner) Runner.stop(runner); // إيقاف الفيزياء عند الفوز
+                    if(runner) Runner.stop(runner);
                     initVotingUI(room.players);
                 }
             });
 
-            // الاستماع لحركة الخصم ورسم قطعه
             const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
             db.ref(`rooms/${currentRoomId}/physics_${oppId}`).on('value', snap => {
                 if(!engine) return;
@@ -347,7 +401,7 @@
                 
                 Object.values(data).forEach(bData => {
                     if(!oppPlacedBlocksMap[bData.id]) {
-                        let b = createTetromino(bData.type, bData.x, bData.y, true); // ثابت للخصم عشان ما يأثر علي
+                        let b = createTetromino(bData.type, bData.x, bData.y, true); 
                         oppPlacedBlocksMap[bData.id] = b;
                         Composite.add(engine.world, b);
                     } else {
@@ -370,13 +424,9 @@
             document.getElementById('ingame-ui-header').innerHTML = html;
         }
 
-        // ===============================================
-        // تهيئة اللعبة ومحرك الفيزياء
-        // ===============================================
         function initGameplayUI(players) {
             switchScreen('screen-gameplay');
             
-            // تحكم الكيبورد
             document.onkeydown = function(e) {
                 if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
                 if (e.key === 'ArrowDown' || e.key === 's') dropActive();
@@ -400,7 +450,6 @@
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            // إنشاء قاعدة البرج
             const myBase = Bodies.rectangle(myTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             const oppBase = Bodies.rectangle(oppTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             
@@ -411,7 +460,6 @@
             Runner.run(runner, engine);
 
             spawnNewBlock();
-
             setInterval(syncMyPhysicsToFirebase, 100);
         }
 
@@ -479,7 +527,6 @@
             db.ref(`rooms/${currentRoomId}/physics_${myPlayerId}`).set(dataToSend);
         }
 
-        /* نظام التصويت النهائي */
         function initVotingUI(players) {
             switchScreen('screen-voting');
             let html = '';
@@ -497,7 +544,9 @@
             });
             document.getElementById('vote-grid-container').innerHTML = html;
         }
+        
         function castVote(targetPid) { db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid); }
+        
         function updateVotes(votesObj) {
             if(!votesObj) return;
             document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('voted'));
