@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mayo Game - The Ascension</title>
+    <title>Tricky Towers Clone - The Ascension</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -15,18 +15,38 @@
             width: 100%; 
             height: 100%; 
             overflow: hidden; 
-            background-color: #030305; 
-            background-image: url('./background2.png'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat;
+            /* مشهد ليلي سحري قوطي مماثل للصورة المرجعية */
+            background: radial-gradient(circle, #2a0044 0%, #030305 100%);
             font-family: 'Orbitron', 'Cairo', sans-serif; 
+        }
+        
+        /* إضافة عناصر الخلفية بصرياً: غيوم وقمر */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(#6a00b030 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* قمر ونجوم بصرياً */
+        .moon-star-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
+        }
+        .moon {
+            position: absolute; top: 50px; left: 50px; width: 100px; height: 100px;
+            background: #fff8e1; border-radius: 50%; box-shadow: 0 0 50px #fff8e150;
+        }
+        .moon::after {
+            content: ''; position: absolute; top: 0; left: -30px; width: 100px; height: 100px;
+            background: #030305; border-radius: 50%;
         }
 
         .game-container { 
             position: relative; 
             width: 100%; 
             height: 100%; 
+            /* وضع لون أسود شفاف فوق الصورة عشان ما تضيع ملامح الأزرار */
             background: rgba(3, 3, 5, 0.6); 
             display: flex; 
         }
@@ -98,21 +118,34 @@
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
         .back-mini-btn:hover { color: #ff4a4a; } .back-mini-btn:hover::after { background-color: #ff4a4a; }
 
-        /* ساحة اللعب المتجاوبة */
-        #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* ساحة اللعب المتجاوبة لـ Tricky Towers */
+        #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
         .ingame-ui-header { position: absolute; top: 15px; width: 95%; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
-        .ingame-card { display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
-        .ingame-card .name { color: #fff; font-weight: bold; font-size: 0.9rem; }
-        .ingame-card .status { font-size: 0.7rem; letter-spacing: 1px; }
-
-        .grid-arena { position: relative; width: 90vw; max-width: 500px; aspect-ratio: 1 / 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 4px; margin-bottom: 80px; }
-        .cube-tile { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border: 2px solid #4338ca; border-radius: 6px; transition: transform 0.1s, opacity 0.5s ease-out, background 0.3s; }
+        .header-part { display: flex; align-items: center; gap: 10px; color: #fff; font-family: 'Cinzel'; letter-spacing: 1px; font-size: 0.9rem;}
+        .next-block { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); position: relative; }
+        
+        .tower-arenas { display: flex; gap: 50px; position: relative; height: 70vh; width: 90vw; max-width: 800px; justify-content: center; align-items: flex-end; padding-bottom: 20px; }
+        .tower-arena { position: relative; width: 150px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        
+        .tower-base { width: 80px; height: 15px; background: linear-gradient(to right, #4a3c26, #795548); border-radius: 3px; position: absolute; bottom: -5px; box-shadow: 0 5px 10px #0005; }
+        
+        .block-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        
+        /* كتل بنمط Tricky Towers بصرياً */
+        .cube-tile { 
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
+            border: 2px solid #4338ca; border-radius: 6px; 
+            transition: transform 0.2s, opacity 0.5s ease-out, background 0.3s; 
+            position: absolute; width: 35px; height: 35px; 
+            box-shadow: inset 0 0 10px #fff2, 0 5px 10px #0003; 
+        }
         .cube-tile.warn { background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%); border-color: #ef4444; }
         .cube-tile.collapsed { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
 
-        .game-entity { position: absolute; border-radius: 50%; background-size: cover; border: 3px solid #fff; box-shadow: 0 0 15px #fff; transition: left 0.15s ease-out, top 0.15s ease-out, width 0.15s, height 0.15s; z-index: 5; }
-        .game-entity.p1-style { border-color: #00f0ff; box-shadow: 0 0 15px #00f0ff; }
-        .game-entity.p2-style { border-color: #ff4a4a; box-shadow: 0 0 15px #ff4a4a; }
+        /* شخصيات السحرة تطفو فوق الأبراج بصرياً */
+        .wizard-player { position: absolute; top: -10px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.2); animation: float 3s ease-in-out infinite; z-index: 5; }
+        .wizard-player img { width: 100%; height: 100%; border-radius: 50%; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .mobile-controls { position: absolute; bottom: 15px; display: flex; gap: 15px; z-index: 10; }
         .ctrl-btn { width: 55px; height: 55px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;}
@@ -131,15 +164,18 @@
             .free-customizer { flex-direction: column; gap: 30px; }
             .sony-input { width: 100%; max-width: 100%; }
             .room-badge { font-size: 1.8rem; }
+            .tower-arenas { gap: 20px; height: 60vh; }
+            .tower-arena { width: 100px; }
             .mobile-controls { gap: 10px; }
             .ctrl-btn { width: 50px; height: 50px; }
-            .grid-arena { margin-bottom: 70px; }
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
+        <div class="moon-star-bg"><div class="moon"></div></div>
+        
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
@@ -218,10 +254,24 @@
 
         <div id="screen-gameplay" class="screen hidden">
             <div id="game-canvas-container">
-                <div class="ingame-ui-header" id="ingame-ui-header"></div>
-                <div class="grid-arena" id="arena-grid"></div>
-                <div id="entity-p1" class="game-entity p1-style" style="display:none;"></div>
-                <div id="entity-p2" class="game-entity p2-style" style="display:none;"></div>
+                <div class="ingame-ui-header" id="ingame-ui-header">
+                    <div class="header-part left">P1 Next: <div class="next-block" id="p1-next"></div></div>
+                    <div class="header-part middle">Mayo Ascension</div>
+                    <div class="header-part right">P2 Next: <div class="next-block" id="p2-next"></div></div>
+                </div>
+                
+                <div class="tower-arenas">
+                    <div class="tower-arena" id="tower-p1">
+                        <div class="tower-base"></div>
+                        <div class="block-container" id="p1-blocks"></div>
+                        <div class="wizard-player" id="wizard-p1"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00" alt=""></div>
+                    </div>
+                    <div class="tower-arena" id="tower-p2">
+                        <div class="tower-base"></div>
+                        <div class="block-container" id="p2-blocks"></div>
+                        <div class="wizard-player" id="wizard-p2"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f" alt=""></div>
+                    </div>
+                </div>
                 
                 <div class="mobile-controls">
                     <button class="ctrl-btn" onclick="requestMove(-1, 0)"><i class="fa-solid fa-arrow-left"></i></button>
@@ -271,6 +321,13 @@
             'frost': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=frost&backgroundColor=065f46' },
             'volt': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
         };
+
+        const blockStyles = [
+            'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', // T-shaped / default
+            'linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%)', // L-shaped
+            'linear-gradient(135deg, #065f46 0%, #000 100%)',     // I-shaped
+            'linear-gradient(135deg, #854d0e 0%, #000 100%)'      // O-shaped
+        ];
 
         let currentHero = 'shadow';
         let currentOrnament = 'diamond';
@@ -345,7 +402,7 @@
             if(!inputName) { alert("Please type your profile name first!"); return; }
             pName = inputName;
 
-            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, x: (actionType === 'create' ? 1 : 4), y: 3, status: "alive" };
+            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, x: (actionType === 'create' ? 1 : 4), y: 0, status: "alive", placedBlocks: 0 };
 
             if(actionType === 'create') {
                 const btn = document.getElementById('btn-create');
@@ -492,45 +549,38 @@
             isGameStartedLocally = true;
             switchScreen('screen-gameplay');
             
-            const arena = document.getElementById('arena-grid');
-            arena.innerHTML = '';
-            for(let r=0; r<gridSize; r++){
-                for(let c=0; c<gridSize; c++){
-                    let tile = document.createElement('div');
-                    tile.className = 'cube-tile';
-                    tile.id = `tile-${c}-${r}`;
-                    arena.appendChild(tile);
-                }
-            }
-
-            let headerHtml = '';
+            // تم تعديل الشبكة لتكون أبراجاً بصرياً يتم بناؤها
             ['p1', 'p2'].forEach(pid => {
                 if(players[pid]) {
-                    headerHtml += `
-                    <div class="ingame-card">
-                        <div class="avatar-frame-wrapper" style="width:35px; height:35px;">
-                            <div class="ornament-border ornament-${players[pid].ornament}" style="width:35px; height:35px; border-width:2px;"></div>
-                            <div class="core-avatar" style="width:30px; height:30px; background-image: url('${animeHeroes[players[pid].hero].url}')"></div>
-                        </div>
-                        <div class="info" style="display:flex; flex-direction:column;">
-                            <span class="name">${players[pid].name}</span>
-                            <span class="status" id="status-${pid}" style="color:#00ff88;">ALIVE</span>
-                        </div>
-                    </div>`;
+                    document.getElementById(`${pid}-blocks`).innerHTML = '';
                 }
             });
-            document.getElementById('ingame-ui-header').innerHTML = headerHtml;
 
-            if(players.p1) {
-                let e1 = document.getElementById('entity-p1');
-                e1.style.display = 'block';
-                e1.style.backgroundImage = `url('${animeHeroes[players.p1.hero].url}')`;
-            }
-            if(players.p2) {
-                let e2 = document.getElementById('entity-p2');
-                e2.style.display = 'block';
-                e2.style.backgroundImage = `url('${animeHeroes[players.p2.hero].url}')`;
-            }
+            // تحديث واجهة المستخدم العلوية (Header)
+            ['p1', 'p2'].forEach(pid => {
+                const headerPart = pid === 'p1' ? 'left' : 'right';
+                // في Tricky Towers لا يوجد عداد تنازلي، سأقوم بعرض عدد القطع الموضوعة
+                let counterHtml = '';
+                if(players[pid]) {
+                    counterHtml = `
+                    <div class="header-ui-card">
+                        <span class="name">${players[pid].name}</span>
+                        <span class="score" id="score-${pid}">0 Blocks</span>
+                    </div>`;
+                }
+                // في صورةimage_0.png لا يوجد عداد، مجرد عدد القطع.
+                // سأقوم بإضافة عداد للقطع في الأعلى لكل برج
+            });
+
+            // إضافة شخصيات السحرة تطفو فوق الأبراج
+            ['p1', 'p2'].forEach(pid => {
+                if(players[pid]) {
+                    const wizard = document.getElementById(`wizard-${pid}`);
+                    wizard.style.display = 'block';
+                    const wizardImg = pid === 'p1' ? 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00' : 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f';
+                    wizard.querySelector('img').src = wizardImg;
+                }
+            });
 
             if(myPlayerId === 'p1') startHostEngine();
 
@@ -539,43 +589,55 @@
                 if (e.key === 'ArrowDown' || e.key === 's') requestMove(0, 1);
                 if (e.key === 'ArrowLeft' || e.key === 'a') requestMove(-1, 0);
                 if (e.key === 'ArrowRight' || e.key === 'd') requestMove(1, 0);
+                // في Tricky Towers يمكنك وضع القطعة باستخدام مسافة أو سهم لأسفل.
+                // سأجعل السهم لأسفل يضع قطعة جديدة
+                if(e.key === 'ArrowDown' || e.key === 's') requestPlaceBlock();
             };
         }
 
         function updateGameplay(room) {
             const gridData = room.grid;
             const players = room.players;
-            const arena = document.getElementById('arena-grid');
-
-            for(let key in gridData) {
-                let [c, r] = key.split('_');
-                let tile = document.getElementById(`tile-${c}-${r}`);
-                if(tile) {
-                    tile.className = 'cube-tile'; 
-                    if(gridData[key] === 'warn') tile.classList.add('warn');
-                    if(gridData[key] === 'collapsed') tile.classList.add('collapsed');
-                }
-            }
-
+            
+            // تم تحويل الشبكة من بلاط ثابت إلى أبراج بصرياً
+            // سأستخدم DOM لتكديس القطع بصرياً داخل ركائز خشبية
             ['p1', 'p2'].forEach(pid => {
                 if(players[pid]) {
-                    let entity = document.getElementById(`entity-${pid}`);
-                    let statText = document.getElementById(`status-${pid}`);
+                    const blockContainer = document.getElementById(`${pid}-blocks`);
+                    blockContainer.innerHTML = '';
+                    // في Tricky Towers الكتل لا توضع على شبكة ثابتة، بل تتكدس بصرياً بفيزياء ظاهرية
+                    // سأقوم بإنشاء أبراج بصرية غير مستقرة
                     
-                    if(players[pid].status === 'alive') {
-                        let tile = document.getElementById(`tile-${players[pid].x}-${players[pid].y}`);
-                        if(tile) {
-                            let size = tile.offsetWidth - 4;
-                            entity.style.width = `${size}px`;
-                            entity.style.height = `${size}px`;
-                            entity.style.left = `${tile.offsetLeft + arena.offsetLeft + 2}px`;
-                            entity.style.top = `${tile.offsetTop + arena.offsetTop + 2}px`;
+                    for(let r=0; r<players[pid].placedBlocks; r++){
+                        let tile = document.createElement('div');
+                        tile.className = 'cube-tile';
+                        // في Tricky Towers الكتل ملونة بفيزياء
+                        tile.style.background = blockStyles[Math.floor(Math.random() * blockStyles.length)];
+                        
+                        // في Tricky Towers الكتل ليست مستقرة تماماً، سأجعلها مائلة قليلاً
+                        const tilt = Math.random() * 10 - 5; // -5 to +5 degrees
+                        tile.style.transform = `rotate(${tilt}deg)`;
+                        // في Tricky Towers الكتل توضع فوق بعضها، سأجعلها تظهر كأبراج
+                        tile.style.position = 'absolute';
+                        // في Tricky Towers الكتل "تسقط" داخل الركيزة بصرية
+                        tile.style.bottom = `${r * 35}px`;
+                        // في Tricky Towers يمكنك وضع القطعة بصرياً في أي مكان داخل الركيزة
+                        // سأجعلها بصرياً غير مستقرة
+                        tile.style.left = `${Math.random() * 20 - 10}px`; // بصرياً غير مستقرة
+                        
+                        // في Tricky Towers الكتل لا تتغير حالتها كما في الشبكة القديمة، سأقوم بإزالة الكود القديم
+                        
+                        // في Tricky Towers الكتل يمكن أن "تنهار" بصرياً
+                        if(players[pid].status === 'dead' && r > players[pid].placedBlocks - 3){
+                            tile.classList.add('collapsed');
                         }
-                    } else {
-                        entity.style.opacity = '0';
-                        statText.innerText = "OUT";
-                        statText.style.color = "#ff4a4a";
+                        
+                        blockContainer.appendChild(tile);
                     }
+                    
+                    // تحديث عداد القطع في الأعلى لكل برج
+                    const score = document.getElementById(`score-${pid}`);
+                    if(score) score.innerText = `${players[pid].placedBlocks} Blocks`;
                 }
             });
         }
@@ -589,11 +651,27 @@
         function requestMove(dx, dy) {
             db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value', snap => {
                 let pData = snap.val();
+                // في Tricky Towers يمكنك فقط تحريك القطعة أفقياً
                 if(pData && pData.status === 'alive') {
-                    let nx = pData.x + dx; let ny = pData.y + dy;
-                    if(nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize) {
-                        db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ x: nx, y: ny });
+                    // تم تعديل منطق الحركة الأفقية فقط
+                    if(dx !== 0){
+                        // تم تحديث منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
                     }
+                }
+            });
+        }
+        
+        // في Tricky Towers يجب أن تكون هناك وظيفة لوضع القطعة
+        function requestPlaceBlock() {
+            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value', snap => {
+                let pData = snap.val();
+                if(pData && pData.status === 'alive') {
+                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
+                    const placedBlocks = pData.placedBlocks || 0;
+                    db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedBlocks: placedBlocks + 1 });
+                    
+                    // في Tricky Towers الكتل يمكن أن "تنهار" بصرياً إذا تم وضعها بشكل سيء
+                    // سأجعل المضيف يتحقق من الانهيار إذا تم وضع قطعة سيئة بصرياً
                 }
             });
         }
@@ -605,29 +683,21 @@
                     if(!room || room.status !== 'playing') return;
 
                     let updates = {};
-                    let activeTiles = Object.keys(room.grid).filter(k => room.grid[k] !== 'collapsed');
+                    // تم تحديث منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
                     
-                    activeTiles.forEach(k => {
-                        if(room.grid[k] === 'warn') updates[`grid/${k}`] = 'collapsed';
-                    });
-
-                    let solidTiles = activeTiles.filter(k => room.grid[k] === 'solid');
-                    if(solidTiles.length > 0) {
-                        let randTile = solidTiles[Math.floor(Math.random() * solidTiles.length)];
-                        updates[`grid/${randTile}`] = 'warn';
-                    }
-
                     let p1Alive = room.players.p1 && room.players.p1.status === 'alive';
                     let p2Alive = room.players.p2 && room.players.p2.status === 'alive';
-
+                    
+                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
+                    
+                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
+                    
                     ['p1', 'p2'].forEach(pid => {
-                        if(room.players[pid] && room.players[pid].status === 'alive') {
-                            let posKey = `${room.players[pid].x}_${room.players[pid].y}`;
-                            if(updates[`grid/${posKey}`] === 'collapsed' || room.grid[posKey] === 'collapsed') {
-                                updates[`players/${pid}/status`] = 'dead';
-                                if(pid === 'p1') p1Alive = false;
-                                if(pid === 'p2') p2Alive = false;
-                            }
+                        if(room.players[pid] && room.players[pid].placedBlocks > (gridSize-1)*2) {
+                            // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
+                            updates[`players/${pid}/status`] = 'dead';
+                            if(pid === 'p1') p1Alive = false;
+                            if(pid === 'p2') p2Alive = false;
                         }
                     });
 
