@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tricky Towers Clone - The Ascension</title>
+    <title>Mayo Game - Ascension Towers</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -15,44 +15,21 @@
             width: 100%; 
             height: 100%; 
             overflow: hidden; 
-            /* مشهد ليلي سحري قوطي مماثل للصورة المرجعية */
-            background: radial-gradient(circle, #2a0044 0%, #030305 100%);
+            background-color: #030305; 
+            /* تم استرجاع خلفيتك الأصلية هنا */
+            background-image: url('./background2.png'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
             font-family: 'Orbitron', 'Cairo', sans-serif; 
-        }
-        
-        /* إضافة عناصر الخلفية بصرياً: غيوم وقمر */
-        body::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(#6a00b030 1px, transparent 1px);
-            background-size: 50px 50px;
-            opacity: 0.3;
-            z-index: 0;
-        }
-
-        /* قمر ونجوم بصرياً */
-        .moon-star-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
-        }
-        .moon {
-            position: absolute; top: 50px; left: 50px; width: 100px; height: 100px;
-            background: #fff8e1; border-radius: 50%; box-shadow: 0 0 50px #fff8e150;
-        }
-        .moon::after {
-            content: ''; position: absolute; top: 0; left: -30px; width: 100px; height: 100px;
-            background: #030305; border-radius: 50%;
         }
 
         .game-container { 
             position: relative; 
             width: 100%; 
             height: 100%; 
-            /* وضع لون أسود شفاف فوق الصورة عشان ما تضيع ملامح الأزرار */
-            background: rgba(3, 3, 5, 0.6); 
+            background: rgba(3, 3, 5, 0.4); /* تخفيف الشفافية عشان تبان الخلفية أكثر */
             display: flex; 
-        }
-        .game-container::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.85) 100%); pointer-events: none; z-index: 1;
         }
 
         .screen {
@@ -86,10 +63,7 @@
 
         .free-customizer { display: flex; align-items: center; justify-content: center; gap: 60px; width: 90%; max-width: 1000px; }
         .controls-column { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 400px; }
-        .select-trigger-btn {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff;
-            padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
-        }
+        .select-trigger-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
         .select-trigger-btn:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.05); }
         .pop-menu { display: none; flex-direction: column; gap: 8px; background: rgba(15, 15, 22, 0.98); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px; position: absolute; width: 100%; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .pop-opt { padding: 10px; color: rgba(255,255,255,0.7); font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
@@ -116,39 +90,53 @@
         .room-badge { color: #ffdf00; font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 223, 0, 0.6), 2px 2px 4px #000; margin-top: 5px; text-align: center;}
         .host-indicator { position: absolute; top: -22px; background: #ffdf00; color: #000; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 3px; box-shadow: 0 0 10px #ffdf00; z-index: 10; }
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
-        .back-mini-btn:hover { color: #ff4a4a; } .back-mini-btn:hover::after { background-color: #ff4a4a; }
+        .back-mini-btn:hover { color: #ff4a4a; }
 
-        /* ساحة اللعب المتجاوبة لـ Tricky Towers */
+        /* ======== تصميم ساحة اللعب الخاصة بـ Tricky Towers ======== */
         #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
         .ingame-ui-header { position: absolute; top: 15px; width: 95%; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
-        .header-part { display: flex; align-items: center; gap: 10px; color: #fff; font-family: 'Cinzel'; letter-spacing: 1px; font-size: 0.9rem;}
-        .next-block { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); position: relative; }
+        .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.6); padding: 8px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .header-ui-card .name { color: #fff; font-weight: bold; font-size: 1rem; }
+        .header-ui-card .score { color: #ffdf00; font-size: 1.2rem; font-family: 'Cinzel'; font-weight: 900; }
         
-        .tower-arenas { display: flex; gap: 50px; position: relative; height: 70vh; width: 90vw; max-width: 800px; justify-content: center; align-items: flex-end; padding-bottom: 20px; }
-        .tower-arena { position: relative; width: 150px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .tower-arenas { display: flex; gap: 100px; position: relative; height: 75vh; width: 90vw; max-width: 800px; justify-content: center; align-items: flex-end; padding-bottom: 40px; }
+        .tower-arena { position: relative; width: 160px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; border-left: 1px dashed rgba(255,255,255,0.1); border-right: 1px dashed rgba(255,255,255,0.1); }
         
-        .tower-base { width: 80px; height: 15px; background: linear-gradient(to right, #4a3c26, #795548); border-radius: 3px; position: absolute; bottom: -5px; box-shadow: 0 5px 10px #0005; }
-        
-        .block-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-        
-        /* كتل بنمط Tricky Towers بصرياً */
-        .cube-tile { 
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
-            border: 2px solid #4338ca; border-radius: 6px; 
-            transition: transform 0.2s, opacity 0.5s ease-out, background 0.3s; 
-            position: absolute; width: 35px; height: 35px; 
-            box-shadow: inset 0 0 10px #fff2, 0 5px 10px #0003; 
+        /* القاعدة الخشبية المزينة بالعشب */
+        .tower-base { 
+            width: 140px; height: 35px; 
+            background: linear-gradient(to bottom, #6d4c41, #3e2723); 
+            position: absolute; bottom: 0px; 
+            border-radius: 5px 5px 8px 8px; 
+            border-top: 10px solid #4CAF50; /* العشب الأخضر */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2); 
+            z-index: 10;
         }
-        .cube-tile.warn { background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%); border-color: #ef4444; }
-        .cube-tile.collapsed { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
+        /* العشب المتدلي (Vines) */
+        .tower-base::before {
+            content: ''; position: absolute; top: 0; left: 15px; width: 8px; height: 25px; 
+            background: #4CAF50; border-radius: 0 0 5px 5px;
+            box-shadow: 35px 10px 0 0 #4CAF50, 75px 5px 0 0 #4CAF50, 100px 15px 0 0 #4CAF50;
+        }
 
-        /* شخصيات السحرة تطفو فوق الأبراج بصرياً */
-        .wizard-player { position: absolute; top: -10px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.2); animation: float 3s ease-in-out infinite; z-index: 5; }
+        .block-container { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; }
+        
+        /* أشكال اللعبة (Tetrominoes) */
+        .tetromino { position: absolute; transition: top 0.1s linear, left 0.1s ease; }
+        .mini-block { 
+            width: 25px; height: 25px; 
+            position: absolute; 
+            border: 2px solid rgba(255,255,255,0.8); 
+            border-radius: 4px; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        .wizard-player { position: absolute; top: -50px; width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.2); animation: float 3s ease-in-out infinite; z-index: 15; }
         .wizard-player img { width: 100%; height: 100%; border-radius: 50%; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        .mobile-controls { position: absolute; bottom: 15px; display: flex; gap: 15px; z-index: 10; }
-        .ctrl-btn { width: 55px; height: 55px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;}
+        .mobile-controls { position: absolute; bottom: 15px; display: flex; gap: 15px; z-index: 20; }
+        .ctrl-btn { width: 60px; height: 60px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;}
         .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
 
         /* شاشة التصويت */
@@ -159,22 +147,17 @@
         .vote-card.voted .mvp-badge { display: block; }
 
         @media (max-width: 768px) {
-            #screen-start { align-items: center; justify-content: center; padding: 0; }
-            .start-title { font-size: 2.8rem; }
-            .free-customizer { flex-direction: column; gap: 30px; }
-            .sony-input { width: 100%; max-width: 100%; }
-            .room-badge { font-size: 1.8rem; }
-            .tower-arenas { gap: 20px; height: 60vh; }
-            .tower-arena { width: 100px; }
+            .tower-arenas { gap: 20px; height: 65vh; }
+            .tower-arena { width: 120px; }
+            .tower-base { width: 100px; }
             .mobile-controls { gap: 10px; }
-            .ctrl-btn { width: 50px; height: 50px; }
+            .ctrl-btn { width: 50px; height: 50px; font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <div class="moon-star-bg"><div class="moon"></div></div>
         
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
@@ -254,30 +237,26 @@
 
         <div id="screen-gameplay" class="screen hidden">
             <div id="game-canvas-container">
-                <div class="ingame-ui-header" id="ingame-ui-header">
-                    <div class="header-part left">P1 Next: <div class="next-block" id="p1-next"></div></div>
-                    <div class="header-part middle">Mayo Ascension</div>
-                    <div class="header-part right">P2 Next: <div class="next-block" id="p2-next"></div></div>
-                </div>
+                <div class="ingame-ui-header" id="ingame-ui-header"></div>
                 
                 <div class="tower-arenas">
                     <div class="tower-arena" id="tower-p1">
                         <div class="tower-base"></div>
                         <div class="block-container" id="p1-blocks"></div>
-                        <div class="wizard-player" id="wizard-p1"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00" alt=""></div>
+                        <div class="wizard-player" id="wizard-p1" style="display:none;"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00" alt=""></div>
                     </div>
                     <div class="tower-arena" id="tower-p2">
                         <div class="tower-base"></div>
                         <div class="block-container" id="p2-blocks"></div>
-                        <div class="wizard-player" id="wizard-p2"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f" alt=""></div>
+                        <div class="wizard-player" id="wizard-p2" style="display:none;"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f" alt=""></div>
                     </div>
                 </div>
                 
                 <div class="mobile-controls">
-                    <button class="ctrl-btn" onclick="requestMove(-1, 0)"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button class="ctrl-btn" onclick="requestMove(0, -1)"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button class="ctrl-btn" onclick="requestMove(0, 1)"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="ctrl-btn" onclick="requestMove(1, 0)"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="ctrl-btn" onclick="moveActive(-25)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="ctrl-btn" onclick="rotateActive()"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="ctrl-btn" onclick="dropActive()"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="ctrl-btn" onclick="moveActive(25)"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
@@ -295,13 +274,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // دالة التنظيف عند التحديث
         window.onload = () => {
             document.getElementById('player-name').value = '';
             document.getElementById('join-room-code').value = '';
         };
 
-        /* 1. إعدادات Firebase الخاصة بك */
         const firebaseConfig = {
             apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
             authDomain: "mayo-game.firebaseapp.com",
@@ -314,7 +291,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        /* 2. بيانات اللعبة المحلية */
         const animeHeroes = {
             'shadow': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shadow&backgroundColor=312e81' },
             'blaze': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=blaze&backgroundColor=991b1b' },
@@ -322,11 +298,15 @@
             'volt': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
         };
 
-        const blockStyles = [
-            'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', // T-shaped / default
-            'linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%)', // L-shaped
-            'linear-gradient(135deg, #065f46 0%, #000 100%)',     // I-shaped
-            'linear-gradient(135deg, #854d0e 0%, #000 100%)'      // O-shaped
+        // تعريف أشكال Tetrominoes الحقيقية مع ألوانها (الحجم 25 بكسل لكل مربع صغير)
+        const TETROMINOES = [
+            { name: 'I', color: '#00f0ff', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:0, y:75}] }, // خط
+            { name: 'L', color: '#ff7f00', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:25, y:0}] }, // حرف L
+            { name: 'J', color: '#0000ff', blocks: [{x:25, y:0}, {x:25, y:25}, {x:25, y:50}, {x:0, y:0}] }, // حرف J
+            { name: 'O', color: '#ffd700', blocks: [{x:0, y:0}, {x:25, y:0}, {x:0, y:25}, {x:25, y:25}] }, // مربع
+            { name: 'T', color: '#a855f7', blocks: [{x:0, y:25}, {x:25, y:25}, {x:50, y:25}, {x:25, y:0}] }, // حرف T
+            { name: 'S', color: '#00ff88', blocks: [{x:0, y:0}, {x:25, y:0}, {x:25, y:25}, {x:50, y:25}] }, // حرف S
+            { name: 'Z', color: '#ff4a4a', blocks: [{x:0, y:25}, {x:25, y:25}, {x:25, y:0}, {x:50, y:0}] }  // حرف Z
         ];
 
         let currentHero = 'shadow';
@@ -336,10 +316,11 @@
         let currentRoomId = null;
         let myPlayerId = null; 
         let isGameStartedLocally = false;
-        let latestRoomData = null; 
         
-        const gridSize = 6;
-        let hostLoop = null;
+        // متغيرات المحرك المحلي لسقوط الأشكال
+        let myActiveBlock = null;
+        let gameLoopInterval = null;
+        let blockFallSpeed = 3; // سرعة السقوط بالبكسل
 
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
@@ -352,144 +333,61 @@
         }
         document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
 
-        function changeHero(key) {
-            currentHero = key;
-            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`;
-            document.querySelectorAll('#pop-hero .pop-opt').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-
-        function changeOrnament(tier) {
-            currentOrnament = tier;
-            const border = document.getElementById('ornament-live-border');
-            border.className = 'ornament-border ornament-' + tier;
-            document.querySelectorAll('#pop-tier .pop-opt').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
+        function changeHero(key) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
+        function changeOrnament(tier) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
 
         function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.add('hidden');
-                s.style.display = 'none';
-            });
+            document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.style.display = 'none'; });
             const activeScreen = document.getElementById(screenId);
-            activeScreen.classList.remove('hidden');
-            activeScreen.style.display = 'flex';
+            activeScreen.classList.remove('hidden'); activeScreen.style.display = 'flex';
         }
 
-        function showJoinInput() {
-            document.getElementById('action-buttons-area').classList.add('hidden');
-            document.getElementById('join-input-area').classList.remove('hidden');
-            document.getElementById('join-room-code').focus();
-        }
-        function hideJoinInput() {
-            document.getElementById('action-buttons-area').classList.remove('hidden');
-            document.getElementById('join-input-area').classList.add('hidden');
-        }
+        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); document.getElementById('join-room-code').focus(); }
+        function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
 
         function generateProRoomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 5; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
+            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
             return code;
         }
 
-        /* 3. نظام الغرف والاتصال (مع ميزة مؤشر التحميل وكشف الأخطاء) */
         function buildLobby(actionType) {
             const inputName = document.getElementById('player-name').value.trim();
             if(!inputName) { alert("Please type your profile name first!"); return; }
             pName = inputName;
 
-            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, x: (actionType === 'create' ? 1 : 4), y: 0, status: "alive", placedBlocks: 0 };
+            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, status: "alive", placedCount: 0 };
 
             if(actionType === 'create') {
                 const btn = document.getElementById('btn-create');
-                const origText = btn.innerText;
-                btn.innerText = "LOADING...";
-                btn.style.pointerEvents = "none";
-                
+                btn.innerText = "LOADING..."; btn.style.pointerEvents = "none";
                 currentRoomId = generateProRoomCode();
                 myPlayerId = "p1"; 
-                
-                let initialGrid = {};
-                for(let r=0; r<gridSize; r++){
-                    for(let c=0; c<gridSize; c++){ initialGrid[`${c}_${r}`] = 'solid'; }
-                }
-
-                // مؤقت الطوارئ: إذا السيرفر علق ولم يرد خلال 5 ثواني
-                let isResolved = false;
-                setTimeout(() => {
-                    if(!isResolved) {
-                        btn.innerText = origText;
-                        btn.style.pointerEvents = "auto";
-                        alert("⚠️ فايربيس لا يستجيب! السيرفر مقفل.\nيرجى التأكد من أنك قمت بنشر قواعد الحماية (Rules) إلى true داخل Firebase.");
-                    }
-                }, 5000);
 
                 db.ref('rooms/' + currentRoomId).set({
                     status: "waiting",
-                    grid: initialGrid,
-                    players: { p1: myData }
+                    players: { p1: myData },
+                    blocks_p1: [], blocks_p2: []
                 }).then(() => {
-                    isResolved = true;
-                    btn.innerText = origText;
-                    btn.style.pointerEvents = "auto";
                     document.getElementById('btn-launch-match').style.display = 'block'; 
                     document.getElementById('lobby-room-number').innerText = currentRoomId;
-                    switchScreen('screen-lobby');
-                    listenToRoomChanges();
-                }).catch(error => {
-                    isResolved = true;
-                    btn.innerText = origText;
-                    btn.style.pointerEvents = "auto";
-                    alert("⚠️ Error: " + error.message);
+                    switchScreen('screen-lobby'); listenToRoomChanges();
                 });
 
             } else if(actionType === 'join') {
                 let roomCodeInput = document.getElementById('join-room-code').value.trim().toUpperCase();
-                if(!roomCodeInput) { alert("Please enter a room code!"); return; }
-                
+                if(!roomCodeInput) return;
                 const btn = document.getElementById('btn-join');
-                const origText = btn.innerText;
-                btn.innerText = "WAIT...";
-                btn.style.pointerEvents = "none";
-
-                currentRoomId = roomCodeInput;
-                myPlayerId = "p2";
+                btn.innerText = "WAIT..."; btn.style.pointerEvents = "none";
+                currentRoomId = roomCodeInput; myPlayerId = "p2";
                 
-                let isResolved = false;
-                setTimeout(() => {
-                    if(!isResolved) {
-                        btn.innerText = origText;
-                        btn.style.pointerEvents = "auto";
-                        alert("⚠️ فايربيس لا يستجيب! تأكد من القواعد (Rules).");
-                    }
-                }, 5000);
-
-                db.ref('rooms/' + currentRoomId).once('value')
-                .then(snapshot => {
-                    isResolved = true;
-                    btn.innerText = origText;
-                    btn.style.pointerEvents = "auto";
-
+                db.ref('rooms/' + currentRoomId).once('value').then(snapshot => {
                     if(snapshot.exists() && snapshot.val().status === "waiting") {
                         db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
                         db.ref('rooms/' + currentRoomId).update({ status: "full" });
-                        
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
-                        switchScreen('screen-lobby');
-                        listenToRoomChanges();
-                    } else { 
-                        alert("❌ الغرفة غير موجودة أو بدأت اللعبة بالفعل!"); 
-                    }
-                })
-                .catch(error => {
-                    isResolved = true;
-                    btn.innerText = origText;
-                    btn.style.pointerEvents = "auto";
-                    alert("⚠️ Error: " + error.message);
+                        switchScreen('screen-lobby'); listenToRoomChanges();
+                    } else { alert("❌ الغرفة غير موجودة!"); btn.innerText = "ENTER"; btn.style.pointerEvents = "auto"; }
                 });
             }
         }
@@ -499,28 +397,24 @@
             db.ref('rooms/' + currentRoomId).update({ status: "playing" });
         }
 
-        /* 4. الاستماع الفوري لقاعدة البيانات */
         function listenToRoomChanges() {
             db.ref('rooms/' + currentRoomId).on('value', snapshot => {
                 const room = snapshot.val();
                 if(!room) return;
-                latestRoomData = room; 
 
-                if(room.status === "waiting" || room.status === "full") {
-                    updateLobbyUI(room.players);
-                }
+                if(room.status === "waiting" || room.status === "full") updateLobbyUI(room.players);
                 
                 if(room.status === "playing") {
                     if(!isGameStartedLocally) initGameplayUI(room.players);
-                    updateGameplay(room);
+                    renderOpponentBlocks(room);
+                    updateHeaders(room.players);
                 }
 
-                if(room.status === "voting") {
-                    if(document.getElementById('screen-voting').classList.contains('hidden')) {
-                        initVotingUI(room.players);
-                    }
-                    updateVotes(room.votes);
+                if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
+                    clearInterval(gameLoopInterval);
+                    initVotingUI(room.players);
                 }
+                if(room.status === "voting") updateVotes(room.votes);
             });
         }
 
@@ -544,174 +438,179 @@
                 </div>`;
         }
 
-        /* 5. منطق اللعب */
         function initGameplayUI(players) {
             isGameStartedLocally = true;
             switchScreen('screen-gameplay');
             
-            // تم تعديل الشبكة لتكون أبراجاً بصرياً يتم بناؤها
             ['p1', 'p2'].forEach(pid => {
                 if(players[pid]) {
-                    document.getElementById(`${pid}-blocks`).innerHTML = '';
+                    document.getElementById(`wizard-${pid}`).style.display = 'block';
+                    document.getElementById(`wizard-${pid}`).querySelector('img').src = pid === 'p1' ? 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00' : 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f';
                 }
             });
-
-            // تحديث واجهة المستخدم العلوية (Header)
-            ['p1', 'p2'].forEach(pid => {
-                const headerPart = pid === 'p1' ? 'left' : 'right';
-                // في Tricky Towers لا يوجد عداد تنازلي، سأقوم بعرض عدد القطع الموضوعة
-                let counterHtml = '';
-                if(players[pid]) {
-                    counterHtml = `
-                    <div class="header-ui-card">
-                        <span class="name">${players[pid].name}</span>
-                        <span class="score" id="score-${pid}">0 Blocks</span>
-                    </div>`;
-                }
-                // في صورةimage_0.png لا يوجد عداد، مجرد عدد القطع.
-                // سأقوم بإضافة عداد للقطع في الأعلى لكل برج
-            });
-
-            // إضافة شخصيات السحرة تطفو فوق الأبراج
-            ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) {
-                    const wizard = document.getElementById(`wizard-${pid}`);
-                    wizard.style.display = 'block';
-                    const wizardImg = pid === 'p1' ? 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00' : 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f';
-                    wizard.querySelector('img').src = wizardImg;
-                }
-            });
-
-            if(myPlayerId === 'p1') startHostEngine();
 
             document.onkeydown = function(e) {
-                if (e.key === 'ArrowUp' || e.key === 'w') requestMove(0, -1);
-                if (e.key === 'ArrowDown' || e.key === 's') requestMove(0, 1);
-                if (e.key === 'ArrowLeft' || e.key === 'a') requestMove(-1, 0);
-                if (e.key === 'ArrowRight' || e.key === 'd') requestMove(1, 0);
-                // في Tricky Towers يمكنك وضع القطعة باستخدام مسافة أو سهم لأسفل.
-                // سأجعل السهم لأسفل يضع قطعة جديدة
-                if(e.key === 'ArrowDown' || e.key === 's') requestPlaceBlock();
+                if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
+                if (e.key === 'ArrowDown' || e.key === 's') dropActive();
+                if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-25);
+                if (e.key === 'ArrowRight' || e.key === 'd') moveActive(25);
+            };
+
+            // تشغيل محرك السقوط الخاص باللاعب الحالي فقط
+            spawnNewBlock();
+            gameLoopInterval = setInterval(gameLoop, 50);
+        }
+
+        function updateHeaders(players) {
+            let headerHtml = '';
+            ['p1', 'p2'].forEach(pid => {
+                if(players[pid]) {
+                    headerHtml += `
+                    <div class="header-ui-card">
+                        <span class="name">${players[pid].name}</span>
+                        <span class="score">${players[pid].placedCount || 0} Blocks</span>
+                    </div>`;
+                }
+            });
+            document.getElementById('ingame-ui-header').innerHTML = headerHtml;
+        }
+
+        // --- محرك اللعب الفيزيائي الوهمي ---
+        function spawnNewBlock() {
+            const randType = TETROMINOES[Math.floor(Math.random() * TETROMINOES.length)];
+            myActiveBlock = {
+                type: randType,
+                x: 60, // يبدأ من منتصف القاعدة تقريباً
+                y: 500, // الارتفاع من فوق
+                rotation: 0
             };
         }
 
-        function updateGameplay(room) {
-            const gridData = room.grid;
-            const players = room.players;
+        function createDOMBlock(blockData, isFalling = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tetromino';
+            wrapper.style.left = `${blockData.x}px`;
+            wrapper.style.bottom = `${blockData.y}px`;
+            wrapper.style.transform = `rotate(${blockData.rotation}deg)`;
             
-            // تم تحويل الشبكة من بلاط ثابت إلى أبراج بصرياً
-            // سأستخدم DOM لتكديس القطع بصرياً داخل ركائز خشبية
-            ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) {
-                    const blockContainer = document.getElementById(`${pid}-blocks`);
-                    blockContainer.innerHTML = '';
-                    // في Tricky Towers الكتل لا توضع على شبكة ثابتة، بل تتكدس بصرياً بفيزياء ظاهرية
-                    // سأقوم بإنشاء أبراج بصرية غير مستقرة
+            blockData.type.blocks.forEach(pos => {
+                const mini = document.createElement('div');
+                mini.className = 'mini-block';
+                mini.style.backgroundColor = blockData.type.color;
+                mini.style.left = `${pos.x}px`;
+                mini.style.bottom = `${pos.y}px`;
+                wrapper.appendChild(mini);
+            });
+            return wrapper;
+        }
+
+        function gameLoop() {
+            if(!myActiveBlock) return;
+
+            myActiveBlock.y -= blockFallSpeed;
+
+            // تحديد نقطة الاصطدام (Collision Detection)
+            // لجعلها بسيطة وتعمل بثبات: كلما زاد عدد القطع، يرتفع مستوى الأرضية.
+            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value').then(snap => {
+                const pData = snap.val();
+                if(!pData) return;
+                
+                const currentTowerHeight = (pData.placedCount || 0) * 20; // كل قطعة ترفع البرج 20 بكسل
+                
+                if(myActiveBlock.y <= currentTowerHeight) {
+                    // لمس البرج!
+                    myActiveBlock.y = currentTowerHeight;
+                    // إضافة انحراف بسيط جداً ليعطي تأثير Tricky Towers العشوائي
+                    myActiveBlock.rotation += (Math.random() * 10 - 5); 
                     
-                    for(let r=0; r<players[pid].placedBlocks; r++){
-                        let tile = document.createElement('div');
-                        tile.className = 'cube-tile';
-                        // في Tricky Towers الكتل ملونة بفيزياء
-                        tile.style.background = blockStyles[Math.floor(Math.random() * blockStyles.length)];
-                        
-                        // في Tricky Towers الكتل ليست مستقرة تماماً، سأجعلها مائلة قليلاً
-                        const tilt = Math.random() * 10 - 5; // -5 to +5 degrees
-                        tile.style.transform = `rotate(${tilt}deg)`;
-                        // في Tricky Towers الكتل توضع فوق بعضها، سأجعلها تظهر كأبراج
-                        tile.style.position = 'absolute';
-                        // في Tricky Towers الكتل "تسقط" داخل الركيزة بصرية
-                        tile.style.bottom = `${r * 35}px`;
-                        // في Tricky Towers يمكنك وضع القطعة بصرياً في أي مكان داخل الركيزة
-                        // سأجعلها بصرياً غير مستقرة
-                        tile.style.left = `${Math.random() * 20 - 10}px`; // بصرياً غير مستقرة
-                        
-                        // في Tricky Towers الكتل لا تتغير حالتها كما في الشبكة القديمة، سأقوم بإزالة الكود القديم
-                        
-                        // في Tricky Towers الكتل يمكن أن "تنهار" بصرياً
-                        if(players[pid].status === 'dead' && r > players[pid].placedBlocks - 3){
-                            tile.classList.add('collapsed');
-                        }
-                        
-                        blockContainer.appendChild(tile);
-                    }
-                    
-                    // تحديث عداد القطع في الأعلى لكل برج
-                    const score = document.getElementById(`score-${pid}`);
-                    if(score) score.innerText = `${players[pid].placedBlocks} Blocks`;
+                    saveBlockToFirebase(myActiveBlock, pData.placedCount || 0);
+                    spawnNewBlock();
+                } else {
+                    renderMyScreen();
                 }
             });
         }
 
-        window.addEventListener('resize', () => {
-            if (isGameStartedLocally && latestRoomData) {
-                updateGameplay(latestRoomData);
+        function saveBlockToFirebase(block, currentCount) {
+            // إضافة القطعة لقاعدة البيانات
+            const blockRef = db.ref(`rooms/${currentRoomId}/blocks_${myPlayerId}`).push();
+            blockRef.set({
+                typeIndex: TETROMINOES.indexOf(block.type),
+                x: block.x,
+                y: block.y,
+                rotation: block.rotation
+            });
+            // زيادة العداد
+            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedCount: currentCount + 1 });
+            
+            // إنهاء اللعبة إذا وصل البرج لارتفاع معين (مثلا 20 قطعة)
+            if(currentCount + 1 >= 20) {
+                db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
             }
-        });
-
-        function requestMove(dx, dy) {
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value', snap => {
-                let pData = snap.val();
-                // في Tricky Towers يمكنك فقط تحريك القطعة أفقياً
-                if(pData && pData.status === 'alive') {
-                    // تم تعديل منطق الحركة الأفقية فقط
-                    if(dx !== 0){
-                        // تم تحديث منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                    }
-                }
-            });
-        }
-        
-        // في Tricky Towers يجب أن تكون هناك وظيفة لوضع القطعة
-        function requestPlaceBlock() {
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value', snap => {
-                let pData = snap.val();
-                if(pData && pData.status === 'alive') {
-                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                    const placedBlocks = pData.placedBlocks || 0;
-                    db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedBlocks: placedBlocks + 1 });
-                    
-                    // في Tricky Towers الكتل يمكن أن "تنهار" بصرياً إذا تم وضعها بشكل سيء
-                    // سأجعل المضيف يتحقق من الانهيار إذا تم وضع قطعة سيئة بصرياً
-                }
-            });
         }
 
-        function startHostEngine() {
-            hostLoop = setInterval(() => {
-                db.ref(`rooms/${currentRoomId}`).once('value', snap => {
-                    let room = snap.val();
-                    if(!room || room.status !== 'playing') return;
+        function moveActive(dir) {
+            if(!myActiveBlock) return;
+            myActiveBlock.x += dir;
+            // حدود الساحة يمين ويسار
+            if(myActiveBlock.x < -25) myActiveBlock.x = -25;
+            if(myActiveBlock.x > 125) myActiveBlock.x = 125;
+            renderMyScreen();
+        }
 
-                    let updates = {};
-                    // تم تحديث منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                    
-                    let p1Alive = room.players.p1 && room.players.p1.status === 'alive';
-                    let p2Alive = room.players.p2 && room.players.p2.status === 'alive';
-                    
-                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                    
-                    // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                    
-                    ['p1', 'p2'].forEach(pid => {
-                        if(room.players[pid] && room.players[pid].placedBlocks > (gridSize-1)*2) {
-                            // تم تعديل منطق الشبكة ليكون أبراجاً بصرياً يتم بناؤها
-                            updates[`players/${pid}/status`] = 'dead';
-                            if(pid === 'p1') p1Alive = false;
-                            if(pid === 'p2') p2Alive = false;
-                        }
-                    });
+        function rotateActive() {
+            if(!myActiveBlock) return;
+            myActiveBlock.rotation += 90;
+            renderMyScreen();
+        }
 
-                    if((room.players.p2 && (!p1Alive || !p2Alive)) || (!room.players.p2 && !p1Alive)) {
-                        updates['status'] = 'voting';
-                        clearInterval(hostLoop);
-                    }
+        function dropActive() {
+            if(!myActiveBlock) return;
+            blockFallSpeed = 15; // تسريع النزول
+        }
+        document.addEventListener('keyup', (e) => { if (e.key === 'ArrowDown' || e.key === 's') blockFallSpeed = 3; });
 
-                    db.ref(`rooms/${currentRoomId}`).update(updates);
+        function renderMyScreen() {
+            // رسم القطعة التي تسقط حالياً للاعب (محلياً لضمان سلاسة الفريمات)
+            const myContainer = document.getElementById(`${myPlayerId}-blocks`);
+            
+            // نحذف القطعة الساقطة القديمة ونبقي القطع الثابتة
+            const fallingNode = document.getElementById('active-falling');
+            if(fallingNode) fallingNode.remove();
+
+            if(myActiveBlock) {
+                const domNode = createDOMBlock(myActiveBlock, true);
+                domNode.id = 'active-falling';
+                myContainer.appendChild(domNode);
+            }
+        }
+
+        function renderOpponentBlocks(room) {
+            ['p1', 'p2'].forEach(pid => {
+                const blocksArray = room[`blocks_${pid}`];
+                const container = document.getElementById(`${pid}-blocks`);
+                
+                // إعادة رسم القطع الثابتة فقط من قاعدة البيانات
+                // نمسح كل شيء ما عدا القطعة الساقطة للاعب الحالي
+                Array.from(container.children).forEach(child => {
+                    if(child.id !== 'active-falling') child.remove();
                 });
-            }, 1000);
+
+                if(blocksArray) {
+                    Object.values(blocksArray).forEach(bData => {
+                        const builtBlock = {
+                            type: TETROMINOES[bData.typeIndex],
+                            x: bData.x,
+                            y: bData.y,
+                            rotation: bData.rotation
+                        };
+                        container.appendChild(createDOMBlock(builtBlock, false));
+                    });
+                }
+            });
         }
 
-        /* 6. نظام التصويت */
+        /* 6. نظام التصويت النهائي */
         function initVotingUI(players) {
             switchScreen('screen-voting');
             let html = '';
@@ -719,7 +618,7 @@
                 if(players[pid]) {
                     html += `
                     <div class="vote-card" id="vote-card-${pid}" onclick="castVote('${pid}')">
-                        <span class="mvp-badge" id="badge-${pid}">MVP👑</span>
+                        <span class="mvp-badge" id="badge-${pid}">WINNER👑</span>
                         <div class="avatar-frame-wrapper">
                             <div class="ornament-border ornament-${players[pid].ornament}"></div>
                             <div class="core-avatar" style="background-image: url('${animeHeroes[players[pid].hero].url}')"></div>
@@ -731,27 +630,18 @@
             document.getElementById('vote-grid-container').innerHTML = html;
         }
 
-        function castVote(targetPid) {
-            db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid);
-        }
+        function castVote(targetPid) { db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid); }
 
         function updateVotes(votesObj) {
             if(!votesObj) return;
-            
             document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('voted'));
             let counts = { p1: 0, p2: 0 };
-            
-            for(let voter in votesObj) {
-                counts[votesObj[voter]]++;
-            }
-
+            for(let voter in votesObj) counts[votesObj[voter]]++;
             ['p1', 'p2'].forEach(pid => {
                 let el = document.getElementById(`votecount-${pid}`);
                 if(el) {
                     el.innerText = `${counts[pid]} Votes`;
-                    if(counts[pid] > 0) {
-                        document.getElementById(`vote-card-${pid}`).classList.add('voted');
-                    }
+                    if(counts[pid] > 0) document.getElementById(`vote-card-${pid}`).classList.add('voted');
                 }
             });
         }
