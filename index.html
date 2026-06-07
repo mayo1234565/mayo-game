@@ -6,58 +6,37 @@
     <title>Mayo Game - Ascension Towers</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         
         body, html { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
+            width: 100%; height: 100%; overflow: hidden; 
             background-color: #030305; 
             background-image: url('./background2.png'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
             font-family: 'Orbitron', 'Cairo', sans-serif; 
         }
 
-        .game-container { 
-            position: relative; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(3, 3, 5, 0.4); 
-            display: flex; 
-        }
+        .game-container { position: relative; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.4); display: flex; }
 
-        .screen {
-            position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 30px; z-index: 2; width: 100%; height: 100%; transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .hidden { opacity: 0; pointer-events: none; transform: scale(0.98); display: none !important; }
+        .screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 20; width: 100%; height: 100%; transition: opacity 0.3s ease; }
+        .hidden { opacity: 0; pointer-events: none; display: none !important; }
 
         #screen-start { align-items: flex-end; justify-content: flex-end; padding-bottom: 8%; padding-right: 10%; }
 
-        .sony-btn {
-            background: none; border: none; color: rgba(255, 255, 255, 0.7); font-family: 'Orbitron', 'Cinzel', sans-serif;
-            font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer;
-            position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 5px 15px;
-        }
-        .sony-btn::after {
-            content: ''; width: 0; height: 3px; background-color: #00f0ff; position: absolute; bottom: -5px; right: 0;
-            transition: width 0.3s ease; box-shadow: 0 0 10px #00f0ff;
-        }
+        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.7); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 5px 15px; }
+        .sony-btn::after { content: ''; width: 0; height: 3px; background-color: #00f0ff; position: absolute; bottom: -5px; right: 0; transition: width 0.3s ease; box-shadow: 0 0 10px #00f0ff; }
         .sony-btn:hover { color: #ffffff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 1); transform: translateX(-5px); }
         .sony-btn:hover::after { width: 100%; }
+        
         .start-title { font-size: 3.5rem; letter-spacing: 8px; color: #ffffff; }
-
         .input-group { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
         .input-label { color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; text-align: center; }
-        .sony-input {
-            background: rgba(0,0,0,0.5); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff;
-            padding: 10px; font-size: 1.3rem; font-family: 'Cairo', 'Orbitron', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px;
-        }
+        .sony-input { background: rgba(0,0,0,0.5); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px; font-size: 1.3rem; font-family: 'Cairo', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px; }
         .sony-input:focus { border-bottom-color: #00f0ff; }
 
         .free-customizer { display: flex; align-items: center; justify-content: center; gap: 60px; width: 90%; max-width: 1000px; }
@@ -78,8 +57,6 @@
         .ornament-bronze { border: 4px solid #cd7f32; }
         .ornament-gold { border: 5px solid #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.3); }
 
-        .player-tag-name { color: #ffffff; font-size: 1.1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        
         .lobby-action-row { display: flex; gap: 20px; margin-top: 10px; width: 100%; justify-content: center; flex-wrap: wrap; }
         #join-input-area { flex-direction: column; align-items: center; gap: 15px; }
 
@@ -91,87 +68,30 @@
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
         .back-mini-btn:hover { color: #ff4a4a; }
 
-        /* ======== تصميم ساحة اللعب ======== */
-        #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-        .ingame-ui-header { position: absolute; top: 15px; width: 95%; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
-        .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.6); padding: 8px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        .header-ui-card .name { color: #fff; font-weight: bold; font-size: 1rem; }
-        .header-ui-card .score { color: #ffdf00; font-size: 1.2rem; font-family: 'Cinzel'; font-weight: 900; }
-        
-        .tower-arenas { display: flex; gap: 100px; position: relative; height: 75vh; width: 90vw; max-width: 800px; justify-content: center; align-items: flex-end; padding-bottom: 40px; }
-        .tower-arena { position: relative; width: 160px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; border-left: 1px dashed rgba(255,255,255,0.1); border-right: 1px dashed rgba(255,255,255,0.1); }
-        
-        /* القاعدة الخشبية المزينة بالعشب */
-        .tower-base { 
-            width: 140px; height: 35px; 
-            background: linear-gradient(to bottom, #6d4c41, #3e2723); 
-            position: absolute; bottom: 0px; 
-            border-radius: 5px 5px 8px 8px; 
-            border-top: 10px solid #4CAF50; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2); 
-            z-index: 10;
-        }
-        .tower-base::before {
-            content: ''; position: absolute; top: 0; left: 15px; width: 8px; height: 25px; 
-            background: #4CAF50; border-radius: 0 0 5px 5px;
-            box-shadow: 35px 10px 0 0 #4CAF50, 75px 5px 0 0 #4CAF50, 100px 15px 0 0 #4CAF50;
-        }
+        /* ======== شاشة التعليمات الإلزامية ======== */
+        .instructions-panel { background: rgba(10, 10, 15, 0.95); border: 2px solid #00f0ff; border-radius: 15px; padding: 30px; color: #fff; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,240,255,0.2); display: flex; flex-direction: column; gap: 15px; }
+        .instructions-panel h2 { color: #ffdf00; font-family: 'Cairo'; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,223,0,0.5); }
+        .instructions-panel p { font-size: 1.1rem; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-family: 'Cairo'; }
+        .instructions-panel span { color: #00ff88; font-family: 'Orbitron'; font-weight: bold; }
+        .instructions-panel .warning { color: #ff4a4a; font-size: 0.9rem; margin-top: 10px; font-weight: bold; border: none; justify-content: center; }
 
-        .block-container { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; }
+        /* ======== ساحة اللعب والفيزياء ======== */
+        #game-canvas-container { position: relative; width: 100%; height: 100%; }
+        /* الكانفاس الخاص بالفيزياء سيكون في الخلفية ليعرض اللعب */
+        #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
         
-        /* أشكال اللعبة (Tetrominoes) */
-        .tetromino { position: absolute; transition: top 0.05s linear, left 0.1s ease, transform 0.1s ease; transform-origin: center; }
-        .mini-block { 
-            width: 25px; height: 25px; 
-            position: absolute; 
-            border: 2px solid rgba(255,255,255,0.8); 
-            border-radius: 4px; 
-            box-sizing: border-box;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        /* لوحة التعليمات الأنيقة */
-        .instructions-panel {
-            position: absolute;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 10, 15, 0.85);
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            border-radius: 12px;
-            padding: 15px 25px;
-            color: #fff;
-            text-align: center;
-            z-index: 100;
-            pointer-events: none; /* عشان ما تعيق النقر */
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        }
-        .instructions-panel h3 { color: #00f0ff; margin-bottom: 12px; font-family: 'Cairo'; letter-spacing: 1px; }
-        .instructions-panel p { font-size: 0.95rem; margin: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
-        .instructions-panel span { color: #ff4a4a; font-weight: bold; font-family: 'Orbitron'; }
-
-        .mobile-controls { position: absolute; bottom: 15px; display: flex; gap: 15px; z-index: 20; }
-        .ctrl-btn { width: 60px; height: 60px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;}
+        .ingame-ui-header { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 15; pointer-events: none; }
+        .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.7); padding: 10px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .header-ui-card .name { color: #fff; font-weight: bold; font-size: 1.1rem; font-family: 'Cairo'; }
+        .header-ui-card .score { color: #00ff88; font-size: 1.3rem; font-family: 'Orbitron'; font-weight: 900; }
+        
+        .mobile-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 20; }
+        .ctrl-btn { width: 65px; height: 65px; background: rgba(15,15,20,0.8); border: 2px solid rgba(0,240,255,0.5); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.6);}
         .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
 
         .vote-grid { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; justify-content: center;}
         .vote-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s; position: relative; width: 160px; }
         .vote-card:hover, .vote-card.voted { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 25px rgba(255,215,0,0.2); }
-        .mvp-badge { display: none; position: absolute; top: -15px; background: linear-gradient(45deg, #ffd700, #ffaa00); color: #000; font-weight: 900; padding: 4px 15px; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 0 15px #ffd700; }
-        .vote-card.voted .mvp-badge { display: block; }
-
-        @media (max-width: 768px) {
-            .tower-arenas { gap: 20px; height: 65vh; }
-            .tower-arena { width: 120px; }
-            .tower-base { width: 100px; }
-            .mobile-controls { gap: 10px; }
-            .ctrl-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            .instructions-panel { bottom: 80px; padding: 10px; }
-            .instructions-panel h3 { font-size: 1.1rem; }
-            .instructions-panel p { font-size: 0.8rem; }
-        }
     </style>
 </head>
 <body>
@@ -228,10 +148,10 @@
                     </div>
 
                     <div class="lobby-action-row hidden" id="join-input-area">
-                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="off" style="border:1px solid rgba(0,240,255,0.5); border-radius:5px; font-weight:bold; letter-spacing:3px;">
+                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="off">
                         <div style="display:flex; gap:10px;">
-                            <button id="btn-join" class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88; font-size:1.1rem;">ENTER</button>
-                            <button class="sony-btn back-mini-btn" onclick="hideJoinInput()" style="font-size:1.1rem;">CANCEL</button>
+                            <button id="btn-join" class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88;">ENTER</button>
+                            <button class="sony-btn back-mini-btn" onclick="hideJoinInput()">CANCEL</button>
                         </div>
                     </div>
                 </div>
@@ -253,56 +173,42 @@
             </div>
         </div>
 
+        <div id="screen-instructions" class="screen hidden">
+            <div class="instructions-panel">
+                <h2>🎮 كيف تلعب Tricky Towers؟</h2>
+                <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
+                <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
+                <p>إسقاط القطعة بسرعة <span>[ S ] أو [ ⬇️ ]</span></p>
+                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! إذا حطيت القطعة على الطرف، راح يختل التوازن وتطيح!</p>
+                <button class="sony-btn" onclick="startActualGame()" style="color:#00f0ff; margin-top:15px;">موافق، ابدأ اللعب!</button>
+            </div>
+        </div>
+
         <div id="screen-gameplay" class="screen hidden">
             <div id="game-canvas-container">
+                <canvas id="physics-canvas"></canvas>
+                
                 <div class="ingame-ui-header" id="ingame-ui-header"></div>
                 
-                <div class="tower-arenas">
-                    <div class="tower-arena" id="tower-p1">
-                        <div class="tower-base"></div>
-                        <div class="block-container" id="p1-blocks"></div>
-                    </div>
-                    <div class="tower-arena" id="tower-p2">
-                        <div class="tower-base"></div>
-                        <div class="block-container" id="p2-blocks"></div>
-                    </div>
-                </div>
-
-                <div class="instructions-panel">
-                    <h3>🎮 كيف تلعب؟</h3>
-                    <p>تحريك القطعة يمين ويسار <span>[ ⬅️ / ➡️ ] أو [ A / D ]</span></p>
-                    <p>تغيير شكل القطعة (تدوير) <span>[ ⬆️ ] أو [ W ]</span></p>
-                    <p>تسريع السقوط للأسفل <span>[ ⬇️ ] أو [ S ]</span></p>
-                    <p style="color:#ffdf00; justify-content:center; margin-top:10px; font-weight:bold; border:none;">الهدف: رص 20 قطعة لتفوز بالمباراة!</p>
-                </div>
-                
                 <div class="mobile-controls">
-                    <button class="ctrl-btn" onclick="moveActive(-25)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="ctrl-btn" onclick="moveActive(-1)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button class="ctrl-btn" onclick="rotateActive()"><i class="fa-solid fa-rotate-right"></i></button>
                     <button class="ctrl-btn" onclick="dropActive()"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="ctrl-btn" onclick="moveActive(25)"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="ctrl-btn" onclick="moveActive(1)"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
 
         <div id="screen-voting" class="screen hidden">
             <span class="input-label" style="color:#ffd700; text-align:center;">MATCH FINISHED</span>
-            <h1 style="color:#fff; font-family:'Cinzel'; letter-spacing:2px; text-align:center; font-size:2rem;">VOTE FOR MVP</h1>
             <div class="vote-grid" id="vote-grid-container"></div>
             <button class="sony-btn" style="margin-top: 30px; color:#ffdf00;" onclick="location.reload()">MAIN MENU</button>
         </div>
 
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <script>
-        window.onload = () => {
-            document.getElementById('player-name').value = '';
-            document.getElementById('join-room-code').value = '';
-        };
-
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
             authDomain: "mayo-game.firebaseapp.com",
@@ -322,375 +228,261 @@
             'volt': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
         };
 
-        // الأشكال بألوانها (حجم المربع الصغير 25 بكسل)
-        const TETROMINOES = [
-            { name: 'I', color: '#00f0ff', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:0, y:75}] }, 
-            { name: 'L', color: '#ff7f00', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:25, y:0}] }, 
-            { name: 'J', color: '#0000ff', blocks: [{x:25, y:0}, {x:25, y:25}, {x:25, y:50}, {x:0, y:0}] }, 
-            { name: 'O', color: '#ffd700', blocks: [{x:0, y:0}, {x:25, y:0}, {x:0, y:25}, {x:25, y:25}] }, 
-            { name: 'T', color: '#a855f7', blocks: [{x:0, y:25}, {x:25, y:25}, {x:50, y:25}, {x:25, y:0}] }, 
-            { name: 'S', color: '#00ff88', blocks: [{x:0, y:0}, {x:25, y:0}, {x:25, y:25}, {x:50, y:25}] }, 
-            { name: 'Z', color: '#ff4a4a', blocks: [{x:0, y:25}, {x:25, y:25}, {x:25, y:0}, {x:50, y:0}] }  
-        ];
-
-        let currentHero = 'shadow';
-        let currentOrnament = 'diamond';
-        let pName = "";
-        
-        let currentRoomId = null;
-        let myPlayerId = null; 
+        let currentHero = 'shadow', currentOrnament = 'diamond', pName = "";
+        let currentRoomId = null, myPlayerId = null;
         let isGameStartedLocally = false;
         
+        // إعدادات محرك الفيزياء Matter.js
+        const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
+              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite;
+              
+        let engine, render, runner;
         let myActiveBlock = null;
-        let gameLoopInterval = null;
-        let blockFallSpeed = 4; // سرعة سقوط معتدلة
-        let localPlacedCount = 0; // تتبع محلي لعدد القطع
+        let myTowerX = 0, oppTowerX = 0;
+        let myPlacedBlocks = [];
+        let oppPlacedBlocksMap = {}; // لحفظ قطع الخصم ورسمها
+
+        // ألوان القطع
+        const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
+        const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
 
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
-        function toggleMenu(menuId) {
-            const menu = document.getElementById(menuId);
-            const isVisible = menu.style.display === 'flex';
-            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none');
-            menu.style.display = isVisible ? 'none' : 'flex';
-            event.stopPropagation();
-        }
+        // دوال القوائم
+        function toggleMenu(menuId) { const menu = document.getElementById(menuId); const isVisible = menu.style.display === 'flex'; document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); menu.style.display = isVisible ? 'none' : 'flex'; event.stopPropagation(); }
         document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
-
         function changeHero(key) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
         function changeOrnament(tier) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
-
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.style.display = 'none'; });
-            const activeScreen = document.getElementById(screenId);
-            activeScreen.classList.remove('hidden'); activeScreen.style.display = 'flex';
-        }
-
-        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); document.getElementById('join-room-code').focus(); }
+        function switchScreen(screenId) { document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.style.display = 'none'; }); const activeScreen = document.getElementById(screenId); activeScreen.classList.remove('hidden'); activeScreen.style.display = 'flex'; }
+        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); }
         function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
 
-        function generateProRoomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
-            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-            return code;
-        }
-
+        // إنشاء الروم
         function buildLobby(actionType) {
             const inputName = document.getElementById('player-name').value.trim();
-            if(!inputName) { alert("Please type your profile name first!"); return; }
+            if(!inputName) return alert("Please type your profile name first!");
             pName = inputName;
-
-            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, status: "alive", placedCount: 0 };
+            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0 };
 
             if(actionType === 'create') {
-                const btn = document.getElementById('btn-create');
-                btn.innerText = "LOADING..."; btn.style.pointerEvents = "none";
-                currentRoomId = generateProRoomCode();
+                document.getElementById('btn-create').innerText = "LOADING...";
+                currentRoomId = [...Array(5)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
                 myPlayerId = "p1"; 
-
-                db.ref('rooms/' + currentRoomId).set({
-                    status: "waiting",
-                    players: { p1: myData },
-                    blocks_p1: [], blocks_p2: []
-                }).then(() => {
+                db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
                     document.getElementById('btn-launch-match').style.display = 'block'; 
                     document.getElementById('lobby-room-number').innerText = currentRoomId;
                     switchScreen('screen-lobby'); listenToRoomChanges();
                 });
-
             } else if(actionType === 'join') {
-                let roomCodeInput = document.getElementById('join-room-code').value.trim().toUpperCase();
-                if(!roomCodeInput) return;
-                const btn = document.getElementById('btn-join');
-                btn.innerText = "WAIT..."; btn.style.pointerEvents = "none";
-                currentRoomId = roomCodeInput; myPlayerId = "p2";
-                
-                db.ref('rooms/' + currentRoomId).once('value').then(snapshot => {
-                    if(snapshot.exists() && snapshot.val().status === "waiting") {
+                let code = document.getElementById('join-room-code').value.trim().toUpperCase();
+                if(!code) return;
+                document.getElementById('btn-join').innerText = "WAIT...";
+                currentRoomId = code; myPlayerId = "p2";
+                db.ref('rooms/' + currentRoomId).once('value').then(snap => {
+                    if(snap.exists() && snap.val().status === "waiting") {
                         db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
                         db.ref('rooms/' + currentRoomId).update({ status: "full" });
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
                         switchScreen('screen-lobby'); listenToRoomChanges();
-                    } else { alert("❌ الغرفة غير موجودة!"); btn.innerText = "ENTER"; btn.style.pointerEvents = "auto"; }
+                    } else alert("الغرفة غير موجودة!");
                 });
             }
         }
 
-        function triggerGameStart() {
-            if(myPlayerId !== 'p1') return;
-            db.ref('rooms/' + currentRoomId).update({ status: "playing" });
-        }
+        function triggerGameStart() { if(myPlayerId === 'p1') db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
 
         function listenToRoomChanges() {
-            db.ref('rooms/' + currentRoomId).on('value', snapshot => {
-                const room = snapshot.val();
+            db.ref('rooms/' + currentRoomId).on('value', snap => {
+                const room = snap.val();
                 if(!room) return;
-
-                if(room.status === "waiting" || room.status === "full") updateLobbyUI(room.players);
-                
-                if(room.status === "playing") {
-                    if(!isGameStartedLocally) initGameplayUI(room.players);
-                    renderOpponentBlocks(room); // تحديث شاشة الخصم فقط
+                if(room.status === "waiting" || room.status === "full") {
+                    document.getElementById('player-mesh').innerHTML = (room.players.p1 ? generateLobbyCard("HOST", room.players.p1) : '') + (room.players.p2 ? generateLobbyCard("PARTY", room.players.p2) : '');
+                }
+                if(room.status === "playing" && !isGameStartedLocally) {
+                    isGameStartedLocally = true;
+                    // نقل اللاعبين لشاشة التعليمات أولاً
+                    switchScreen('screen-instructions');
+                }
+                if(room.status === "playing" && engine) {
                     updateHeaders(room.players);
                 }
-
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
-                    clearInterval(gameLoopInterval);
+                    if(runner) Runner.stop(runner); // إيقاف الفيزياء
                     initVotingUI(room.players);
                 }
-                if(room.status === "voting") updateVotes(room.votes);
             });
-        }
 
-        function updateLobbyUI(players) {
-            const grid = document.getElementById('player-mesh');
-            let html = '';
-            if(players.p1) html += generateLobbyCard("HOST", players.p1);
-            if(players.p2) html += generateLobbyCard("PARTY", players.p2);
-            grid.innerHTML = html;
+            // الاستماع لحركة الخصم (نستقبل مواقع القطع الجاهزة ونرسمها فقط)
+            const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
+            db.ref(`rooms/${currentRoomId}/physics_${oppId}`).on('value', snap => {
+                if(!engine) return;
+                const data = snap.val();
+                if(!data) return;
+                
+                Object.values(data).forEach(bData => {
+                    if(!oppPlacedBlocksMap[bData.id]) {
+                        // إنشاء قطعة الخصم كمجسم ثابت (isStatic) عشان ما تتداخل مع قطعي
+                        let b = createTetromino(bData.type, bData.x, bData.y, true);
+                        oppPlacedBlocksMap[bData.id] = b;
+                        Composite.add(engine.world, b);
+                    } else {
+                        // تحديث موقعها إذا تحركت أو طاحت
+                        Body.setPosition(oppPlacedBlocksMap[bData.id], {x: bData.x, y: bData.y});
+                        Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
+                    }
+                });
+            });
         }
 
         function generateLobbyCard(label, data) {
-            return `
-                <div class="lobby-card">
-                    <span class="host-indicator">${label}</span>
-                    <div class="avatar-frame-wrapper">
-                        <div class="ornament-border ornament-${data.ornament}"></div>
-                        <div class="core-avatar" style="background-image: url('${animeHeroes[data.hero].url}')"></div>
-                    </div>
-                    <div class="player-tag-name">${data.name}</div>
-                </div>`;
-        }
-
-        function initGameplayUI(players) {
-            isGameStartedLocally = true;
-            switchScreen('screen-gameplay');
-
-            // ربط الكيبورد للتحكم
-            document.onkeydown = function(e) {
-                if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
-                if (e.key === 'ArrowDown' || e.key === 's') dropActive();
-                if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-25);
-                if (e.key === 'ArrowRight' || e.key === 'd') moveActive(25);
-            };
-
-            // تشغيل محرك اللعب الفيزيائي المحلي الخاص باللاعب
-            spawnNewBlock();
-            gameLoopInterval = setInterval(gameLoop, 50);
-
-            // تشغيل محرك المضيف للتأكد من حالة الفوز
-            if(myPlayerId === 'p1') startHostEngine();
+            return `<div class="lobby-card"><span class="host-indicator">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar" style="background-image: url('${animeHeroes[data.hero].url}')"></div></div><div class="player-tag-name">${data.name}</div></div>`;
         }
 
         function updateHeaders(players) {
-            let headerHtml = '';
+            let html = '';
             ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) {
-                    headerHtml += `
-                    <div class="header-ui-card">
-                        <span class="name">${players[pid].name}</span>
-                        <span class="score">${players[pid].placedCount || 0} Blocks</span>
-                    </div>`;
-                }
+                if(players[pid]) html += `<div class="header-ui-card"><span class="name">${players[pid].name}</span><span class="score">${players[pid].score || 0}</span></div>`;
             });
-            document.getElementById('ingame-ui-header').innerHTML = headerHtml;
+            document.getElementById('ingame-ui-header').innerHTML = html;
         }
 
-        // ==========================================
-        // محرك الفيزياء واكتشاف الاصطدام (Collision)
-        // ==========================================
+        // ===============================================
+        // زر بداية اللعب الفعلي (بعد التعليمات)
+        // ===============================================
+        function startActualGame() {
+            switchScreen('screen-gameplay');
+            initPhysicsEngine();
+            
+            // تحكم الكيبورد
+            document.onkeydown = function(e) {
+                if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
+                if (e.key === 'ArrowDown' || e.key === 's') dropActive();
+                if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-1);
+                if (e.key === 'ArrowRight' || e.key === 'd') moveActive(1);
+            };
+        }
+
+        // ===============================================
+        // محرك الفيزياء Matter.js
+        // ===============================================
+        function initPhysicsEngine() {
+            engine = Engine.create();
+            engine.world.gravity.y = 1.2; // جاذبية مناسبة
+
+            const canvas = document.getElementById('physics-canvas');
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            render = Render.create({
+                canvas: canvas,
+                engine: engine,
+                options: {
+                    width: w, height: h,
+                    wireframes: false, // عرض الألوان الحقيقية
+                    background: 'transparent' // عشان تظهر صورة الموقع اللي ورا
+                }
+            });
+
+            // تحديد أماكن أبراج اللاعبين
+            myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
+            oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
+
+            // إنشاء قاعدة البرج الخاصة بي (مجسم ثابت) لونه خشبي
+            const myBase = Bodies.rectangle(myTowerX, h - 100, 150, 40, { isStatic: true, render: { fillStyle: '#5d4037' } });
+            // إنشاء قاعدة الخصم
+            const oppBase = Bodies.rectangle(oppTowerX, h - 100, 150, 40, { isStatic: true, render: { fillStyle: '#5d4037' } });
+            
+            Composite.add(engine.world, [myBase, oppBase]);
+
+            Render.run(render);
+            runner = Runner.create();
+            Runner.run(runner, engine);
+
+            spawnNewBlock();
+
+            // إرسال الإحداثيات لفايربيس كل 100 ملي ثانية (لضمان المزامنة)
+            setInterval(syncMyPhysicsToFirebase, 100);
+        }
+
+        // مصنع القطع (Tetrominoes) في محرك الفيزياء
+        function createTetromino(type, x, y, isStaticOption) {
+            const s = 25; // حجم المربع الواحد
+            const opt = { isStatic: isStaticOption, friction: 0.9, restitution: 0.05, density: 0.005, render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } };
+            let body;
+            
+            // تصميم الأشكال باستخدام تجميع المربعات (Parts) عشان تكون دقيقة بالفيزياء
+            switch(type) {
+                case 'I': body = Bodies.rectangle(x, y, s*4, s, opt); break;
+                case 'O': body = Bodies.rectangle(x, y, s*2, s*2, opt); break;
+                case 'T': body = Body.create({parts: [Bodies.rectangle(x, y+s/2, s*3, s, opt), Bodies.rectangle(x, y-s/2, s, s, opt)], ...opt}); break;
+                case 'L': body = Body.create({parts: [Bodies.rectangle(x-s/2, y, s, s*3, opt), Bodies.rectangle(x+s/2, y+s, s, s, opt)], ...opt}); break;
+                case 'J': body = Body.create({parts: [Bodies.rectangle(x+s/2, y, s, s*3, opt), Bodies.rectangle(x-s/2, y+s, s, s, opt)], ...opt}); break;
+                case 'S': body = Body.create({parts: [Bodies.rectangle(x+s/2, y-s/2, s*2, s, opt), Bodies.rectangle(x-s/2, y+s/2, s*2, s, opt)], ...opt}); break;
+                case 'Z': body = Body.create({parts: [Bodies.rectangle(x-s/2, y-s/2, s*2, s, opt), Bodies.rectangle(x+s/2, y+s/2, s*2, s, opt)], ...opt}); break;
+            }
+            body.myType = type;
+            body.myId = Date.now() + Math.random(); // رقم تعريفي مميز للقطعة
+            return body;
+        }
 
         function spawnNewBlock() {
-            const randType = TETROMINOES[Math.floor(Math.random() * TETROMINOES.length)];
-            myActiveBlock = {
-                type: randType,
-                x: 45, // يبدأ من منتصف القاعدة تقريباً
-                y: 500, // الارتفاع
-                rotation: 0
-            };
-            blockFallSpeed = 4; // إرجاع السرعة للطبيعي
-            renderMyScreen();
+            const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+            // القطعة الجديدة تكون معلقة بالهواء (isStatic = true) لين يقرر اللاعب ينزلها
+            myActiveBlock = createTetromino(randType, myTowerX, 100, true);
+            Composite.add(engine.world, myActiveBlock);
         }
 
-        function createDOMBlock(blockData, isFalling = false) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'tetromino';
-            wrapper.style.left = `${blockData.x}px`;
-            wrapper.style.bottom = `${blockData.y}px`;
-            wrapper.style.transform = `rotate(${blockData.rotation}deg)`;
-            
-            blockData.type.blocks.forEach(pos => {
-                const mini = document.createElement('div');
-                mini.className = 'mini-block';
-                mini.style.backgroundColor = blockData.type.color;
-                mini.style.left = `${pos.x}px`;
-                mini.style.bottom = `${pos.y}px`;
-                wrapper.appendChild(mini);
-            });
-            return wrapper;
-        }
-
-        function checkCollisionDOM() {
-            const activeNode = document.getElementById('active-falling');
-            if(!activeNode) return false;
-            
-            const activeMinis = activeNode.querySelectorAll('.mini-block');
-            const baseNode = document.querySelector(`#tower-${myPlayerId} .tower-base`);
-            const baseRect = baseNode.getBoundingClientRect();
-            
-            // 1. التحقق من الاصطدام بالأرضية (القاعدة الخشبية)
-            for(let mini of activeMinis) {
-                let rect = mini.getBoundingClientRect();
-                if (rect.bottom >= baseRect.top + 5) { // +5 للغوص قليلاً في العشب
-                    return true;
-                }
-            }
-            
-            // 2. التحقق من الاصطدام بالقطع المبنية مسبقاً
-            const container = document.getElementById(`${myPlayerId}-blocks`);
-            const placedMinis = container.querySelectorAll('.tetromino:not(#active-falling) .mini-block');
-            
-            for(let aMini of activeMinis) {
-                let aRect = aMini.getBoundingClientRect();
-                for(let pMini of placedMinis) {
-                    let pRect = pMini.getBoundingClientRect();
-                    // كشف تقاطع المربعات (مع هامش بسيط لمنع الاحتكاك الوهمي)
-                    if (aRect.left + 2 < pRect.right &&
-                        aRect.right - 2 > pRect.left &&
-                        aRect.bottom > pRect.top + 2 &&
-                        aRect.top < pRect.bottom - 2) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function gameLoop() {
-            if(!myActiveBlock) return;
-
-            let oldY = myActiveBlock.y;
-            myActiveBlock.y -= blockFallSpeed;
-            renderMyScreen(); 
-
-            // إذا حصل اصطدام، نرجع القطعة لمكانها قبل الاصطدام بملي ثانية ونثبتها
-            if(checkCollisionDOM()) {
-                myActiveBlock.y = oldY;
-                renderMyScreen(); 
-                
-                // إضافة ميلان عشوائي خفيف لإعطاء تأثير برج غير مستقر زي تريكي تاورز
-                myActiveBlock.rotation += (Math.random() * 8 - 4); 
-                
-                saveBlockToFirebase(myActiveBlock);
-                myActiveBlock = null;
-                setTimeout(spawnNewBlock, 150); // تأخير بسيط قبل نزول القطعة الجديدة
-            }
-        }
-
-        function saveBlockToFirebase(block) {
-            // حفظ بيانات القطعة في الداتا بيس
-            db.ref(`rooms/${currentRoomId}/blocks_${myPlayerId}`).push().set({
-                typeIndex: TETROMINOES.indexOf(block.type),
-                x: block.x,
-                y: block.y,
-                rotation: block.rotation
-            });
-            
-            localPlacedCount++;
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedCount: localPlacedCount });
-        }
-
+        // أزرار التحكم
         function moveActive(dir) {
-            if(!myActiveBlock) return;
-            myActiveBlock.x += dir;
-            // حماية من الخروج عن الشاشة
-            if(myActiveBlock.x < -30) myActiveBlock.x = -30;
-            if(myActiveBlock.x > 120) myActiveBlock.x = 120;
-            
-            renderMyScreen();
-            if(checkCollisionDOM()) {
-                myActiveBlock.x -= dir; // التراجع لو خبط في شيء
-                renderMyScreen();
-            }
+            if(!myActiveBlock || !myActiveBlock.isStatic) return;
+            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 25), y: myActiveBlock.position.y });
         }
 
         function rotateActive() {
-            if(!myActiveBlock) return;
-            myActiveBlock.rotation += 90;
-            renderMyScreen();
-            if(checkCollisionDOM()) {
-                myActiveBlock.rotation -= 90; // التراجع لو اللفة بتخليه يخترق قطعة
-                renderMyScreen();
-            }
+            if(!myActiveBlock || !myActiveBlock.isStatic) return;
+            Body.setAngle(myActiveBlock, myActiveBlock.angle + (Math.PI / 2));
         }
 
         function dropActive() {
-            if(!myActiveBlock) return;
-            blockFallSpeed = 18; // تسريع السقوط
-        }
+            if(!myActiveBlock || !myActiveBlock.isStatic) return;
+            
+            // تحويل القطعة لـ Dynamic عشان يبدأ يحسبها محرك الفيزياء وتطيح
+            Body.setStatic(myActiveBlock, false);
+            myPlacedBlocks.push(myActiveBlock);
+            myActiveBlock = null;
 
-        document.addEventListener('keyup', (e) => { 
-            if (e.key === 'ArrowDown' || e.key === 's') blockFallSpeed = 4; // إرجاع السرعة إذا رفع يده
-        });
+            // تحديث السكور
+            let currentScore = myPlacedBlocks.length;
+            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ score: currentScore });
 
-        // رسم شاشة اللاعب (المحلي)
-        function renderMyScreen() {
-            const myContainer = document.getElementById(`${myPlayerId}-blocks`);
-            const fallingNode = document.getElementById('active-falling');
-            if(fallingNode) fallingNode.remove();
-
-            if(myActiveBlock) {
-                const domNode = createDOMBlock(myActiveBlock, true);
-                domNode.id = 'active-falling';
-                myContainer.appendChild(domNode);
+            // الفوز إذا وصل 20 قطعة ولم تسقط (بشكل تقريبي)
+            if(currentScore >= 20) {
+                db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
+            } else {
+                // إنزال القطعة اللي بعدها بعد ثانية
+                setTimeout(spawnNewBlock, 1000);
             }
         }
 
-        // رسم شاشة الخصم (من الإنترنت) بطريقة محسنة لا تسبب تعليق
-        function renderOpponentBlocks(room) {
-            ['p1', 'p2'].forEach(pid => {
-                if(pid === myPlayerId) return; // شاشتي ترسم محلياً عشان ما تعلق
-                
-                const blocksArray = room[`blocks_${pid}`];
-                const container = document.getElementById(`${pid}-blocks`);
-                
-                if(blocksArray) {
-                    const currentDOMCount = container.children.length;
-                    const dbBlocks = Object.values(blocksArray);
-                    
-                    // إضافة القطع الجديدة فقط للخصم
-                    if(dbBlocks.length > currentDOMCount) {
-                        for(let i = currentDOMCount; i < dbBlocks.length; i++) {
-                            const bData = dbBlocks[i];
-                            const builtBlock = {
-                                type: TETROMINOES[bData.typeIndex],
-                                x: bData.x,
-                                y: bData.y,
-                                rotation: bData.rotation
-                            };
-                            container.appendChild(createDOMBlock(builtBlock, false));
-                        }
-                    }
+        // رفع بيانات قطعي لفايربيس عشان يشوفها الخصم
+        function syncMyPhysicsToFirebase() {
+            // نجمع القطع اللي طاحت واللي لسى تنبني
+            let dataToSend = [];
+            
+            // إضافة القطعة المتحركة حالياً (عشان يشوفك وأنت تفكر وين تحطها)
+            if(myActiveBlock) {
+                dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, x: myActiveBlock.position.x, y: myActiveBlock.position.y, angle: myActiveBlock.angle });
+            }
+            
+            // إضافة القطع المبنية
+            myPlacedBlocks.forEach(b => {
+                // ميزة: إذا القطعة طاحت برى الشاشة (خسرتها)، ما نرسلها عشان ما تثقل السيرفر
+                if(b.position.y < window.innerHeight + 200) {
+                    dataToSend.push({ id: b.myId, type: b.myType, x: b.position.x, y: b.position.y, angle: b.angle });
                 }
             });
-        }
 
-        function startHostEngine() {
-            // المضيف يفحص فقط إذا وصل أحد لـ 20 قطعة لإنهاء المباراة
-            let hostLoop = setInterval(() => {
-                db.ref(`rooms/${currentRoomId}`).once('value').then(snap => {
-                    let room = snap.val();
-                    if(!room || room.status !== 'playing') return;
-
-                    let p1Won = room.players.p1 && room.players.p1.placedCount >= 20;
-                    let p2Won = room.players.p2 && room.players.p2.placedCount >= 20;
-
-                    if(p1Won || p2Won) {
-                        db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
-                        clearInterval(hostLoop);
-                    }
-                });
-            }, 1000);
+            db.ref(`rooms/${currentRoomId}/physics_${myPlayerId}`).set(dataToSend);
         }
 
         /* نظام التصويت النهائي */
@@ -701,7 +493,6 @@
                 if(players[pid]) {
                     html += `
                     <div class="vote-card" id="vote-card-${pid}" onclick="castVote('${pid}')">
-                        <span class="mvp-badge" id="badge-${pid}">WINNER👑</span>
                         <div class="avatar-frame-wrapper">
                             <div class="ornament-border ornament-${players[pid].ornament}"></div>
                             <div class="core-avatar" style="background-image: url('${animeHeroes[players[pid].hero].url}')"></div>
@@ -712,9 +503,7 @@
             });
             document.getElementById('vote-grid-container').innerHTML = html;
         }
-
         function castVote(targetPid) { db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid); }
-
         function updateVotes(votesObj) {
             if(!votesObj) return;
             document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('voted'));
@@ -722,10 +511,7 @@
             for(let voter in votesObj) counts[votesObj[voter]]++;
             ['p1', 'p2'].forEach(pid => {
                 let el = document.getElementById(`votecount-${pid}`);
-                if(el) {
-                    el.innerText = `${counts[pid]} Votes`;
-                    if(counts[pid] > 0) document.getElementById(`vote-card-${pid}`).classList.add('voted');
-                }
+                if(el) { el.innerText = `${counts[pid]} Votes`; if(counts[pid] > 0) document.getElementById(`vote-card-${pid}`).classList.add('voted'); }
             });
         }
     </script>
