@@ -24,7 +24,7 @@
         .game-container { position: relative; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.4); display: flex; }
 
         .screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 20; width: 100%; height: 100%; transition: opacity 0.3s ease; }
-        .hidden { opacity: 0; pointer-events: none; display: none !important; }
+        .hidden { opacity: 0 !important; pointer-events: none !important; display: none !important; }
 
         #screen-start { align-items: flex-end; justify-content: flex-end; padding-bottom: 8%; padding-right: 10%; }
 
@@ -68,7 +68,8 @@
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
         .back-mini-btn:hover { color: #ff4a4a; }
 
-        /* ======== شاشة التعليمات الإلزامية ======== */
+        /* نافذة التعليمات المنبثقة في اللوبي */
+        #instructions-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .instructions-panel { background: rgba(10, 10, 15, 0.95); border: 2px solid #00f0ff; border-radius: 15px; padding: 30px; color: #fff; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,240,255,0.2); display: flex; flex-direction: column; gap: 15px; }
         .instructions-panel h2 { color: #ffdf00; font-family: 'Cairo'; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,223,0,0.5); }
         .instructions-panel p { font-size: 1.1rem; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-family: 'Cairo'; }
@@ -77,7 +78,6 @@
 
         /* ======== ساحة اللعب والفيزياء ======== */
         #game-canvas-container { position: relative; width: 100%; height: 100%; }
-        /* الكانفاس الخاص بالفيزياء سيكون في الخلفية ليعرض اللعب */
         #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
         
         .ingame-ui-header { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 15; pointer-events: none; }
@@ -111,26 +111,26 @@
                     </div>
                     
                     <div style="position: relative;">
-                        <button class="select-trigger-btn" onclick="toggleMenu('pop-hero')">
+                        <button class="select-trigger-btn" onclick="toggleMenu(event, 'pop-hero')">
                             <span>CHOOSE HERO AVATAR</span> <i class="fa-solid fa-chevron-down"></i>
                         </button>
                         <div class="pop-menu" id="pop-hero">
-                            <div class="pop-opt selected" onclick="changeHero('shadow')">SHADOW NINJA</div>
-                            <div class="pop-opt" onclick="changeHero('blaze')">BLAZE SAMURAI</div>
-                            <div class="pop-opt" onclick="changeHero('frost')">FROST MAGE</div>
-                            <div class="pop-opt" onclick="changeHero('volt')">VOLT STRIKER</div>
+                            <div class="pop-opt selected" onclick="changeHero('shadow', this)">SHADOW NINJA</div>
+                            <div class="pop-opt" onclick="changeHero('blaze', this)">BLAZE SAMURAI</div>
+                            <div class="pop-opt" onclick="changeHero('frost', this)">FROST MAGE</div>
+                            <div class="pop-opt" onclick="changeHero('volt', this)">VOLT STRIKER</div>
                         </div>
                     </div>
 
                     <div style="position: relative;">
-                        <button class="select-trigger-btn" onclick="toggleMenu('pop-tier')">
+                        <button class="select-trigger-btn" onclick="toggleMenu(event, 'pop-tier')">
                             <span>CHOOSE BORDER ORNAMENT</span> <i class="fa-solid fa-chevron-down"></i>
                         </button>
                         <div class="pop-menu" id="pop-tier">
-                            <div class="pop-opt selected" onclick="changeOrnament('diamond')">DIAMOND SHINE 💎</div>
-                            <div class="pop-opt" onclick="changeOrnament('galaxy')">GALAXY & TREES 🌌</div>
-                            <div class="pop-opt" onclick="changeOrnament('bronze')">BRONZE WINGS</div>
-                            <div class="pop-opt" onclick="changeOrnament('gold')">MYTHIC GOLD ★</div>
+                            <div class="pop-opt selected" onclick="changeOrnament('diamond', this)">DIAMOND SHINE 💎</div>
+                            <div class="pop-opt" onclick="changeOrnament('galaxy', this)">GALAXY & TREES 🌌</div>
+                            <div class="pop-opt" onclick="changeOrnament('bronze', this)">BRONZE WINGS</div>
+                            <div class="pop-opt" onclick="changeOrnament('gold', this)">MYTHIC GOLD ★</div>
                         </div>
                     </div>
                 </div>
@@ -167,20 +167,21 @@
                 </div>
                 <div class="central-player-grid" id="player-mesh"></div>
                 <div class="lobby-buttons" style="display:flex; flex-direction:column; align-items:center; gap:15px;">
+                    <button class="sony-btn" style="color: #00f0ff;" onclick="showInstructions()">HOW TO PLAY 📖</button>
                     <button class="sony-btn" id="btn-launch-match" style="color: #00ff88; display:none;" onclick="triggerGameStart()">LAUNCH MATCH</button>
                     <button class="sony-btn back-mini-btn" onclick="location.reload()">LEAVE LOBBY</button>
                 </div>
             </div>
         </div>
 
-        <div id="screen-instructions" class="screen hidden">
+        <div id="instructions-modal" class="hidden">
             <div class="instructions-panel">
                 <h2>🎮 كيف تلعب Tricky Towers؟</h2>
                 <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
                 <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
                 <p>إسقاط القطعة بسرعة <span>[ S ] أو [ ⬇️ ]</span></p>
                 <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! إذا حطيت القطعة على الطرف، راح يختل التوازن وتطيح!</p>
-                <button class="sony-btn" onclick="startActualGame()" style="color:#00f0ff; margin-top:15px;">موافق، ابدأ اللعب!</button>
+                <button class="sony-btn" onclick="hideInstructions()" style="color:#ffdf00; margin-top:15px; font-size:1rem;">إغلاق / CLOSE</button>
             </div>
         </div>
 
@@ -240,24 +241,41 @@
         let myActiveBlock = null;
         let myTowerX = 0, oppTowerX = 0;
         let myPlacedBlocks = [];
-        let oppPlacedBlocksMap = {}; // لحفظ قطع الخصم ورسمها
+        let oppPlacedBlocksMap = {}; 
 
-        // ألوان القطع
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
 
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
-        // دوال القوائم
-        function toggleMenu(menuId) { const menu = document.getElementById(menuId); const isVisible = menu.style.display === 'flex'; document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); menu.style.display = isVisible ? 'none' : 'flex'; event.stopPropagation(); }
+        // تم إصلاح مشكلة القوائم هنا
+        function toggleMenu(e, menuId) { 
+            e.stopPropagation(); // منع الإغلاق التلقائي
+            const menu = document.getElementById(menuId); 
+            const isVisible = menu.style.display === 'flex'; 
+            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
+            menu.style.display = isVisible ? 'none' : 'flex'; 
+        }
         document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
-        function changeHero(key) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
-        function changeOrnament(tier) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(el => el.classList.remove('selected')); event.target.classList.add('selected'); }
-        function switchScreen(screenId) { document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.style.display = 'none'; }); const activeScreen = document.getElementById(screenId); activeScreen.classList.remove('hidden'); activeScreen.style.display = 'flex'; }
+        
+        function changeHero(key, el) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); }
+        function changeOrnament(tier, el) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); }
+        
+        function switchScreen(screenId) { document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); }); document.getElementById(screenId).classList.remove('hidden'); }
+        
         function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); }
         function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
 
-        // إنشاء الروم
+        // التحكم في نافذة التعليمات
+        function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
+        function hideInstructions() { document.getElementById('instructions-modal').classList.add('hidden'); }
+
+        function generateProRoomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
+            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            return code;
+        }
+
         function buildLobby(actionType) {
             const inputName = document.getElementById('player-name').value.trim();
             if(!inputName) return alert("Please type your profile name first!");
@@ -266,7 +284,7 @@
 
             if(actionType === 'create') {
                 document.getElementById('btn-create').innerText = "LOADING...";
-                currentRoomId = [...Array(5)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
+                currentRoomId = generateProRoomCode();
                 myPlayerId = "p1"; 
                 db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
                     document.getElementById('btn-launch-match').style.display = 'block'; 
@@ -284,7 +302,10 @@
                         db.ref('rooms/' + currentRoomId).update({ status: "full" });
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
                         switchScreen('screen-lobby'); listenToRoomChanges();
-                    } else alert("الغرفة غير موجودة!");
+                    } else {
+                        alert("الغرفة غير موجودة!");
+                        document.getElementById('btn-join').innerText = "ENTER";
+                    }
                 });
             }
         }
@@ -295,24 +316,29 @@
             db.ref('rooms/' + currentRoomId).on('value', snap => {
                 const room = snap.val();
                 if(!room) return;
+                
                 if(room.status === "waiting" || room.status === "full") {
                     document.getElementById('player-mesh').innerHTML = (room.players.p1 ? generateLobbyCard("HOST", room.players.p1) : '') + (room.players.p2 ? generateLobbyCard("PARTY", room.players.p2) : '');
                 }
+                
                 if(room.status === "playing" && !isGameStartedLocally) {
                     isGameStartedLocally = true;
-                    // نقل اللاعبين لشاشة التعليمات أولاً
-                    switchScreen('screen-instructions');
+                    // إغلاق التعليمات إجبارياً لو كانت مفتوحة وبدء الجيم
+                    hideInstructions();
+                    initGameplayUI(room.players);
                 }
+                
                 if(room.status === "playing" && engine) {
                     updateHeaders(room.players);
                 }
+                
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
-                    if(runner) Runner.stop(runner); // إيقاف الفيزياء
+                    if(runner) Runner.stop(runner); // إيقاف الفيزياء عند الفوز
                     initVotingUI(room.players);
                 }
             });
 
-            // الاستماع لحركة الخصم (نستقبل مواقع القطع الجاهزة ونرسمها فقط)
+            // الاستماع لحركة الخصم ورسم قطعه
             const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
             db.ref(`rooms/${currentRoomId}/physics_${oppId}`).on('value', snap => {
                 if(!engine) return;
@@ -321,12 +347,10 @@
                 
                 Object.values(data).forEach(bData => {
                     if(!oppPlacedBlocksMap[bData.id]) {
-                        // إنشاء قطعة الخصم كمجسم ثابت (isStatic) عشان ما تتداخل مع قطعي
-                        let b = createTetromino(bData.type, bData.x, bData.y, true);
+                        let b = createTetromino(bData.type, bData.x, bData.y, true); // ثابت للخصم عشان ما يأثر علي
                         oppPlacedBlocksMap[bData.id] = b;
                         Composite.add(engine.world, b);
                     } else {
-                        // تحديث موقعها إذا تحركت أو طاحت
                         Body.setPosition(oppPlacedBlocksMap[bData.id], {x: bData.x, y: bData.y});
                         Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
                     }
@@ -347,11 +371,10 @@
         }
 
         // ===============================================
-        // زر بداية اللعب الفعلي (بعد التعليمات)
+        // تهيئة اللعبة ومحرك الفيزياء
         // ===============================================
-        function startActualGame() {
+        function initGameplayUI(players) {
             switchScreen('screen-gameplay');
-            initPhysicsEngine();
             
             // تحكم الكيبورد
             document.onkeydown = function(e) {
@@ -360,14 +383,9 @@
                 if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-1);
                 if (e.key === 'ArrowRight' || e.key === 'd') moveActive(1);
             };
-        }
 
-        // ===============================================
-        // محرك الفيزياء Matter.js
-        // ===============================================
-        function initPhysicsEngine() {
             engine = Engine.create();
-            engine.world.gravity.y = 1.2; // جاذبية مناسبة
+            engine.world.gravity.y = 1.2; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -376,21 +394,15 @@
             render = Render.create({
                 canvas: canvas,
                 engine: engine,
-                options: {
-                    width: w, height: h,
-                    wireframes: false, // عرض الألوان الحقيقية
-                    background: 'transparent' // عشان تظهر صورة الموقع اللي ورا
-                }
+                options: { width: w, height: h, wireframes: false, background: 'transparent' }
             });
 
-            // تحديد أماكن أبراج اللاعبين
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            // إنشاء قاعدة البرج الخاصة بي (مجسم ثابت) لونه خشبي
-            const myBase = Bodies.rectangle(myTowerX, h - 100, 150, 40, { isStatic: true, render: { fillStyle: '#5d4037' } });
-            // إنشاء قاعدة الخصم
-            const oppBase = Bodies.rectangle(oppTowerX, h - 100, 150, 40, { isStatic: true, render: { fillStyle: '#5d4037' } });
+            // إنشاء قاعدة البرج
+            const myBase = Bodies.rectangle(myTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
+            const oppBase = Bodies.rectangle(oppTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             
             Composite.add(engine.world, [myBase, oppBase]);
 
@@ -400,17 +412,14 @@
 
             spawnNewBlock();
 
-            // إرسال الإحداثيات لفايربيس كل 100 ملي ثانية (لضمان المزامنة)
             setInterval(syncMyPhysicsToFirebase, 100);
         }
 
-        // مصنع القطع (Tetrominoes) في محرك الفيزياء
         function createTetromino(type, x, y, isStaticOption) {
-            const s = 25; // حجم المربع الواحد
+            const s = 25; 
             const opt = { isStatic: isStaticOption, friction: 0.9, restitution: 0.05, density: 0.005, render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } };
             let body;
             
-            // تصميم الأشكال باستخدام تجميع المربعات (Parts) عشان تكون دقيقة بالفيزياء
             switch(type) {
                 case 'I': body = Bodies.rectangle(x, y, s*4, s, opt); break;
                 case 'O': body = Bodies.rectangle(x, y, s*2, s*2, opt); break;
@@ -421,21 +430,19 @@
                 case 'Z': body = Body.create({parts: [Bodies.rectangle(x-s/2, y-s/2, s*2, s, opt), Bodies.rectangle(x+s/2, y+s/2, s*2, s, opt)], ...opt}); break;
             }
             body.myType = type;
-            body.myId = Date.now() + Math.random(); // رقم تعريفي مميز للقطعة
+            body.myId = Date.now() + Math.random(); 
             return body;
         }
 
         function spawnNewBlock() {
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            // القطعة الجديدة تكون معلقة بالهواء (isStatic = true) لين يقرر اللاعب ينزلها
             myActiveBlock = createTetromino(randType, myTowerX, 100, true);
             Composite.add(engine.world, myActiveBlock);
         }
 
-        // أزرار التحكم
         function moveActive(dir) {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
-            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 25), y: myActiveBlock.position.y });
+            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 30), y: myActiveBlock.position.y });
         }
 
         function rotateActive() {
@@ -445,43 +452,30 @@
 
         function dropActive() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
-            
-            // تحويل القطعة لـ Dynamic عشان يبدأ يحسبها محرك الفيزياء وتطيح
             Body.setStatic(myActiveBlock, false);
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
 
-            // تحديث السكور
             let currentScore = myPlacedBlocks.length;
             db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ score: currentScore });
 
-            // الفوز إذا وصل 20 قطعة ولم تسقط (بشكل تقريبي)
             if(currentScore >= 20) {
                 db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
             } else {
-                // إنزال القطعة اللي بعدها بعد ثانية
                 setTimeout(spawnNewBlock, 1000);
             }
         }
 
-        // رفع بيانات قطعي لفايربيس عشان يشوفها الخصم
         function syncMyPhysicsToFirebase() {
-            // نجمع القطع اللي طاحت واللي لسى تنبني
             let dataToSend = [];
-            
-            // إضافة القطعة المتحركة حالياً (عشان يشوفك وأنت تفكر وين تحطها)
             if(myActiveBlock) {
                 dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, x: myActiveBlock.position.x, y: myActiveBlock.position.y, angle: myActiveBlock.angle });
             }
-            
-            // إضافة القطع المبنية
             myPlacedBlocks.forEach(b => {
-                // ميزة: إذا القطعة طاحت برى الشاشة (خسرتها)، ما نرسلها عشان ما تثقل السيرفر
                 if(b.position.y < window.innerHeight + 200) {
                     dataToSend.push({ id: b.myId, type: b.myType, x: b.position.x, y: b.position.y, angle: b.angle });
                 }
             });
-
             db.ref(`rooms/${currentRoomId}/physics_${myPlayerId}`).set(dataToSend);
         }
 
