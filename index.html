@@ -4,91 +4,84 @@
     <meta charset="UTF-8">
     <title>Mayo Bet - احترافية المراهنة</title>
     <style>
-        body { background: #1a1a1a; color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        body { background: #1a1a1a; color: #fff; font-family: 'Cairo', sans-serif; margin: 0; overflow: hidden; }
+        .screen { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        /* طاولة 3D */
-        .table-container { 
-            width: 800px; height: 400px; background: #34495e; margin-top: 100px;
-            transform: perspective(1000px) rotateX(40deg); border-radius: 50px;
-            display: flex; justify-content: space-around; align-items: center;
-            border: 15px solid #2c3e50; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .bet-box { width: 200px; height: 250px; background: #2c3e50; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* تصميم الواجهة */
+        .card { background: #2f3640; padding: 30px; border-radius: 20px; border: 2px solid #7f8c8d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 400px; text-align: center; }
+        .input-pro { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #dcdde1; }
+        .btn-pro { background: #e84118; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
         
-        /* شخصيات اللاعبين (ستايل سوني) */
-        .player-3d { width: 80px; height: 120px; background: #95a5a6; border-radius: 10px; position: absolute; transition: 0.5s; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
-        .player-3d::after { content: '👤'; font-size: 40px; }
-
-        /* التحكم */
-        .controls { background: #333; padding: 20px; border-radius: 20px; margin-top: 50px; display: flex; gap: 20px; }
-        .bet-btn { background: #e67e22; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; color: white; }
+        /* الطاولة والشخصيات */
+        .table-3d { width: 700px; height: 350px; background: #2f3640; margin: 50px auto; border-radius: 50px; transform: perspective(800px) rotateX(40deg); border: 15px solid #7f8c8d; }
+        .host-model { width: 100px; position: absolute; top: 100px; left: 50%; transform: translateX(-50%); }
     </style>
 </head>
 <body>
 
-    <div id="lobby">
+<div id="setup" class="screen">
+    <div class="card">
         <h1>Mayo Bet 🎮</h1>
-        <button onclick="join('host')">المقدم</button>
-        <button onclick="join('player')">متسابق</button>
+        <input id="playerName" class="input-pro" placeholder="اكتب اسمك هنا...">
+        <div id="emojiPicker" style="margin: 15px;">
+            <span onclick="setEmoji('😎')" style="cursor:pointer; font-size: 2rem;">😎</span>
+            <span onclick="setEmoji('🤖')" style="cursor:pointer; font-size: 2rem;">🤖</span>
+            <span onclick="setEmoji('🦁')" style="cursor:pointer; font-size: 2rem;">🦁</span>
+        </div>
+        <button class="btn-pro" onclick="createRoom()">إنشاء غرفه</button>
+        <button class="btn-pro" onclick="joinRoom()">انضمام لغرفه</button>
     </div>
+</div>
 
-    <div id="game" style="display:none; width: 100%; text-align: center;">
-        <h2 id="q">السؤال: ما هي عاصمة السعودية؟</h2>
-        
-        <div class="table-container">
-            <div class="bet-box" id="box1">الرياض<div class="bet-amount">0$</div></div>
-            <div class="bet-box" id="box2">جدة<div class="bet-amount">0$</div></div>
-            <div class="bet-box" id="box3">مكة<div class="bet-amount">0$</div></div>
-            
-            <div class="player-3d" id="p1" style="left: 100px; bottom: 50px;"></div>
-            <div class="player-3d" id="p2" style="left: 400px; bottom: 50px;"></div>
-        </div>
-
-        <div id="host-controls" style="display:none;">
-            <button onclick="revealAnswer()">إظهار النتيجة</button>
-            <button onclick="nextQuestion()">السؤال التالي</button>
-        </div>
-
-        <div class="controls">
-            <button class="bet-btn" onclick="changeBet(-500)">-500</button>
-            <span id="my-bet">رهانك: 0$</span>
-            <button class="bet-btn" onclick="changeBet(500)">+500</button>
-        </div>
+<div id="game" class="screen" style="display:none;">
+    <div class="table-3d"></div>
+    <div id="hostControls" style="display:none;">
+        <button onclick="reveal()">إظهار الإجابة</button>
+        <button onclick="nextQ()">السؤال التالي</button>
     </div>
+    
+    <div style="margin-top:20px;">
+        <button onclick="bet(500)">+500</button>
+        <button onclick="bet(-500)">-500</button>
+        <span id="betAmount">رهانك: 0</span>
+    </div>
+</div>
 
-    <script>
-        let myBet = 0;
-        let isHost = false;
+<script>
+    let myEmoji = '😎';
+    let currentBet = 0;
 
-        function join(role) {
-            isHost = (role === 'host');
-            document.getElementById('lobby').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            if(isHost) document.getElementById('host-controls').style.display = 'block';
+    function setEmoji(e) { myEmoji = e; alert("تم اختيار: " + e); }
+
+    function createRoom() {
+        let name = document.getElementById('playerName').value;
+        if(!name) return alert("اكتب اسمك!");
+        localStorage.setItem('role', 'host');
+        enterGame(true);
+    }
+
+    function joinRoom() {
+        let code = prompt("أدخل كود الغرفة:");
+        if(code) {
+            localStorage.setItem('role', 'player');
+            enterGame(false);
         }
+    }
 
-        function changeBet(amount) {
-            myBet = Math.max(0, myBet + amount);
-            document.getElementById('my-bet').innerText = "رهانك: " + myBet + "$";
-        }
+    function enterGame(isHost) {
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('game').style.display = 'flex';
+        if(isHost) document.getElementById('hostControls').style.display = 'block';
+    }
 
-        function revealAnswer() {
-            alert("النتيجة: الرياض هي الصح! من أخطأ خسر رهانه.");
-        }
+    function bet(val) {
+        currentBet = Math.max(0, currentBet + val);
+        document.getElementById('betAmount').innerText = "رهانك: " + currentBet;
+    }
 
-        function nextQuestion() {
-            document.getElementById('q').innerText = "السؤال التالي: كم عدد أضلاع المثلث؟";
-        }
+    function reveal() { alert("الإجابة الصحيحة هي: الرياض"); }
+    function nextQ() { document.getElementById('q').innerText = "السؤال التالي..."; }
+</script>
 
-        // تحريك شخصيتك بالأسهم
-        let pos = 100;
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'ArrowRight') pos += 50;
-            if(e.key === 'ArrowLeft') pos -= 50;
-            document.getElementById('p1').style.left = pos + 'px';
-        });
-    </script>
 </body>
 </html>
