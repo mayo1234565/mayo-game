@@ -16,7 +16,6 @@
             height: 100%; 
             overflow: hidden; 
             background-color: #030305; 
-            /* تم استرجاع خلفيتك الأصلية هنا */
             background-image: url('./background2.png'); 
             background-size: cover; 
             background-position: center; 
@@ -28,7 +27,7 @@
             position: relative; 
             width: 100%; 
             height: 100%; 
-            background: rgba(3, 3, 5, 0.4); /* تخفيف الشفافية عشان تبان الخلفية أكثر */
+            background: rgba(3, 3, 5, 0.4); 
             display: flex; 
         }
 
@@ -92,7 +91,7 @@
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.3); }
         .back-mini-btn:hover { color: #ff4a4a; }
 
-        /* ======== تصميم ساحة اللعب الخاصة بـ Tricky Towers ======== */
+        /* ======== تصميم ساحة اللعب ======== */
         #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
         .ingame-ui-header { position: absolute; top: 15px; width: 95%; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
         .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.6); padding: 8px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
@@ -108,11 +107,10 @@
             background: linear-gradient(to bottom, #6d4c41, #3e2723); 
             position: absolute; bottom: 0px; 
             border-radius: 5px 5px 8px 8px; 
-            border-top: 10px solid #4CAF50; /* العشب الأخضر */
+            border-top: 10px solid #4CAF50; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2); 
             z-index: 10;
         }
-        /* العشب المتدلي (Vines) */
         .tower-base::before {
             content: ''; position: absolute; top: 0; left: 15px; width: 8px; height: 25px; 
             background: #4CAF50; border-radius: 0 0 5px 5px;
@@ -122,24 +120,42 @@
         .block-container { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; }
         
         /* أشكال اللعبة (Tetrominoes) */
-        .tetromino { position: absolute; transition: top 0.1s linear, left 0.1s ease; }
+        .tetromino { position: absolute; transition: top 0.05s linear, left 0.1s ease, transform 0.1s ease; transform-origin: center; }
         .mini-block { 
             width: 25px; height: 25px; 
             position: absolute; 
             border: 2px solid rgba(255,255,255,0.8); 
             border-radius: 4px; 
+            box-sizing: border-box;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
         }
-        
-        .wizard-player { position: absolute; top: -50px; width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.2); animation: float 3s ease-in-out infinite; z-index: 15; }
-        .wizard-player img { width: 100%; height: 100%; border-radius: 50%; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* لوحة التعليمات الأنيقة */
+        .instructions-panel {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 15, 0.85);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 12px;
+            padding: 15px 25px;
+            color: #fff;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none; /* عشان ما تعيق النقر */
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .instructions-panel h3 { color: #00f0ff; margin-bottom: 12px; font-family: 'Cairo'; letter-spacing: 1px; }
+        .instructions-panel p { font-size: 0.95rem; margin: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        .instructions-panel span { color: #ff4a4a; font-weight: bold; font-family: 'Orbitron'; }
 
         .mobile-controls { position: absolute; bottom: 15px; display: flex; gap: 15px; z-index: 20; }
         .ctrl-btn { width: 60px; height: 60px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;}
         .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
 
-        /* شاشة التصويت */
         .vote-grid { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; justify-content: center;}
         .vote-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s; position: relative; width: 160px; }
         .vote-card:hover, .vote-card.voted { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 25px rgba(255,215,0,0.2); }
@@ -152,6 +168,9 @@
             .tower-base { width: 100px; }
             .mobile-controls { gap: 10px; }
             .ctrl-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+            .instructions-panel { bottom: 80px; padding: 10px; }
+            .instructions-panel h3 { font-size: 1.1rem; }
+            .instructions-panel p { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -215,7 +234,6 @@
                             <button class="sony-btn back-mini-btn" onclick="hideJoinInput()" style="font-size:1.1rem;">CANCEL</button>
                         </div>
                     </div>
-
                 </div>
             </div>
             <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-start')">BACK</button>
@@ -243,13 +261,19 @@
                     <div class="tower-arena" id="tower-p1">
                         <div class="tower-base"></div>
                         <div class="block-container" id="p1-blocks"></div>
-                        <div class="wizard-player" id="wizard-p1" style="display:none;"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00" alt=""></div>
                     </div>
                     <div class="tower-arena" id="tower-p2">
                         <div class="tower-base"></div>
                         <div class="block-container" id="p2-blocks"></div>
-                        <div class="wizard-player" id="wizard-p2" style="display:none;"><img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f" alt=""></div>
                     </div>
+                </div>
+
+                <div class="instructions-panel">
+                    <h3>🎮 كيف تلعب؟</h3>
+                    <p>تحريك القطعة يمين ويسار <span>[ ⬅️ / ➡️ ] أو [ A / D ]</span></p>
+                    <p>تغيير شكل القطعة (تدوير) <span>[ ⬆️ ] أو [ W ]</span></p>
+                    <p>تسريع السقوط للأسفل <span>[ ⬇️ ] أو [ S ]</span></p>
+                    <p style="color:#ffdf00; justify-content:center; margin-top:10px; font-weight:bold; border:none;">الهدف: رص 20 قطعة لتفوز بالمباراة!</p>
                 </div>
                 
                 <div class="mobile-controls">
@@ -298,15 +322,15 @@
             'volt': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
         };
 
-        // تعريف أشكال Tetrominoes الحقيقية مع ألوانها (الحجم 25 بكسل لكل مربع صغير)
+        // الأشكال بألوانها (حجم المربع الصغير 25 بكسل)
         const TETROMINOES = [
-            { name: 'I', color: '#00f0ff', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:0, y:75}] }, // خط
-            { name: 'L', color: '#ff7f00', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:25, y:0}] }, // حرف L
-            { name: 'J', color: '#0000ff', blocks: [{x:25, y:0}, {x:25, y:25}, {x:25, y:50}, {x:0, y:0}] }, // حرف J
-            { name: 'O', color: '#ffd700', blocks: [{x:0, y:0}, {x:25, y:0}, {x:0, y:25}, {x:25, y:25}] }, // مربع
-            { name: 'T', color: '#a855f7', blocks: [{x:0, y:25}, {x:25, y:25}, {x:50, y:25}, {x:25, y:0}] }, // حرف T
-            { name: 'S', color: '#00ff88', blocks: [{x:0, y:0}, {x:25, y:0}, {x:25, y:25}, {x:50, y:25}] }, // حرف S
-            { name: 'Z', color: '#ff4a4a', blocks: [{x:0, y:25}, {x:25, y:25}, {x:25, y:0}, {x:50, y:0}] }  // حرف Z
+            { name: 'I', color: '#00f0ff', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:0, y:75}] }, 
+            { name: 'L', color: '#ff7f00', blocks: [{x:0, y:0}, {x:0, y:25}, {x:0, y:50}, {x:25, y:0}] }, 
+            { name: 'J', color: '#0000ff', blocks: [{x:25, y:0}, {x:25, y:25}, {x:25, y:50}, {x:0, y:0}] }, 
+            { name: 'O', color: '#ffd700', blocks: [{x:0, y:0}, {x:25, y:0}, {x:0, y:25}, {x:25, y:25}] }, 
+            { name: 'T', color: '#a855f7', blocks: [{x:0, y:25}, {x:25, y:25}, {x:50, y:25}, {x:25, y:0}] }, 
+            { name: 'S', color: '#00ff88', blocks: [{x:0, y:0}, {x:25, y:0}, {x:25, y:25}, {x:50, y:25}] }, 
+            { name: 'Z', color: '#ff4a4a', blocks: [{x:0, y:25}, {x:25, y:25}, {x:25, y:0}, {x:50, y:0}] }  
         ];
 
         let currentHero = 'shadow';
@@ -317,10 +341,10 @@
         let myPlayerId = null; 
         let isGameStartedLocally = false;
         
-        // متغيرات المحرك المحلي لسقوط الأشكال
         let myActiveBlock = null;
         let gameLoopInterval = null;
-        let blockFallSpeed = 3; // سرعة السقوط بالبكسل
+        let blockFallSpeed = 4; // سرعة سقوط معتدلة
+        let localPlacedCount = 0; // تتبع محلي لعدد القطع
 
         document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
 
@@ -406,7 +430,7 @@
                 
                 if(room.status === "playing") {
                     if(!isGameStartedLocally) initGameplayUI(room.players);
-                    renderOpponentBlocks(room);
+                    renderOpponentBlocks(room); // تحديث شاشة الخصم فقط
                     updateHeaders(room.players);
                 }
 
@@ -441,14 +465,8 @@
         function initGameplayUI(players) {
             isGameStartedLocally = true;
             switchScreen('screen-gameplay');
-            
-            ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) {
-                    document.getElementById(`wizard-${pid}`).style.display = 'block';
-                    document.getElementById(`wizard-${pid}`).querySelector('img').src = pid === 'p1' ? 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=redwizard&backgroundColor=f00' : 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bluewizard&backgroundColor=00f';
-                }
-            });
 
+            // ربط الكيبورد للتحكم
             document.onkeydown = function(e) {
                 if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
                 if (e.key === 'ArrowDown' || e.key === 's') dropActive();
@@ -456,9 +474,12 @@
                 if (e.key === 'ArrowRight' || e.key === 'd') moveActive(25);
             };
 
-            // تشغيل محرك السقوط الخاص باللاعب الحالي فقط
+            // تشغيل محرك اللعب الفيزيائي المحلي الخاص باللاعب
             spawnNewBlock();
             gameLoopInterval = setInterval(gameLoop, 50);
+
+            // تشغيل محرك المضيف للتأكد من حالة الفوز
+            if(myPlayerId === 'p1') startHostEngine();
         }
 
         function updateHeaders(players) {
@@ -475,15 +496,20 @@
             document.getElementById('ingame-ui-header').innerHTML = headerHtml;
         }
 
-        // --- محرك اللعب الفيزيائي الوهمي ---
+        // ==========================================
+        // محرك الفيزياء واكتشاف الاصطدام (Collision)
+        // ==========================================
+
         function spawnNewBlock() {
             const randType = TETROMINOES[Math.floor(Math.random() * TETROMINOES.length)];
             myActiveBlock = {
                 type: randType,
-                x: 60, // يبدأ من منتصف القاعدة تقريباً
-                y: 500, // الارتفاع من فوق
+                x: 45, // يبدأ من منتصف القاعدة تقريباً
+                y: 500, // الارتفاع
                 rotation: 0
             };
+            blockFallSpeed = 4; // إرجاع السرعة للطبيعي
+            renderMyScreen();
         }
 
         function createDOMBlock(blockData, isFalling = false) {
@@ -504,77 +530,112 @@
             return wrapper;
         }
 
+        function checkCollisionDOM() {
+            const activeNode = document.getElementById('active-falling');
+            if(!activeNode) return false;
+            
+            const activeMinis = activeNode.querySelectorAll('.mini-block');
+            const baseNode = document.querySelector(`#tower-${myPlayerId} .tower-base`);
+            const baseRect = baseNode.getBoundingClientRect();
+            
+            // 1. التحقق من الاصطدام بالأرضية (القاعدة الخشبية)
+            for(let mini of activeMinis) {
+                let rect = mini.getBoundingClientRect();
+                if (rect.bottom >= baseRect.top + 5) { // +5 للغوص قليلاً في العشب
+                    return true;
+                }
+            }
+            
+            // 2. التحقق من الاصطدام بالقطع المبنية مسبقاً
+            const container = document.getElementById(`${myPlayerId}-blocks`);
+            const placedMinis = container.querySelectorAll('.tetromino:not(#active-falling) .mini-block');
+            
+            for(let aMini of activeMinis) {
+                let aRect = aMini.getBoundingClientRect();
+                for(let pMini of placedMinis) {
+                    let pRect = pMini.getBoundingClientRect();
+                    // كشف تقاطع المربعات (مع هامش بسيط لمنع الاحتكاك الوهمي)
+                    if (aRect.left + 2 < pRect.right &&
+                        aRect.right - 2 > pRect.left &&
+                        aRect.bottom > pRect.top + 2 &&
+                        aRect.top < pRect.bottom - 2) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         function gameLoop() {
             if(!myActiveBlock) return;
 
+            let oldY = myActiveBlock.y;
             myActiveBlock.y -= blockFallSpeed;
+            renderMyScreen(); 
 
-            // تحديد نقطة الاصطدام (Collision Detection)
-            // لجعلها بسيطة وتعمل بثبات: كلما زاد عدد القطع، يرتفع مستوى الأرضية.
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).once('value').then(snap => {
-                const pData = snap.val();
-                if(!pData) return;
+            // إذا حصل اصطدام، نرجع القطعة لمكانها قبل الاصطدام بملي ثانية ونثبتها
+            if(checkCollisionDOM()) {
+                myActiveBlock.y = oldY;
+                renderMyScreen(); 
                 
-                const currentTowerHeight = (pData.placedCount || 0) * 20; // كل قطعة ترفع البرج 20 بكسل
+                // إضافة ميلان عشوائي خفيف لإعطاء تأثير برج غير مستقر زي تريكي تاورز
+                myActiveBlock.rotation += (Math.random() * 8 - 4); 
                 
-                if(myActiveBlock.y <= currentTowerHeight) {
-                    // لمس البرج!
-                    myActiveBlock.y = currentTowerHeight;
-                    // إضافة انحراف بسيط جداً ليعطي تأثير Tricky Towers العشوائي
-                    myActiveBlock.rotation += (Math.random() * 10 - 5); 
-                    
-                    saveBlockToFirebase(myActiveBlock, pData.placedCount || 0);
-                    spawnNewBlock();
-                } else {
-                    renderMyScreen();
-                }
-            });
+                saveBlockToFirebase(myActiveBlock);
+                myActiveBlock = null;
+                setTimeout(spawnNewBlock, 150); // تأخير بسيط قبل نزول القطعة الجديدة
+            }
         }
 
-        function saveBlockToFirebase(block, currentCount) {
-            // إضافة القطعة لقاعدة البيانات
-            const blockRef = db.ref(`rooms/${currentRoomId}/blocks_${myPlayerId}`).push();
-            blockRef.set({
+        function saveBlockToFirebase(block) {
+            // حفظ بيانات القطعة في الداتا بيس
+            db.ref(`rooms/${currentRoomId}/blocks_${myPlayerId}`).push().set({
                 typeIndex: TETROMINOES.indexOf(block.type),
                 x: block.x,
                 y: block.y,
                 rotation: block.rotation
             });
-            // زيادة العداد
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedCount: currentCount + 1 });
             
-            // إنهاء اللعبة إذا وصل البرج لارتفاع معين (مثلا 20 قطعة)
-            if(currentCount + 1 >= 20) {
-                db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
-            }
+            localPlacedCount++;
+            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ placedCount: localPlacedCount });
         }
 
         function moveActive(dir) {
             if(!myActiveBlock) return;
             myActiveBlock.x += dir;
-            // حدود الساحة يمين ويسار
-            if(myActiveBlock.x < -25) myActiveBlock.x = -25;
-            if(myActiveBlock.x > 125) myActiveBlock.x = 125;
+            // حماية من الخروج عن الشاشة
+            if(myActiveBlock.x < -30) myActiveBlock.x = -30;
+            if(myActiveBlock.x > 120) myActiveBlock.x = 120;
+            
             renderMyScreen();
+            if(checkCollisionDOM()) {
+                myActiveBlock.x -= dir; // التراجع لو خبط في شيء
+                renderMyScreen();
+            }
         }
 
         function rotateActive() {
             if(!myActiveBlock) return;
             myActiveBlock.rotation += 90;
             renderMyScreen();
+            if(checkCollisionDOM()) {
+                myActiveBlock.rotation -= 90; // التراجع لو اللفة بتخليه يخترق قطعة
+                renderMyScreen();
+            }
         }
 
         function dropActive() {
             if(!myActiveBlock) return;
-            blockFallSpeed = 15; // تسريع النزول
+            blockFallSpeed = 18; // تسريع السقوط
         }
-        document.addEventListener('keyup', (e) => { if (e.key === 'ArrowDown' || e.key === 's') blockFallSpeed = 3; });
 
+        document.addEventListener('keyup', (e) => { 
+            if (e.key === 'ArrowDown' || e.key === 's') blockFallSpeed = 4; // إرجاع السرعة إذا رفع يده
+        });
+
+        // رسم شاشة اللاعب (المحلي)
         function renderMyScreen() {
-            // رسم القطعة التي تسقط حالياً للاعب (محلياً لضمان سلاسة الفريمات)
             const myContainer = document.getElementById(`${myPlayerId}-blocks`);
-            
-            // نحذف القطعة الساقطة القديمة ونبقي القطع الثابتة
             const fallingNode = document.getElementById('active-falling');
             if(fallingNode) fallingNode.remove();
 
@@ -585,32 +646,54 @@
             }
         }
 
+        // رسم شاشة الخصم (من الإنترنت) بطريقة محسنة لا تسبب تعليق
         function renderOpponentBlocks(room) {
             ['p1', 'p2'].forEach(pid => {
+                if(pid === myPlayerId) return; // شاشتي ترسم محلياً عشان ما تعلق
+                
                 const blocksArray = room[`blocks_${pid}`];
                 const container = document.getElementById(`${pid}-blocks`);
                 
-                // إعادة رسم القطع الثابتة فقط من قاعدة البيانات
-                // نمسح كل شيء ما عدا القطعة الساقطة للاعب الحالي
-                Array.from(container.children).forEach(child => {
-                    if(child.id !== 'active-falling') child.remove();
-                });
-
                 if(blocksArray) {
-                    Object.values(blocksArray).forEach(bData => {
-                        const builtBlock = {
-                            type: TETROMINOES[bData.typeIndex],
-                            x: bData.x,
-                            y: bData.y,
-                            rotation: bData.rotation
-                        };
-                        container.appendChild(createDOMBlock(builtBlock, false));
-                    });
+                    const currentDOMCount = container.children.length;
+                    const dbBlocks = Object.values(blocksArray);
+                    
+                    // إضافة القطع الجديدة فقط للخصم
+                    if(dbBlocks.length > currentDOMCount) {
+                        for(let i = currentDOMCount; i < dbBlocks.length; i++) {
+                            const bData = dbBlocks[i];
+                            const builtBlock = {
+                                type: TETROMINOES[bData.typeIndex],
+                                x: bData.x,
+                                y: bData.y,
+                                rotation: bData.rotation
+                            };
+                            container.appendChild(createDOMBlock(builtBlock, false));
+                        }
+                    }
                 }
             });
         }
 
-        /* 6. نظام التصويت النهائي */
+        function startHostEngine() {
+            // المضيف يفحص فقط إذا وصل أحد لـ 20 قطعة لإنهاء المباراة
+            let hostLoop = setInterval(() => {
+                db.ref(`rooms/${currentRoomId}`).once('value').then(snap => {
+                    let room = snap.val();
+                    if(!room || room.status !== 'playing') return;
+
+                    let p1Won = room.players.p1 && room.players.p1.placedCount >= 20;
+                    let p2Won = room.players.p2 && room.players.p2.placedCount >= 20;
+
+                    if(p1Won || p2Won) {
+                        db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
+                        clearInterval(hostLoop);
+                    }
+                });
+            }, 1000);
+        }
+
+        /* نظام التصويت النهائي */
         function initVotingUI(players) {
             switchScreen('screen-voting');
             let html = '';
