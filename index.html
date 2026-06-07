@@ -2,86 +2,218 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Mayo Bet - احترافية المراهنة</title>
+    <title>The Ascension Bet - أسطورة المراهنة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { background: #1a1a1a; color: #fff; font-family: 'Cairo', sans-serif; margin: 0; overflow: hidden; }
-        .screen { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: white; font-family: 'Orbitron', 'Cairo', sans-serif; color: #1e1e1e; }
+
+        .game-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+        .screen {
+            position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 20px; z-index: 2; width: 100%; height: 100%; transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.98); display: none !important; }
+
+        .sony-btn {
+            background: linear-gradient(135deg, #00cec9 0%, #0984e3 100%); border: none; color: white; font-family: 'Orbitron', 'Cairo', sans-serif;
+            font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            position: relative; transition: all 0.2s ease; padding: 12px 25px; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .sony-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,206,201,0.5); }
+        .back-mini-btn { font-size: 0.9rem; background: rgba(0,0,0,0.2); color: white; padding: 8px 18px; position: fixed; top: 10px; right: 10px; }
+        .back-mini-btn:hover { background: #ff4a4a; }
+
+        .p-input { padding: 15px; font-size: 1.1rem; border-radius: 8px; border: 2px solid rgba(0,0,0,0.2); width: 300px; text-align: center; }
+
+        /* ستايل المراهنة (الأستوديو) */
+        #game-canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: white; }
         
-        /* تصميم الواجهة */
-        .card { background: #2f3640; padding: 30px; border-radius: 20px; border: 2px solid #7f8c8d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 400px; text-align: center; }
-        .input-pro { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #dcdde1; }
-        .btn-pro { background: #e84118; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
+        /* طاولة المتسابقين في المنتصف */
+        .table-center { 
+            position: absolute; left: 60%; top: 50%; transform: translate(-50%, -50%) perspective(1000px) rotateX(20deg); 
+            width: 600px; height: 150px; background: #00cec9; 
+            border: 5px solid #0984e3; border-radius: 10px; 
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .bet-box { 
+            width: 150px; height: 100px; background: rgba(255, 255, 255, 0.9); border: 2px dashed rgba(0,0,0,0.3); 
+            border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: #0984e3; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .bet-box:hover { background: #dcdde1; transform: scale(1.05); }
+
+        /* مجسمات المتسابقين والمقدم */
+        .model { width: 50px; height: 100px; border-radius: 10px; position: absolute; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
+        .head { width: 30px; height: 30px; background: #ddd; border-radius: 50%; position: absolute; top: -35px; left: 10px; }
         
-        /* الطاولة والشخصيات */
-        .table-3d { width: 700px; height: 350px; background: #2f3640; margin: 50px auto; border-radius: 50px; transform: perspective(800px) rotateX(40deg); border: 15px solid #7f8c8d; }
-        .host-model { width: 100px; position: absolute; top: 100px; left: 50%; transform: translateX(-50%); }
+        .p1-color { background: #a855f7; border: 3px solid #7c3aed; }
+        .p2-color { background: #ecf0f1; border: 3px solid #bdc3c7; }
+        .host-color { background: #e67e22; border: 3px solid #d35400; width: 120px; height: 200px; left: 100px; top: 40%; transform: none; box-shadow: 10px 10px 30px rgba(0,0,0,0.3); }
+
+        /* لوحات التحكم */
+        .ui-panel { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 10px; position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 200px; }
+        .host-panel { background: rgba(230,126,34,0.1); border: 2px solid #e67e22; top: 80px; }
+        
+        .bet-input { width: 100%; padding: 5px; margin-top: 5px; text-align: center; border-radius: 3px; border: 1px solid #aaa; }
     </style>
 </head>
 <body>
 
-<div id="setup" class="screen">
-    <div class="card">
-        <h1>Mayo Bet 🎮</h1>
-        <input id="playerName" class="input-pro" placeholder="اكتب اسمك هنا...">
-        <div id="emojiPicker" style="margin: 15px;">
-            <span onclick="setEmoji('😎')" style="cursor:pointer; font-size: 2rem;">😎</span>
-            <span onclick="setEmoji('🤖')" style="cursor:pointer; font-size: 2rem;">🤖</span>
-            <span onclick="setEmoji('🦁')" style="cursor:pointer; font-size: 2rem;">🦁</span>
+    <div class="game-container">
+        
+        <div id="screen-setup" class="screen">
+            <span class="host-indicator" style="background:#00cec9;">أهلاً بك في The Ascension Bet</span>
+            <input type="text" id="p-name" class="p-input" placeholder="اكتب اسمك للمباراة..." maxlength="12">
+            <div style="display:flex; gap: 20px;">
+                <button class="sony-btn" onclick="joinGame('host')" style="background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);">دخول كمقدم</button>
+                <button class="sony-btn" onclick="switchScreen('screen-lobby-choice')">انضمام لغرفة</button>
+            </div>
         </div>
-        <button class="btn-pro" onclick="createRoom()">إنشاء غرفه</button>
-        <button class="btn-pro" onclick="joinRoom()">انضمام لغرفه</button>
+
+        <div id="screen-lobby-choice" class="screen hidden">
+            <span class="host-indicator">الانضمام للمباراة</span>
+            <input type="text" id="room-id-input" class="p-input" placeholder="أدخل كود الغرفة (مثال: GAME_5)">
+            <button class="sony-btn" onclick="joinGame('player')">تأكيد الانضمام</button>
+            <button class="sony-btn back-mini-btn" onclick="switchScreen('screen-setup')">رجوع</button>
+        </div>
+
+        <div id="screen-gameplay" class="screen hidden">
+            <div id="game-canvas-container">
+                <h1 id="q-text" style="position: absolute; top: 120px; text-align: center; width: 100%;">انتظار المقدم...</h1>
+                
+                <div class="table-center">
+                    <div class="bet-box" id="box1">الخيار أ<br><small>الرياض</small><input type="number" id="b1" class="bet-input" placeholder="الرهان" min="100"></div>
+                    <div class="bet-box" id="box2">الخيار ب<br><small>جدة</small><input type="number" id="b2" class="bet-input" placeholder="الرهان" min="100"></div>
+                    <div class="bet-box" id="box3">الخيار ج<br><small>مكة</small><input type="number" id="b3" class="bet-input" placeholder="الرهان" min="100"></div>
+                </div>
+
+                <div class="model host-color" id="host-avatar"><div class="head"></div></div>
+                <div class="model p1-color" id="p1-avatar" style="left: 450px; top: 40%; display:none;"><div class="head"></div></div>
+                <div class="model p2-color" id="p2-avatar" style="left: 750px; top: 40%; display:none;"><div class="head"></div></div>
+                
+                <div class="ui-panel">
+                    <div>الرصيد: <span id="money" style="font-weight:bold; color: #00cec9;">10000</span>$</div>
+                    <div id="game-status">بانتظار المقدم...</div>
+                </div>
+
+                <div class="ui-panel host-panel hidden" id="host-ui-controls">
+                    <button class="sony-btn" style="width:100%; background:linear-gradient(135deg, #0984e3 0%, #7c3aed 100%);" onclick="revealAnswer()">إظهار الإجابة</button>
+                    <button class="sony-btn" style="width:100%; background:linear-gradient(135deg, #a855f7 0%, #ff4a4a 100%);" onclick="nextQuestion()">السؤال التالي</button>
+                </div>
+
+            </div>
+        </div>
+
     </div>
-</div>
 
-<div id="game" class="screen" style="display:none;">
-    <div class="table-3d"></div>
-    <div id="hostControls" style="display:none;">
-        <button onclick="reveal()">إظهار الإجابة</button>
-        <button onclick="nextQ()">السؤال التالي</button>
-    </div>
-    
-    <div style="margin-top:20px;">
-        <button onclick="bet(500)">+500</button>
-        <button onclick="bet(-500)">-500</button>
-        <span id="betAmount">رهانك: 0</span>
-    </div>
-</div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-<script>
-    let myEmoji = '😎';
-    let currentBet = 0;
+    <script>
+        // 1. إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1...",
+            authDomain: "the-ascension.firebaseapp.com",
+            databaseURL: "https://the-ascension-default-rtdb.firebaseio.com",
+            projectId: "the-ascension",
+            storageBucket: "the-ascension.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:123456:web:abcd1234"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    function setEmoji(e) { myEmoji = e; alert("تم اختيار: " + e); }
+        let roomId = "GAME_001";
+        let myRole = ""; // 'host' or 'player'
+        let myName = "";
+        let currentRoomData = null;
 
-    function createRoom() {
-        let name = document.getElementById('playerName').value;
-        if(!name) return alert("اكتب اسمك!");
-        localStorage.setItem('role', 'host');
-        enterGame(true);
-    }
-
-    function joinRoom() {
-        let code = prompt("أدخل كود الغرفة:");
-        if(code) {
-            localStorage.setItem('role', 'player');
-            enterGame(false);
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
         }
-    }
 
-    function enterGame(isHost) {
-        document.getElementById('setup').style.display = 'none';
-        document.getElementById('game').style.display = 'flex';
-        if(isHost) document.getElementById('hostControls').style.display = 'block';
-    }
+        /* 2. نظام الدخول للغرفة والتخصيص */
+        function joinGame(role) {
+            myName = document.getElementById('p-name').value.trim();
+            if(!myName) { alert("Please write your name first!"); return; }
+            myRole = role;
+            
+            if(role === 'player') {
+                let inputRoomId = document.getElementById('room-id-input').value.trim();
+                if(inputRoomId) roomId = inputRoomId;
+                else { alert("Please write room code (e.g., GAME_5)"); return; }
+            } else {
+                roomId = "HOST_" + Math.floor(1000 + Math.random() * 9000);
+            }
 
-    function bet(val) {
-        currentBet = Math.max(0, currentBet + val);
-        document.getElementById('betAmount').innerText = "رهانك: " + currentBet;
-    }
+            // إضافة اللاعب للسيرفر
+            db.ref('games/' + roomId + '/players/' + myName).set({
+                role: role,
+                money: 10000,
+                bets: { a: 0, b: 0, c: 0 },
+                status: "alive"
+            });
 
-    function reveal() { alert("الإجابة الصحيحة هي: الرياض"); }
-    function nextQ() { document.getElementById('q').innerText = "السؤال التالي..."; }
-</script>
+            if(role === 'host') {
+                db.ref('games/' + roomId).update({ status: "waiting_for_players" });
+                document.getElementById('host-ui-controls').classList.remove('hidden');
+            }
 
+            switchScreen('screen-gameplay');
+            listenToRoomChanges();
+        }
+
+        /* 3. الاستماع للسيرفر وتحديث واجهة اللعب */
+        function listenToRoomChanges() {
+            db.ref('games/' + roomId).on('value', (snap) => {
+                const room = snap.val();
+                if(!room) return;
+                currentRoomData = room;
+
+                // تحديث حالة اللعبة عند المتسابقين
+                if(myRole === 'player') {
+                    if(room.players && room.players[myName]) {
+                        document.getElementById('money').innerText = room.players[myName].money;
+                        if(room.players[myName].money <= 0) {
+                            document.getElementById('game-status').innerText = "تم إقصاؤك من اللعبة!";
+                            document.getElementById('game-status').style.color = "#ff4a4a";
+                        }
+                    }
+                }
+
+                // تحديث مجسمات المتسابقين في الأستوديو
+                if(room.players) {
+                    const pNames = Object.keys(room.players).filter(n => room.players[n].role === 'player');
+                    
+                    if(pNames[0]) {
+                        document.getElementById('p1-avatar').style.display = 'block';
+                        document.getElementById('p1-avatar').title = pNames[0] + " - " + room.players[pNames[0]].money + "$";
+                    }
+                    if(pNames[1]) {
+                        document.getElementById('p2-avatar').style.display = 'block';
+                        document.getElementById('p2-avatar').title = pNames[1] + " - " + room.players[pNames[1]].money + "$";
+                    }
+                }
+            });
+        }
+
+        /* 4. لوحة تحكم المقدم (Host Controls) */
+        function revealAnswer() {
+            if(myRole !== 'host') return;
+            // يمكنك هنا تنفيذ نظام حساب النتائج تلقائياً في السيرفر
+            alert("النتيجة هي الرياض (أ). الخاسرون سيفقدون رهاناتهم!");
+        }
+
+        function nextQuestion() {
+            if(myRole !== 'host') return;
+            document.getElementById('q-text').innerText = "كم عدد أضلاع المثلث؟ (أ): 3 (ب): 4 (ج): 5";
+        }
+    </script>
 </body>
 </html>
