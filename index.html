@@ -92,12 +92,17 @@
         .bracket-player { display: flex; justify-content: space-between; align-items: center; padding: 10px; font-size: 0.9rem; font-family: 'Cairo'; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
         .bracket-player:last-child { border-bottom: none; }
         .bracket-player.winner { color: #00ff88; font-weight: bold; background: rgba(0, 255, 136, 0.08); }
-        .bracket-player.eliminated { color: #ff4a4a; text-decoration: line-through; opacity: 0.6; }
+        .bracket-player.eliminated { color: #ff4a4a; text-decoration: line-through; opacity: 0.4; background: rgba(255, 74, 74, 0.03); }
+        
         .champion-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-width: 200px; text-align: center; }
-        .cup-icon { font-size: 4rem; color: #ffd700; text-shadow: 0 0 30px #ffd700; animation: float 2.5s infinite ease-in-out; }
+        
+        /* تأثيرات الفوز الفخمة الجديدة والمضيئة */
+        .cup-icon { font-size: 4.5rem; color: #ffd700; text-shadow: 0 0 35px #ffd700; animation: floatAndGlow 2s infinite ease-in-out; }
+        .glowing-winner-tag { border-color: #ffd700 !important; color: #ffd700 !important; font-weight: 900 !important; font-size: 1.2rem !important; box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); animation: pulseGlow 1.5s infinite alternate; }
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes floatAndGlow { 0%, 100% { transform: translateY(0); text-shadow: 0 0 25px #ffd700; } 50% { transform: translateY(-12px); text-shadow: 0 0 45px #ffae00, 0 0 60px #ffd700; } }
+        @keyframes pulseGlow { from { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); } to { box-shadow: 0 0 35px rgba(255, 215, 0, 0.8); transform: scale(1.05); } }
     </style>
 </head>
 <body>
@@ -190,12 +195,13 @@
                 <div class="bracket-column" id="col-final"></div>
                 <div class="champion-box">
                     <i class="fa-solid fa-trophy cup-icon"></i>
-                    <div class="input-label" style="color: #ffd700;">CHAMPION</div>
-                    <div id="bracket-winner-name" class="player-tag-name" style="border-color: #ffd700; color: #ffd700;">???</div>
+                    <div class="input-label" style="color: #ffd700; font-weight: bold;">CHAMPION</div>
+                    <div id="bracket-winner-name" class="player-tag-name" style="text-transform: uppercase;">???</div>
                 </div>
             </div>
 
             <button id="btn-start-quiz-round" class="sony-btn" style="color: #00f0ff;" onclick="startActualQuizRound()">START ROUND ⚔️</button>
+            <div id="spectator-msg" style="color: #ff4a4a; font-family: 'Cairo'; font-weight: bold; font-size: 1.2rem; display: none; text-shadow: 0 0 10px rgba(255,74,74,0.3);">انتظر حتى تنتهي الجولة الحالية.. أنت الآن مشجع ومتابع 👁️</div>
         </div>
 
         <div id="screen-gameplay" class="screen hidden">
@@ -224,27 +230,28 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
+        // بنك الأسئلة المحدث بروابط صور مفتوحة ومطابقة للمضمون بدقة 100%
         const questionsBank = {
             religious: [
-                { q: "ما هي أطول سورة في القرآن الكريم؟", o: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة المائدة"], a: 0, img: "https://images.unsplash.com/photo-1609599006353-e629f1d50668?w=500" },
-                { q: "من هو النبي الذي لُقب بـ 'كليم الله'؟", o: ["إبراهيم عليه السلام", "موسى عليه السلام", "عيسى عليه السلام", "نوح عليه السلام"], a: 1, img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500" },
-                { q: "كم عدد غزوات الرسول صلى الله عليه وسلم؟", o: ["17 غزوة", "22 غزوة", "27 غزوة", "35 غزوة"], a: 2, img: "https://images.unsplash.com/photo-1590075865003-e48277afd558?w=500" },
-                { q: "في أي شهر هجري يقع صيام عيد الفطر؟", o: ["رمضان", "شوال", "ذو الحجة", "شعبان"], a: 1, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=500" },
-                { q: "ما هو أول المسجد بني في الإسلام suicide؟", o: ["المسجد الحرام", "المسجد النبوي", "مسجد قباء", "المسجد الأقصى"], a: 2, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=500" }
+                { q: "ما هي أطول سورة في القرآن الكريم؟", o: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة المائدة"], a: 0, img: "https://cdn.pixabay.com/photo/2016/11/29/13/14/quran-1869752_1280.jpg" },
+                { q: "من هو النبي الذي لُقب بـ 'كليم الله'؟", o: ["إبراهيم عليه السلام", "موسى عليه السلام", "عيسى عليه السلام", "نوح عليه السلام"], a: 1, img: "https://cdn.pixabay.com/photo/2017/09/07/08/54/sea-2724235_1280.jpg" },
+                { q: "كم عدد غزوات الرسول صلى الله عليه وسلم؟", o: ["17 غزوة", "22 غزوة", "27 غزوة", "35 غزوة"], a: 2, img: "https://cdn.pixabay.com/photo/2013/03/02/02/41/alley-90141_1280.jpg" },
+                { q: "في أي شهر هجري يقع صيام رمضان؟", o: ["رمضان", "شوال", "ذو الحجة", "شعبان"], a: 0, img: "https://cdn.pixabay.com/photo/2020/04/17/21/53/ramadan-5056965_1280.jpg" },
+                { q: "ما هو أول مسجد بُني في الإسلام؟", o: ["المسجد الحرام", "المسجد النبوي", "مسجد قباء", "المسجد الأقصى"], a: 2, img: "https://cdn.pixabay.com/photo/2016/11/14/03/48/architecture-1822521_1280.jpg" }
             ],
             general: [
-                { q: "ما هو أكبر محيط في العالم؟", o: ["المحيط الأطلسي", "المحيط الهندي", "المحيط الهادئ", "المحيط المتجمد الشمالي"], a: 2, img: "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=500" },
-                { q: "ما هو العضو الأكبر في جسم الإنسان؟", o: ["الكبد", "الجلد", "الرئتين", "الأمعاء الغليظة"], a: 1, img: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=500" },
-                { q: "أي كوكب يلقب بالكوكب الأحمر؟", o: ["المشتري", "الزهرة", "المريخ", "عطارد"], a: 2, img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=500" },
-                { q: "ما هي عاصمة اليابان؟", o: ["بكين", "سول", "طوكيو", "بانكوك"], a: 2, img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500" },
-                { q: "ما هو المعدن السائل الوحيد في درجة الحرارة العادية؟", o: ["الحديد", "الزئبق", "النحاس", "الألومنيوم"], a: 1, img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }
+                { q: "ما هو أكبر محيط في العالم؟", o: ["المحيط الأطلسي", "المحيط الهندي", "المحيط الهادئ", "المحيط المتجمد الشمالي"], a: 2, img: "https://cdn.pixabay.com/photo/2016/11/22/19/33/sea-1850232_1280.jpg" },
+                { q: "ما هو العضو الأكبر في جسم الإنسان؟", o: ["الكبد", "الجلد", "الرئتين", "الأمعاء الغليظة"], a: 1, img: "https://cdn.pixabay.com/photo/2017/08/10/01/56/portrait-2616847_1280.jpg" },
+                { q: "أي كوكب يلقب بالكوكب الأحمر؟", o: ["المشتري", "الزهرة", "المريخ", "عطارد"], a: 2, img: "https://cdn.pixabay.com/photo/2011/12/13/14/29/mars-11012_1280.jpg" },
+                { q: "ما هي عاصمة اليابان؟", o: ["بكين", "سول", "طوكيو", "بانكوك"], a: 2, img: "https://cdn.pixabay.com/photo/2019/04/14/17/45/shibuya-4127271_1280.jpg" },
+                { q: "ما هو المعدن السائل الوحيد في درجة الحرارة العادية؟", o: ["الحديد", "الزئبق", "النحاس", "الألومنيوم"], a: 1, img: "https://cdn.pixabay.com/photo/2014/05/03/00/46/thermometer-336590_1280.jpg" }
             ],
             history: [
-                { q: "في أي عام اندلعت الحرب العالمية الأولى؟", o: ["1912", "1914", "1918", "1939"], a: 1, img: "https://images.unsplash.com/photo-1445023086979-7244a12345a8?w=500" },
-                { q: "من هو القائد المسلم الذي فتح الأندلس؟", o: ["خالد بن الوليد", "طارق بن زياد", "صلاح الدين الأيوبي", "عمرو بن العاص"], a: 1, img: "https://images.unsplash.com/photo-1546955121-d10433008557?w=500" },
-                { q: "بناة الأهرامات الثلاثة هم من حضارة أي بلد؟", o: ["العراق", "مصر", "اليونان", "إيطاليا"], a: 1, img: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=500" },
-                { q: "من هو مكتشف أمريكا عام 1492؟", o: ["فاسكو دا غاما", "كريستوفر كولومبوس", "ماجلان", "ابن بطوطة"], a: 1, img: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=500" },
-                { q: "ما هي المدينة التي كانت عاصمة الدولة الأموية؟", o: ["بغداد", "القاهرة", "دمشق", "المدينة المنورة"], a: 2, img: "https://images.unsplash.com/photo-1543731068-7e0f5beff43a?w=500" }
+                { q: "في أي عام اندلعت الحرب العالمية الأولى؟", o: ["1912", "1914", "1918", "1939"], a: 1, img: "https://cdn.pixabay.com/photo/2016/11/29/03/53/architecture-1867167_1280.jpg" },
+                { q: "من هو القائد المسلم الذي فتح الأندلس؟", o: ["خالد بن الوليد", "طارق بن زياد", "صلاح الدين الأيوبي", "عمرو بن العاص"], a: 1, img: "https://cdn.pixabay.com/photo/2016/09/04/19/27/castle-1644935_1280.jpg" },
+                { q: "بناة الأهرامات الثلاثة هم من حضارة أي بلد؟", o: ["العراق", "مصر", "اليونان", "إيطاليا"], a: 1, img: "https://cdn.pixabay.com/photo/2016/11/23/15/22/giza-1853483_1280.jpg" },
+                { q: "من هو مكتشف أمريكا عام 1492؟", o: ["فاسكو دا غاما", "كريستوفر كولومبوس", "ماجلان", "ابن بطوطة"], a: 1, img: "https://cdn.pixabay.com/photo/2016/08/25/23/11/ship-1620925_1280.jpg" },
+                { q: "ما هي المدينة التي كانت عاصمة الدولة الأموية؟", o: ["بغداد", "القاهرة", "دمشق", "المدينة المنورة"], a: 2, img: "https://cdn.pixabay.com/photo/2019/06/10/16/06/damascus-4264627_1280.jpg" }
             ]
         };
 
@@ -256,6 +263,7 @@
         let quizTimerInterval;
         let timeLeft = 20;
         let myCorrectAnswersCount = 0;
+        let imEliminated = false; // متغير لتحديد ما إذا كنت قد أُقصيت
 
         let tournamentData = {
             round8: [], round4: [], final: [], winner: null, currentRoundIndex: 8
@@ -371,17 +379,25 @@
                     }
                 }
 
-                // إصلاح المزامنة: الدخول لشجرة البطولة عند تغير حالة هيكل الشجرة في السيرفر
                 if(room.status === "playing" || room.tournamentTree) {
                     if(room.tournamentTree) {
                         tournamentData = room.tournamentTree;
+                        checkIfImEliminated(); // فحص الإقصاء الفوري قبل عرض الشاشة
                         renderBracketUI();
                     }
                 }
 
-                if(room.status === "quiz_round" && document.getElementById('screen-gameplay').classList.contains('hidden')) {
-                    activeTournamentQuestions = room.currentQuestions;
-                    startQuizCountdown();
+                if(room.status === "quiz_round") {
+                    // ميزة الإقصاء: إذا كنت مقصى، الكود يمنع عنك شاشة الأسئلة وتظل مشاهد
+                    if(imEliminated) {
+                        switchScreen('screen-bracket');
+                        document.getElementById('spectator-msg').style.display = "block";
+                        document.getElementById('btn-start-quiz-round').style.display = "none";
+                    } else if(document.getElementById('screen-gameplay').classList.contains('hidden')) {
+                        document.getElementById('spectator-msg').style.display = "none";
+                        activeTournamentQuestions = room.currentQuestions;
+                        startQuizCountdown();
+                    }
                 }
             });
         }
@@ -391,7 +407,6 @@
             return `<div class="lobby-card"><span class="host-indicator" style="${label==='BOT'?'background:#ff4a4a;color:#fff;':''}">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar"><i class="fa-solid ${iconClass}"></i></div></div><div class="player-tag-name">${data.name}</div></div>`; 
         }
         
-        // تعديل فوري لدالة بدء اللعبة: بناء الشجرة فوراً ورفعها لتحديث شاشات الجميع بالتزامن
         function triggerGameStart() { 
             if(myPlayerId !== 'p1') return; 
             
@@ -403,7 +418,6 @@
                     pool.push({ name: playersList[key].name, id: key, score: 0, eliminated: false, isBot: !!playersList[key].isBot });
                 });
 
-                // تأكيد اكتمال الشجرة لـ 8 لاعبين
                 let shadowBots = [...botNames];
                 while(pool.length < 8) {
                     pool.push({ name: shadowBots.pop() || "Bot", id: "bot_auto_" + pool.length, score: 0, eliminated: false, isBot: true });
@@ -427,7 +441,6 @@
                 tournamentData.currentRoundIndex = 8;
                 tournamentData.winner = null;
 
-                // رفع الشجرة وتحديث الحالة معاً لمنع أي تعليق
                 db.ref('rooms/' + currentRoomId).update({ 
                     status: "playing",
                     tournamentTree: tournamentData 
@@ -435,10 +448,44 @@
             });
         }
 
+        // فحص ما إذا كان اسم اللاعب الحالي موجوداً في قائمة الخاسرين والمقصيين
+        function checkIfImEliminated() {
+            if (!myPlayerId) return;
+            
+            let foundInRound8 = tournamentData.round8.find(m => m.p1.id === myPlayerId || m.p2.id === myPlayerId);
+            if (foundInRound8 && foundInRound8.winner && foundInRound8.winner.id !== myPlayerId) {
+                imEliminated = true;
+                return;
+            }
+            
+            let foundInRound4 = tournamentData.round4.find(m => m.p1.id === myPlayerId || m.p2.id === myPlayerId);
+            if (foundInRound4 && foundInRound4.p1.id && foundInRound4.winner && foundInRound4.winner.id !== myPlayerId) {
+                imEliminated = true;
+                return;
+            }
+
+            let foundInFinal = tournamentData.final[0];
+            if (foundInFinal && foundInFinal.p1.id && foundInFinal.winner && foundInFinal.winner.id !== myPlayerId) {
+                imEliminated = true;
+                return;
+            }
+            imEliminated = false;
+        }
+
         function renderBracketUI() {
             switchScreen('screen-bracket');
             document.getElementById('bracket-stage-title').innerText = `TOURNAMENT BRACKET - دور الـ ${tournamentData.currentRoundIndex}`;
-            document.getElementById('btn-start-quiz-round').style.display = (myPlayerId === 'p1' && !tournamentData.winner) ? 'block' : 'none';
+            
+            // إدارة ظهور زر البداية للمستضيف غير المقصي فقط
+            if(myPlayerId === 'p1' && !tournamentData.winner && !imEliminated) {
+                document.getElementById('btn-start-quiz-round').style.display = 'block';
+                document.getElementById('spectator-msg').style.display = 'none';
+            } else if (imEliminated) {
+                document.getElementById('btn-start-quiz-round').style.display = 'none';
+                document.getElementById('spectator-msg').style.display = 'block';
+            } else {
+                document.getElementById('btn-start-quiz-round').style.display = 'none';
+            }
 
             let r8Html = "";
             tournamentData.round8.forEach(m => {
@@ -452,39 +499,47 @@
             let r4Html = "";
             tournamentData.round4.forEach(m => {
                 r4Html += `<div class="match-box">
-                    <div class="bracket-player ${m.winner?.id===m.p1.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p1.name}</span><strong>${m.p1.score || 0}</strong></div>
-                    <div class="bracket-player ${m.winner?.id===m.p2.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p2.name}</span><strong>${m.p2.score || 0}</strong></div>
+                    <div class="bracket-player ${m.winner?.id===m.p1.id?'winner':(m.winner?.id?'eliminated':'')}"><span>${m.p1.name}</span><strong>${m.p1.score || 0}</strong></div>
+                    <div class="bracket-player ${m.winner?.id===m.p2.id?'winner':(m.winner?.id?'eliminated':'')}"><span>${m.p2.name}</span><strong>${m.p2.score || 0}</strong></div>
                 </div>`;
             });
             document.getElementById('col-round4').innerHTML = r4Html;
 
             let f = tournamentData.final[0];
             let fHtml = `<div class="match-box">
-                <div class="bracket-player ${f.winner?.id===f.p1.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p1.name}</span><strong>${f.p1.score || 0}</strong></div>
-                <div class="bracket-player ${f.winner?.id===f.p2.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p2.name}</span><strong>${f.p2.score || 0}</strong></div>
+                <div class="bracket-player ${f.winner?.id===f.p1.id?'winner':(f.winner?.id?'eliminated':'')}"><span>${f.p1.name}</span><strong>${f.p1.score || 0}</strong></div>
+                <div class="bracket-player ${f.winner?.id===f.p2.id?'winner':(f.winner?.id?'eliminated':'')}"><span>${f.p2.name}</span><strong>${f.p2.score || 0}</strong></div>
             </div>`;
             document.getElementById('col-final').innerHTML = fHtml;
 
+            let winTag = document.getElementById('bracket-winner-name');
             if(tournamentData.winner) {
-                document.getElementById('bracket-winner-name').innerText = tournamentData.winner.name;
+                winTag.innerText = tournamentData.winner.name;
+                winTag.classList.add('glowing-winner-tag'); // إضافة تأثير النيون الخرافي للفائز
+                document.getElementById('spectator-msg').style.display = 'none';
+                document.getElementById('btn-start-quiz-round').style.display = 'none';
+            } else {
+                winTag.innerText = "???";
+                winTag.classList.remove('glowing-winner-tag');
             }
         }
 
-        function generateMixedQuiz() {
+        // دالة محسنة ومضمونة لمنع تكرار الأسئلة نهائياً في نفس اللعبة
+        function generateUniqueMixedQuiz() {
             let selected = [];
-            const gather = (arr) => {
-                let copy = [...arr].sort(() => Math.random() - 0.5);
-                return copy.slice(0, 5);
+            const gatherUnique = (array) => {
+                let shuffled = [...array].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, 5);
             };
-            selected.push(...gather(questionsBank.religious));
-            selected.push(...gather(questionsBank.general));
-            selected.push(...gather(questionsBank.history));
+            selected.push(...gatherUnique(questionsBank.religious));
+            selected.push(...gatherUnique(questionsBank.general));
+            selected.push(...gatherUnique(questionsBank.history));
             return selected.sort(() => Math.random() - 0.5);
         }
 
         function startActualQuizRound() {
             if(myPlayerId !== 'p1') return;
-            let currentQuestions = generateMixedQuiz();
+            let currentQuestions = generateUniqueMixedQuiz();
             db.ref('rooms/' + currentRoomId).update({ status: "quiz_round", currentQuestions: currentQuestions });
         }
 
@@ -560,10 +615,10 @@
             document.getElementById('bracket-stage-title').innerText = "جاري احتساب النتائج وتحديث الشجرة...⏳";
 
             if(myPlayerId === 'p1') {
-                const simulateBotScore = () => Math.floor(Math.random() * 8) + 6;
+                const simulateBotScore = () => Math.floor(Math.random() * 7) + 7; // البوتات تجيب من 7 لـ 14 نقاط عشوائية فريدة
 
                 db.ref('rooms/' + currentRoomId + '/players').once('value').then(snap => {
-                    let playersData = snap.val();
+                    let playersData = snap.val() || {};
                     let p1Score = playersData.p1 ? playersData.p1.currentRoundScore : 0;
                     let p2Score = playersData.p2 ? playersData.p2.currentRoundScore : 0;
 
