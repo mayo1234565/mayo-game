@@ -3,61 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏎️ NEON RALLY: MULTIPLAYER 7 🏎️</title>
+    <title>⚡ CYBER ARENA 3D: 7-PLAYERS ⚡</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@700;900&display=swap');
-        
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #0a0a12; font-family: 'Cairo', 'Orbitron', sans-serif; color: #fff; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #020205; font-family: 'Cairo', 'Orbitron', sans-serif; }
         
-        canvas { display: block; width: 100vw; height: calc(100vh - 120px); background: #11111e; }
+        canvas { display: block; width: 100vw; height: 100vh; position: absolute; top:0; left:0; z-index: 5; }
 
-        /* واجهة قائمة الدخول */
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(10,10,18,0.95); z-index:100; padding: 20px; }
-        .setup-box { background: rgba(255,255,255,0.03); border: 2px solid #00f0ff; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,240,255,0.2); }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #ff0055; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-radius: 8px; }
+        /* واجهة اللوبي الجبارة */
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background: radial-gradient(circle, #090914 0%, #020205 100%); z-index:100; padding: 20px; transition: opacity 0.4s; }
+        .setup-box { background: rgba(5, 5, 15, 0.75); border: 2px solid #00f0ff; padding: 35px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 40px rgba(0,240,255,0.25); backdrop-filter: blur(10px); }
+        input { width: 100%; padding: 14px; background: #000; border: 1px solid #ff0055; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 20px; border-radius: 10px; font-weight: bold; outline: none; }
         
-        .neon-btn { background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; border-radius: 8px; width: 100%; text-shadow: 0 0 10px #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.2); transition: 0.2s; }
-        .neon-btn:active { background: #00f0ff; color: #000; transform: scale(0.98); }
+        .neon-btn { background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 16px; font-size: 1.3rem; font-weight: 900; cursor: pointer; border-radius: 10px; width: 100%; text-shadow: 0 0 10px #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+        .neon-btn:active { background: #00f0ff; color: #000; box-shadow: 0 0 30px #00f0ff; }
 
-        /* شاشة التحكم السفلية المريحة للجوال */
-        .controls-container { height: 120px; width: 100%; background: #07070d; display: grid; grid-template-columns: 1fr 1.2fr 1fr; border-top: 2px solid #222; }
-        .ctrl-btn { display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; background: rgba(255,255,255,0.02); color: #888; }
-        .ctrl-btn:active { background: rgba(0, 240, 255, 0.1); color: #00f0ff; }
-        .btn-gas { background: rgba(0, 255, 136, 0.05); color: #00ff88; font-size: 1.5rem; border-left: 1px solid #222; border-right: 1px solid #222; }
-        .btn-gas:active { background: #00ff88; color: #000; }
-
-        #hud { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; border: 1px solid #333; pointer-events: none; }
+        #hud-overlay { position: absolute; top: 20px; left: 20px; z-index: 50; color: #00f0ff; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 5px #00f0ff; pointer-events: none; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="hud">اللاعبين في الغرفة: <span id="p-count" style="color:#00f0ff;">1</span>/7</div>
+    <div id="hud-overlay">الآليين في الساحة: <span id="p-count" style="color:#ff0055;">1</span> / 7</div>
 
     <div id="lobby-menu" class="overlay">
-        <h1 style="font-size: 2.5rem; color: #ff0055; text-shadow: 0 0 15px #ff0055; margin-bottom: 20px;">🏎️ NEON RALLY 7</h1>
+        <h1 style="font-size: 2.8rem; color: #00f0ff; text-shadow: 0 0 20px #00f0ff; margin-bottom: 5px; font-family:'Orbitron'; font-weight:900;">CYBER ARENA 3D</h1>
+        <p style="color: #666; margin-bottom: 30px; font-size: 1rem; font-weight: bold;">ساحة حرب آليين ثلاثية الأبعاد حرة لـ 7 لاعبين</p>
         <div class="setup-box">
-            <input type="text" id="username-input" placeholder="أدخل اسم السائق..." maxlength="10">
-            <button class="neon-btn" onclick="joinRace()">دخول حلبة السباق 🏁</button>
+            <input type="text" id="username-input" placeholder="اسم المقاتل الـ 3D..." maxlength="10">
+            <button class="neon-btn" onclick="enterArena()">دخول الساحة القتالية ⚔️</button>
         </div>
     </div>
 
-    <canvas id="raceCanvas"></canvas>
-
-    <div class="controls-container">
-        <div class="ctrl-btn" id="btn-left">◀</div>
-        <div class="ctrl-btn btn-gas" id="btn-gas">اضغط للسرعة ⚡</div>
-        <div class="ctrl-btn" id="btn-right">▶</div>
-    </div>
+    <canvas id="arenaCanvas"></canvas>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // إعداد الاتصال بـ Firebase (تلقائي للتجربة المحلية أو ضع مفاتيحك الخاصة)
         let db;
-        const roomCode = "RACE-777"; 
-        let myPlayerId = "p_" + Math.floor(Math.random() * 100000);
+        const arenaRoom = "ARENA-3D-777";
+        const myPlayerId = "mech_" + Math.floor(Math.random() * 100000);
         let myName = "";
 
         try {
@@ -69,152 +55,232 @@
             };
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch (e) { console.error("Firebase info missing, running offline demo mode."); }
+        } catch (e) { console.error("Firebase connection error"); }
 
-        const canvas = document.getElementById('raceCanvas');
+        const canvas = document.getElementById('arenaCanvas');
         const ctx = canvas.getContext('2d');
         let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight - 120;
+        let h = canvas.height = window.innerHeight;
 
-        // الألوان المخصصة للسيارات السبعة لتمييزها
-        const carColors = ['#00f0ff', '#ff0055', '#00ff88', '#ffdf00', '#ff00ff', '#ffffff', '#ff9900'];
-        
-        let localPlayers = {};
-        let myInput = { left: false, right: false, gas: false };
+        const mechColors = ['#00f0ff', '#ff0055', '#00ff88', '#ffdf00', '#ff00ff', '#ffffff', '#ff9900'];
+        let remotePlayers = {};
+        let localLasers = [];
 
-        // دالة الدخول وتوليد السيارة
-        function joinRace() {
-            let inputName = document.getElementById('username-input').value.trim();
-            myName = inputName ? inputName : "سائق_" + Math.floor(Math.random()*90);
+        // إدخالات اللمس الافتراضية للـ Joystick للتحرك والإطلاق بالإبهامين
+        let touchControls = {
+            move: { active: false, startX: 0, startY: 0, curX: 0, curY: 0 },
+            shoot: { active: false, lastFired: 0 }
+        };
+
+        // المصفوفات الرياضية للمنظور ثلاثي الأبعاد الحر (Isometric 3D Projection)
+        const ISO_ANGLE = Math.PI / 6; // 30 درجة لزاوية الـ 3D المبهجة
+        function project3D(x, y, z) {
+            // تحويل الإحداثيات الكارتيزية إلى إسقاط ثلاثي أبعاد رياضي دقيق
+            let rotX = x * Math.cos(ISO_ANGLE) - y * Math.sin(ISO_ANGLE);
+            let rotY = x * Math.sin(ISO_ANGLE) + y * Math.cos(ISO_ANGLE) - z;
+            return { x: rotX + w / 2, y: rotY + h / 2.5 };
+        }
+
+        function enterArena() {
+            let input = document.getElementById('username-input').value.trim();
+            myName = input ? input : "آلي_" + Math.floor(Math.random()*90 + 10);
             
-            document.getElementById('lobby-menu').style.display = 'none';
+            document.getElementById('lobby-menu').style.opacity = '0';
+            setTimeout(() => document.getElementById('lobby-menu').style.display = 'none', 400);
+            document.getElementById('hud-overlay').style.display = 'block';
 
-            let startX = w / 2 + (Math.random() - 0.5) * 100;
-            let randomColor = carColors[Math.floor(Math.random() * carColors.length)];
-
-            let initialData = {
-                id: myPlayerId,
-                name: myName,
-                x: startX,
-                y: h - 100,
-                angle: -Math.PI / 2,
-                color: randomColor,
-                score: 0
+            let myMech = {
+                id: myPlayerId, name: myName,
+                x: (Math.random() - 0.5) * 300, y: (Math.random() - 0.5) * 300, z: 0,
+                angle: 0, color: mechColors[Math.floor(Math.random() * mechColors.length)],
+                health: 100, lasers: []
             };
 
-            if (db) {
-                // رفع بيانات سيارتك فوراً للسيرفر ليراها اللاعبون الآخرون
-                db.ref(`rooms/${roomCode}/players/${myPlayerId}`).set(initialData);
-                // الاستماع لتحركات بقية الـ 7 لاعبين ومزامنتهم
-                db.ref(`rooms/${roomCode}/players`).on('value', snap => {
-                    if (snap.exists()) {
-                        localPlayers = snap.val();
-                        document.getElementById('p-count').innerText = Object.keys(localPlayers).length;
+            if(db) {
+                db.ref(`rooms/${arenaRoom}/players/${myPlayerId}`).set(myMech);
+                db.ref(`rooms/${arenaRoom}/players`).on('value', snap => {
+                    if(snap.exists()) {
+                        remotePlayers = snap.val();
+                        document.getElementById('p-count').innerText = Object.keys(remotePlayers).length;
                     }
                 });
-                // عند إغلاق الصفحة، تُحذف السيارة تلقائياً
-                db.ref(`rooms/${roomCode}/players/${myPlayerId}`).onDisconnect().remove();
+                db.ref(`rooms/${arenaRoom}/players/${myPlayerId}`).onDisconnect().remove();
             } else {
-                // نمط تجريبي محلي في حال عدم ربط الفايربيس
-                localPlayers[myPlayerId] = initialData;
+                remotePlayers[myPlayerId] = myMech;
             }
 
-            setupControls();
-            requestAnimationFrame(gameLoop);
+            setupMobileInput();
+            requestAnimationFrame(engineLoop);
         }
 
-        // إعداد أحداث اللمس الفورية للجوال
-        function setupControls() {
-            const bindBtn = (id, property) => {
-                let el = document.getElementById(id);
-                el.addEventListener('touchstart', (e) => { e.preventDefault(); myInput[property] = true; });
-                el.addEventListener('touchend', (e) => { e.preventDefault(); myInput[property] = false; });
-                el.addEventListener('mousedown', () => myInput[property] = true);
-                el.addEventListener('mouseup', () => myInput[property] = false);
+        // إعداد الجويستيك اللمسي الذكي المقسم للجوال
+        function setupMobileInput() {
+            window.addEventListener('touchstart', (e) => {
+                for(let t of e.changedTouches) {
+                    if(t.clientX < w / 2) { // الجزء الأيسر: حركة 3D
+                        touchControls.move.active = true;
+                        touchControls.move.startX = touchControls.move.curX = t.clientX;
+                        touchControls.move.startY = touchControls.move.curY = t.clientY;
+                    } else { // الجزء الأيمن: إطلاق صواريخ
+                        touchControls.shoot.active = true;
+                    }
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                for(let t of e.touches) {
+                    if(t.clientX < w / 2 && touchControls.move.active) {
+                        touchControls.move.curX = t.clientX;
+                        touchControls.move.curY = t.clientY;
+                    }
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchend', (e) => {
+                for(let t of e.changedTouches) {
+                    if(t.clientX < w / 2) touchControls.move.active = false;
+                    else touchControls.shoot.active = false;
+                }
+            });
+
+            // دعم ماوس وكيبورد الكمبيوتر للتجربة الفورية
+            window.addEventListener('mousemove', (e) => {
+                if(!touchControls.move.active && remotePlayers[myPlayerId]) {
+                    let p2d = project3D(remotePlayers[myPlayerId].x, remotePlayers[myPlayerId].y, 0);
+                    remotePlayers[myPlayerId].angle = Math.atan2(e.clientY - p2d.y, e.clientX - p2d.x);
+                }
+            });
+            window.addEventListener('mousedown', () => touchControls.shoot.active = true);
+            window.addEventListener('mouseup', () => touchControls.shoot.active = false);
+        }
+
+        function spawnLaser(me) {
+            let now = Date.now();
+            if(now - touchControls.shoot.lastFired < 220) return; // سرعة الإطلاق المعدلة
+            touchControls.shoot.lastFired = now;
+
+            let laserObj = {
+                x: me.x, y: me.y, z: 15,
+                vx: Math.cos(me.angle) * 7, vy: Math.sin(me.angle) * 7,
+                color: me.color, life: 60
             };
-
-            bindBtn('btn-left', 'left');
-            bindBtn('btn-right', 'right');
-            bindBtn('btn-gas', 'gas');
+            localLasers.push(laserObj);
         }
 
-        // المحرك الرسومي وحلقة التحديث (60 إطار في الثانية)
-        function gameLoop() {
-            // تنظيف الحلبة ورسم أرضية الطريق
-            ctx.fillStyle = '#11111e';
+        // الحلقة الرسومية العملاقة والمطورة
+        function engineLoop() {
+            ctx.fillStyle = '#020206';
             ctx.fillRect(0, 0, w, h);
 
-            // رسم خطوط الطريق السريعة (المضمار النيوني)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.lineWidth = 6;
-            for(let i=1; i<4; i++) {
+            // 1. رسم شبكة الأرضية ثلاثية الأبعاد (3D Grid Floor) المذهلة لتعطي عمق حركي بصري
+            ctx.strokeStyle = '#0a0a1f';
+            ctx.lineWidth = 1;
+            for(let i = -400; i <= 400; i += 40) {
                 ctx.beginPath();
-                ctx.moveTo((w/4)*i, 0);
-                ctx.lineTo((w/4)*i, h);
+                let p1 = project3D(i, -400, 0); let p2 = project3D(i, 400, 0);
+                ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+
+                ctx.beginPath();
+                let p3 = project3D(-400, i, 0); let p4 = project3D(400, i, 0);
+                ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
                 ctx.stroke();
             }
 
-            // تحديث سيارة اللاعب المحلي
-            if (localPlayers[myPlayerId]) {
-                let me = localPlayers[myPlayerId];
+            // 2. تحديث بيانات آليّ اللاعب المحلي وحساب المتجهات ثلاثية الأبعاد
+            if(remotePlayers[myPlayerId]) {
+                let me = remotePlayers[myPlayerId];
 
-                if (myInput.left) me.angle -= 0.04;
-                if (myInput.right) me.angle += 0.04;
-                
-                if (myInput.gas) {
-                    me.x += Math.cos(me.angle) * 5;
-                    me.y += Math.sin(me.angle) * 5;
+                if(touchControls.move.active) {
+                    let dx = touchControls.move.curX - touchControls.move.startX;
+                    let dy = touchControls.move.curY - touchControls.move.startY;
+                    let dist = Math.hypot(dx, dy);
+                    
+                    if(dist > 5) {
+                        let moveAngle = Math.atan2(dy, dx);
+                        me.x += Math.cos(moveAngle) * 3.5;
+                        me.y += Math.sin(moveAngle) * 3.5;
+                        me.angle = moveAngle; // الدوران مع الحركة
+                    }
                 }
 
-                // الحماية من الخروج من الشاشة
-                if (me.x < 0) me.x = w; if (me.x > w) me.x = 0;
-                if (me.y < 0) me.y = h; if (me.y > h) me.y = 0;
+                // محاكاة الطفو الارتدادي ثلاثي الأبعاد (Hovering effect) عبر دالة الـ Sine
+                me.z = 12 + Math.sin(Date.now() * 0.005) * 4;
 
-                // إرسال الإحداثيات الجديدة فوراً للفايربيس ليراها الـ 6 الآخرين على شاشاتهم
-                if (db) {
-                    db.ref(`rooms/${roomCode}/players/${myPlayerId}`).update({ x: me.x, y: me.y, angle: me.angle });
-                }
+                if(touchControls.shoot.active) spawnLaser(me);
+
+                if(db) db.ref(`rooms/${arenaRoom}/players/${myPlayerId}`).update({ x: me.x, y: me.y, z: me.z, angle: me.angle });
             }
 
-            // رسم جميع سيارات اللاعبين المتصلين حالياً (حتى 7 لاعبين)
-            Object.keys(localPlayers).forEach(id => {
-                let p = localPlayers[id];
+            // 3. تحديث ورسم أشعة ليزر الـ 3D
+            for(let i = localLasers.length - 1; i >= 0; i--) {
+                let l = localLasers[i];
+                l.x += l.vx; l.y += l.vy; l.life--;
 
+                let lp = project3D(l.x, l.y, l.z);
+                
+                ctx.shadowBlur = 15; ctx.shadowColor = l.color;
+                ctx.fillStyle = l.color;
+                ctx.beginPath(); ctx.arc(lp.x, lp.y, 4, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0;
+
+                if(l.life <= 0) localLasers.splice(i, 1);
+            }
+
+            // 4. رسم جميع اللاعبين السبعة المتواجدين في الغرفة بهياكل آليات ثلاثية الأبعاد مجسمة
+            Object.keys(remotePlayers).forEach(id => {
+                let p = remotePlayers[id];
+                let pt = project3D(p.x, p.y, p.z);
+                let shadowPt = project3D(p.x, p.y, 0); // ظل الآلي على الأرض لإعطاء إحساس بالارتفاع الـ 3D
+
+                // أ. رسم الظل السفلي
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.beginPath(); ctx.arc(shadowPt.x, shadowPt.y, 14, 0, Math.PI * 2); ctx.fill();
+
+                // ب. رسم الآلي المشع (The Mech)
                 ctx.save();
-                ctx.translate(p.x, p.y);
+                ctx.translate(pt.x, pt.y);
                 ctx.rotate(p.angle);
 
-                // رسم مجسم السيارة النيوني المتألق
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 20; ctx.shadowColor = p.color;
                 ctx.fillStyle = p.color;
                 
-                // هيكل السيارة المستقبلي
-                ctx.fillRect(-20, -10, 40, 20); 
-                // الإطارات البارزة
-                ctx.fillStyle = '#000';
-                ctx.fillRect(-18, -13, 8, 3);
-                ctx.fillRect(10, -13, 8, 3);
-                ctx.fillRect(-18, 10, 8, 3);
-                ctx.fillRect(10, 10, 8, 3);
+                // تصميم مضلع ثلاثي للآلي الطائر الهجومي
+                ctx.beginPath();
+                ctx.moveTo(18, 0);
+                ctx.lineTo(-14, -14);
+                ctx.lineTo(-6, 0);
+                ctx.lineTo(-14, 14);
+                ctx.closePath();
+                ctx.fill();
+
+                // النواة المضيئة للآلي لزيادة جودة الرسوميات
+                ctx.fillStyle = '#fff';
+                ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI*2); ctx.fill();
 
                 ctx.restore();
                 ctx.shadowBlur = 0;
 
-                // كتابة اسم السائق فوق سيارته مباشرة لمتابعته
+                // ج. كتابة اسم اللاعب واللوحة التعريفية ثلاثية الأبعاد
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 12px Cairo';
                 ctx.textAlign = 'center';
-                ctx.fillText(p.name, p.x, p.y - 25);
+                ctx.fillText(p.name, pt.x, pt.y - 25);
             });
 
-            requestAnimationFrame(gameLoop);
+            // 5. رسم الجويستيك الافتراضي بشكل أنيق ونظيف على شاشة اللمس
+            if(touchControls.move.active) {
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.arc(touchControls.move.startX, touchControls.move.startY, 45, 0, Math.PI*2); ctx.stroke();
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+                ctx.beginPath(); ctx.arc(touchControls.move.curX, touchControls.move.curY, 20, 0, Math.PI*2); ctx.fill();
+            }
+
+            requestAnimationFrame(engineLoop);
         }
 
-        window.addEventListener('resize', () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight - 120;
-        });
+        window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
     </script>
 </body>
 </html>
