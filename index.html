@@ -1,274 +1,315 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة صائد الجواسيس 🕵️‍♂️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚡ HYPERSPACE CORE: 3D ENGINE ⚡</title>
     <style>
-        :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --dark: #2d3436;
-            --light: #dfe6e9;
-            --danger: #d63031;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { 
+            width: 100%; height: 100%; overflow: hidden; 
+            background: #000; font-family: 'Orbitron', sans-serif;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e272e, #0f141c);
-            color: var(--light);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        canvas { 
+            display: block; width: 100vw; height: 100vh; 
+            cursor: crosshair; touch-action: none;
         }
-
-        .game-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; display: flex; flex-direction: column;
+            justify-content: space-between; padding: 20px;
         }
-
-        h1 {
-            color: var(--secondary);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        .hud-text {
+            color: #00f0ff; font-size: 1.5rem; font-weight: 900;
+            text-shadow: 0 0 10px #00f0ff; letter-spacing: 2px;
         }
-
-        .subtitle {
-            color: #b2bec3;
-            margin-bottom: 30px;
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 30px; height: 30px; border: 2px dashed #ff0055;
+            border-radius: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; animation: rotateCH 10s infinite linear;
+            box-shadow: 0 0 8px #ff0055;
         }
-
-        .btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
-            width: 100%;
-            font-weight: bold;
+        @keyframes rotateCH { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        #start-screen {
+            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100; color: #fff; text-align: center; transition: opacity 0.5s;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+        .glow-btn {
+            background: transparent; border: 2px solid #00f0ff; color: #00f0ff;
+            padding: 15px 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer;
+            margin-top: 20px; text-shadow: 0 0 10px #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.4);
+            border-radius: 4px; text-transform: uppercase; transition: all 0.3s;
         }
-
-        .card {
-            background: #2d3436;
-            border: 3px solid var(--primary);
-            border-radius: 15px;
-            padding: 40px 20px;
-            margin: 20px 0;
-            cursor: pointer;
-            font-size: 1.5rem;
-            font-weight: bold;
-            transition: transform 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card.hidden {
-            background: linear-gradient(45deg, #2c3e50, #34495e);
-            border: 3px dashed #7f8c8d;
-        }
-
-        .card-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .hidden .card-icon {
-            filter: blur(5px);
-        }
-
-        .status-text {
-            font-size: 1.1rem;
-            color: #00cec9;
-            margin-top: 15px;
-        }
-
-        .spy-text {
-            color: var(--danger);
-            font-size: 2rem;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        .rules {
-            text-align: right;
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+        .glow-btn:hover { background: #00f0ff; color: #000; box-shadow: 0 0 30px #00f0ff; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="game-container">
-        <!-- الشاشة الرئيسية -->
-        <div id="start-screen" class="screen active">
-            <h1>🕵️‍♂️ صائد الجواسيـس</h1>
-            <p class="subtitle">لعبة الذكاء والخداع لـ 7 لاعبين</p>
-            
-            <div class="rules">
-                <strong>📜 طريقة اللعب:</strong>
-                <ul>
-                    <li>اللعبة مجهزة الآن لـ 7 لاعبين.</li>
-                    <li>يوجد بينكم جاسوس واحد لا يعرف المكان.</li>
-                    <li>مرروا الجوال بينكم، وليضغط كل لاعب على الكرت لرؤية دوره بسرية ثم إغلاقه.</li>
-                    <li>بعد انتهاء الجميع، ابدأوا بالتحقيق والأسئلة!</li>
-                </ul>
-            </div>
-            <button class="btn" onclick="startGame()">إبدأ اللعب 🚀</button>
-        </div>
-
-        <!-- شاشة عرض الكروت -->
-        <div id="game-screen" class="screen">
-            <h2 id="player-number">اللاعب رقم 1</h2>
-            <p style="color: #b2bec3;">إضغط على الكرت لمعاينة هويتك بسرية تامّة!</p>
-            
-            <div id="role-card" class="card hidden" onclick="toggleCard()">
-                <span id="card-icon" class="card-icon">❓</span>
-                <span id="card-text">إضغط لإظهار الدور</span>
-            </div>
-
-            <p class="status-text" id="status-msg">اضغط لمشاهدة بطاقتك</p>
-            <button class="btn" id="next-btn" onclick="nextPlayer()" style="display: none;">اللاعب التالي ➡️</button>
-        </div>
-
-        <!-- شاشة بدء التحقيق -->
-        <div id="action-screen" class="screen">
-            <h1>🕵️‍♂️ بدأ التحقيق!</h1>
-            <p style="font-size: 1.3rem; margin: 30px 0;">الآن، مرروا الجوال جانباً. ابدأوا بطرح الأسئلة على بعضكم البعض لكشف الجاسوس، أو ليخمن الجاسوس المكان!</p>
-            <div style="font-size: 4rem; margin-bottom: 20px;">⏱️💬</div>
-            <button class="btn" onclick="resetGame()">اللعب مجدداً 🔄</button>
-        </div>
+    <div id="start-screen">
+        <h1 style="font-size: 3.5rem; letter-spacing: 5px; color: #ff0055; text-shadow: 0 0 20px #ff0055;">HYPERSPACE 3D</h1>
+        <p style="color: #888; margin-top: 10px; font-size: 1.1rem;">محرك فضاء ثلاثي الأبعاد نقي مكتوب بالكامل بدون أي مكتبات خارجية</p>
+        <p style="color: #00f0ff; margin-top: 5px; font-size: 0.9rem;">التحكم: الماوس أو اللمس للتوجيه والإطلاق</p>
+        <button class="glow-btn" onclick="initGame()">LAUNCH ENGINE</button>
     </div>
 
+    <div id="ui-layer">
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="hud-text" id="score-val">SCORE: 0000</div>
+            <div class="hud-text" id="hull-val" style="color: #ff0055; text-shadow: 0 0 10px #ff0055;">HULL: 100%</div>
+        </div>
+        <div id="crosshair"></div>
+        <div class="hud-text" style="font-size: 0.8rem; opacity: 0.5; text-align: center; width: 100%;">PURE JAVASCRIPT 3D ENGINE ACTIVE</div>
+    </div>
+
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        // قائمة الأماكن والصور التعبيرية الخاصة بها لزيادة المتعة البصرية
-        const locations = [
-            { name: "المستشفى 🏥", icon: "🏥" },
-            { name: "المطعم الفاخر 🍔", icon: "🍔" },
-            { name: "المطار ✈️", icon: "✈️" },
-            { name: "مدرسة المشاغبين 🏫", icon: "🏫" },
-            { name: "الفضاء الخارجي 🚀", icon: "🚀" },
-            { name: "حديقة الحيوانات 🦁", icon: "🦁" },
-            { name: "محطة القطار 🚂", icon: "🚂" },
-            { name: "السيرك 🎪", icon: "🎪" }
-        ];
+        const canvas = document.getElementById('renderCanvas');
+        const ctx = canvas.getContext('2d');
 
-        let totalPlayers = 7;
-        let roles = [];
-        let currentPlayer = 0;
-        let isCardOpen = false;
+        let width, height, cx, cy;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            cx = width / 2;
+            cy = height / 2;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        function startGame() {
-            // اختيار مكان عشوائي
-            let selectedLocation = locations[Math.floor(Math.random() * locations.length)];
-            
-            // تحديد من هو الجاسوس (لاعب واحد من الـ 7 عشوائياً)
-            let spyIndex = Math.floor(Math.random() * totalPlayers);
+        // إعدادات الكاميرا والمنظور الرياضي الـ 3D
+        const FOV = 250; // البعد البؤري لإسقاط الأبعاد
+        let score = 0;
+        let health = 100;
+        let gameActive = false;
 
-            roles = [];
-            for (let i = 0; i < totalPlayers; i++) {
-                if (i === spyIndex) {
-                    roles.push({ name: "أنت الجاسوس! 🕵️‍♂️", icon: "🕵️‍♂️", isSpy: true });
-                } else {
-                    roles.push({ name: selectedLocation.name, icon: selectedLocation.icon, isSpy: false });
+        let mouse = { x: cx, y: cy, down: false };
+
+        // كائنات اللعبة
+        let stars = [];
+        let enemies = [];
+        let lasers = [];
+        let particles = [];
+
+        class Star {
+            constructor() { this.reset(); this.z = Math.random() * 2000; }
+            reset() {
+                this.x = (Math.random() - 0.5) * 3000;
+                this.y = (Math.random() - 0.5) * 3000;
+                this.z = 2000;
+            }
+            update(speed) {
+                this.z -= speed;
+                if (this.z <= 0) this.reset();
+            }
+            render() {
+                // معادلة الإسقاط من 3D إلى 2D
+                let sx = (this.x / this.z) * FOV + cx;
+                let sy = (this.y / this.z) * FOV + cy;
+                let size = (1 - this.z / 2000) * 3;
+
+                if (sx >= 0 && sx <= width && sy >= 0 && sy <= height) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z / 2000})`;
+                    ctx.fillRect(sx, sy, size, size);
                 }
             }
-
-            currentPlayer = 0;
-            showScreen('game-screen');
-            setupPlayerTurn();
         }
 
-        function setupPlayerTurn() {
-            isCardOpen = false;
-            document.getElementById('player-number').innerText = `اللاعب رقم ${currentPlayer + 1}`;
-            
-            let card = document.getElementById('role-card');
-            card.className = "card hidden";
-            document.getElementById('card-icon').innerText = "❓";
-            document.getElementById('card-text').innerText = "إضغط لإظهار الدور";
-            
-            document.getElementById('status-msg').innerText = "اضغط لمشاهدة بطاقتك";
-            document.getElementById('next-btn').style.display = "none";
-        }
+        class EnemyShip {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = (Math.random() - 0.5) * 1500;
+                this.y = (Math.random() - 0.5) * 1500;
+                this.z = 2000;
+                this.size = 60;
+                this.speed = Math.random() * 8 + 7;
+                this.hue = Math.random() * 360;
+            }
+            update() {
+                this.z -= this.speed;
+                // مطاردة طفيفة نحو مركز شاشة اللاعب
+                this.x += ((mouse.x - cx) * 0.5 - this.x) * 0.01;
+                this.y += ((mouse.y - cy) * 0.5 - this.y) * 0.01;
 
-        function toggleCard() {
-            let card = document.getElementById('role-card');
-            let cardIcon = document.getElementById('card-icon');
-            let cardText = document.getElementById('card-text');
-
-            if (!isCardOpen) {
-                // فتح الكرت وعرض الدور
-                card.classList.remove('hidden');
-                cardIcon.innerText = roles[currentPlayer].icon;
-                cardText.innerText = roles[currentPlayer].name;
-                if(roles[currentPlayer].isSpy) {
-                    cardText.className = "spy-text";
-                } else {
-                    cardText.className = "";
+                if (this.z <= 10) {
+                    health -= 15;
+                    if(health < 0) health = 0;
+                    document.getElementById('hull-val').innerText = `HULL: ${health}%`;
+                    this.reset();
                 }
-                
-                document.getElementById('status-msg').innerText = "إضغط مجدداً لإخفاء الكرت وتمرير الجهاز";
-                document.getElementById('next-btn').style.display = "block";
-                isCardOpen = true;
-            } else {
-                // إغلاق الكرت للحفاظ على السرية قبل التمرير
-                card.classList.add('hidden');
-                cardIcon.innerText = "❓";
-                cardText.innerText = "مخفي - تم التمرير";
-                cardText.className = "";
-                isCardOpen = false;
+            }
+            render() {
+                let sx = (this.x / this.z) * FOV + cx;
+                let sy = (this.y / this.z) * FOV + cy;
+                let r = (this.size / this.z) * FOV;
+
+                if (sx > -r && sx < width + r && sy > -r && sy < height + r && this.z > 0) {
+                    // رسم هيكل السفينة ثلاثي الأبعاد عبر المضلعات الرياضية المباشرة
+                    ctx.strokeStyle = `hsl(${this.hue}, 100%, 60%)`;
+                    ctx.lineWidth = Math.max(1, 200 / this.z);
+                    ctx.fillStyle = "rgba(10, 10, 20, 0.8)";
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(sx, sy - r); // النقطة العلوية
+                    ctx.lineTo(sx + r, sy + r/2);
+                    ctx.lineTo(sx, sy + r/4);
+                    ctx.lineTo(sx - r, sy + r/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // المحركات الخلفية المضيئة
+                    ctx.fillStyle = "#ff0055";
+                    ctx.beginPath();
+                    ctx.arc(sx, sy + r/4, r/4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
         }
 
-        function nextPlayer() {
-            currentPlayer++;
-            if (currentPlayer < totalPlayers) {
-                setupPlayerTurn();
-            } else {
-                showScreen('action-screen');
+        class Laser {
+            constructor(targetX, targetY) {
+                // ينطلق الليزر من أسفل الشاشة (جناح السفينة التخيلية للاعب) نحو الهدف 3D
+                this.sx = Math.random() > 0.5 ? 0 : width;
+                this.sy = height;
+                this.tx = targetX;
+                this.ty = targetY;
+                this.progress = 0;
+                this.speed = 0.12;
+            }
+            update() {
+                this.progress += this.speed;
+                return this.progress >= 1;
+            }
+            render() {
+                ctx.strokeStyle = "#00f0ff";
+                ctx.lineWidth = 4 * (1 - this.progress);
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#00f0ff";
+                ctx.beginPath();
+                ctx.moveTo(this.sx, this.sy);
+                let lx = this.sx + (this.tx - this.sx) * this.progress;
+                let ly = this.sy + (this.ty - this.sy) * this.progress;
+                ctx.lineTo(lx, ly);
+                ctx.stroke();
+                ctx.shadowBlur = 0; // إعادة ضبط التوهج للأداء
             }
         }
 
-        function resetGame() {
-            showScreen('start-screen');
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.vx = (Math.random() - 0.5) * 12;
+                this.vy = (Math.random() - 0.5) * 12;
+                this.alpha = 1;
+                this.color = Math.random() > 0.5 ? "#ff0055" : "#ffd700";
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.alpha -= 0.02;
+                return this.alpha <= 0;
+            }
+            render() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.fillRect(this.x, this.y, 4, 4);
+                ctx.globalAlpha = 1;
+            }
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+        // إدخال البيانات وتتبع الحركة
+        function updateMouse(e) {
+            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            if(clientX !== undefined) {
+                mouse.x = clientX;
+                mouse.y = clientY;
+            }
+        }
+        window.addEventListener('mousemove', updateMouse);
+        window.addEventListener('touchmove', updateMouse);
+        
+        window.addEventListener('mousedown', () => { mouse.down = true; fireLaser(); });
+        window.addEventListener('touchstart', (e) => { mouse.down = true; updateMouse(e); fireLaser(); });
+
+        function fireLaser() {
+            if(!gameActive) return;
+            lasers.push(new Laser(mouse.x, mouse.y));
+
+            // كشف الاصطدام ثلاثي الأبعاد المباشر (3D Collision Matrix)
+            enemies.forEach(enemy => {
+                let sx = (enemy.x / enemy.z) * FOV + cx;
+                let sy = (enemy.y / enemy.z) * FOV + cy;
+                let r = (enemy.size / enemy.z) * FOV;
+
+                let dist = Math.hypot(mouse.x - sx, mouse.y - sy);
+                if (dist < r + 15 && enemy.z > 100) {
+                    // تفجير العدو
+                    for(let i=0; i<25; i++) particles.push(new Particle(sx, sy));
+                    score += Math.floor(enemy.z / 10);
+                    document.getElementById('score-val').innerText = `SCORE: ${String(score).padStart(4, '0')}`;
+                    enemy.reset();
+                }
+            });
+        }
+
+        // تهيئة محتويات الفضاء
+        for (let i = 0; i < 400; i++) stars.push(new Star());
+        for (let i = 0; i < 3; i++) enemies.push(new EnemyShip());
+
+        function initGame() {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('start-screen').style.display = 'none', 500);
+            gameActive = true;
+            loop();
+        }
+
+        // حلقة اللعب ومحرك التحديث (The Engine Loop)
+        function loop() {
+            if (health <= 0) {
+                alert(`GAME OVER\nFINAL SCORE: ${score}`);
+                location.reload();
+                return;
+            }
+
+            // رسم الخلفية الكونية العميقة وتأثير الـ Motion Blur الخفيف
+            ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+            ctx.fillRect(0, 0, width, height);
+
+            // انحراف الكاميرا الديناميكي حسب حركة الماوس لإعطاء إحساس بالطيران الحقيقي
+            let targetCamX = (mouse.x - cx) * 0.1;
+            let targetCamY = (mouse.y - cy) * 0.1;
+
+            // 1. تحديث ورسم النجوم الخلفية
+            stars.forEach(star => {
+                star.x -= targetCamX * 0.05;
+                star.y -= targetCamY * 0.05;
+                star.update(12);
+                star.render();
+            });
+
+            // 2. تحديث ورسم أشعة الليزر
+            for (let i = lasers.length - 1; i >= 0; i--) {
+                if (lasers[i].update()) lasers.splice(i, 1);
+                else lasers[i].render();
+            }
+
+            // 3. تحديث ورسم سفن الأعداء الـ 3D
+            enemies.forEach(enemy => {
+                enemy.update();
+                enemy.render();
+            });
+
+            // 4. تحديث ورسم جزيئات الانفجارات
+            for (let i = particles.length - 1; i >= 0; i--) {
+                if (particles[i].update()) particles.splice(i, 1);
+                else particles[i].render();
+            }
+
+            requestAnimationFrame(loop);
         }
     </script>
 </body>
