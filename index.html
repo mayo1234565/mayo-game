@@ -3,286 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🚀 NEON OVERDRIVE: 7-PLAYER SHOWDOWN 🚀</title>
+    <title>🏴‍☠️ PIRATE'S BLIND FORTUNE 🏴‍☠️</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #050508; font-family: 'Orbitron', 'Cairo', sans-serif; color: #fff; }
-        canvas { display: block; width: 100vw; height: 100vh; background: #020205; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@700;900&display=swap');
         
-        /* واجهة القائمة الرئيسية */
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(5,5,10,0.9); z-index:100; padding: 20px; transition: all 0.5s; }
-        h1 { font-size: 3rem; color: #00f0ff; text-shadow: 0 0 20px #00f0ff; margin-bottom: 10px; text-align: center; }
-        .setup-box { background: rgba(255,255,255,0.03); border: 2px solid #ff0055; padding: 30px; border-radius: 15px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(255,0,85,0.2); }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #00f0ff; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-radius: 5px; }
-        .btn { width: 100%; padding: 15px; border: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; border-radius: 5px; margin-bottom: 10px; transition: 0.3s; }
-        .btn-host { background: #00f0ff; color: #000; box-shadow: 0 0 15px #00f0ff; }
-        .btn-join { background: #ff0055; color: #fff; box-shadow: 0 0 15px #ff0055; }
-        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         
-        /* شاشة التحكم للجوال */
-        #controller-ui { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background:#111; z-index:150; grid-template-columns: 1fr 1fr; }
-        .ctrl-btn { display:flex; align-items:center; justify-content:center; font-size: 3rem; user-select:none; -webkit-user-select:none; }
-        .ctrl-left { background: #ff005522; border-right: 1px solid #ff005555; color: #ff0055; }
-        .ctrl-right { background: #00f0ff22; border-left: 1px solid #00f0ff55; color: #00f0ff; }
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background: #030308; color: #fff;
+            font-family: 'Cairo', 'Orbitron', sans-serif;
+        }
+
+        /* خلفية جزيئات النيون المتحركة */
+        #bg-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1; pointer-events: none; }
+
+        .app-container {
+            position: relative; z-index: 10; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+
+        .screen {
+            display: none; width: 100%; max-width: 440px;
+            animation: fadeIn 0.4s ease-out forwards;
+            text-align: center;
+        }
+        .screen.active { display: flex; flex-direction: column; gap: 20px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2.2rem; font-weight: 900; color: #ff0055; text-shadow: 0 0 15px #ff0055; letter-spacing: 2px; }
+        p { color: #8a8da4; font-size: 1rem; line-height: 1.6; }
+
+        /* الأزرار النيون المشعة */
+        .neon-btn {
+            background: transparent; border: 2px solid #00f0ff; color: #00f0ff;
+            padding: 15px 30px; font-size: 1.2rem; font-weight: 900; border-radius: 12px;
+            cursor: pointer; transition: all 0.2s; text-shadow: 0 0 10px #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); width: 100%;
+            margin-top: 10px;
+        }
+        .neon-btn:opacity { opacity: 0.8; }
+        .neon-btn:active { transform: scale(0.98); background: #00f0ff; color: #000; box-shadow: 0 0 25px #00f0ff; }
+
+        .neon-btn.danger { border-color: #ff0055; color: #ff0055; text-shadow: 0 0 10px #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
+        .neon-btn.danger:active { background: #ff0055; color: #fff; box-shadow: 0 0 25px #ff0055; }
+
+        /* بطاقة الهوية ثلاثية الأبعاد */
+        .card-wrapper { perspective: 1000px; width: 100%; height: 260px; margin: 20px 0; }
+        .pirate-card {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+        }
+        .pirate-card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 20px; border: 2px solid rgba(255,255,255,0.1);
+        }
         
-        #room-id-display { position: absolute; top: 15px; left: 15px; color: #00f0ff; font-size: 1.2rem; z-index: 50; text-shadow: 0 0 5px #00f0ff; }
-        #player-count { position: absolute; top: 15px; right: 15px; color: #ff0055; font-size: 1.2rem; z-index: 50; }
+        .card-front {
+            background: linear-gradient(135deg, #0f0f26, #050510);
+            border-color: #00f0ff; box-shadow: 0 0 20px rgba(0,240,255,0.15);
+        }
+        .card-back {
+            background: linear-gradient(135deg, #1f0515, #0a0005);
+            transform: rotateY(180deg); border-color: #ff0055;
+            box-shadow: 0 0 20px rgba(255,0,85,0.15);
+        }
+
+        .card-icon { font-size: 4.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px currentColor); }
+
+        /* شبكة الخريطة التفاعلية للكنز */
+        .map-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin: 15px 0; }
+        .map-tile {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.8rem; cursor: pointer; transition: all 0.2s;
+        }
+        .map-tile:active { transform: scale(0.95); }
+        .map-tile.revealed-gold { background: rgba(255, 223, 0, 0.15); border-color: #ffdf00; box-shadow: 0 0 15px rgba(255, 223, 0, 0.3); }
+        .map-tile.revealed-bomb { background: rgba(255, 0, 85, 0.15); border-color: #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.3); }
+
+        .badge { background: rgba(255,255,255,0.07); padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; color: #00f0ff; display: inline-block; }
     </style>
-    <!-- مكتبة الـ Peer-to-Peer السحرية للربط الشبكي بدون سيرفر -->
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-    <!-- عرض رقم الغرفة واللاعبين أثناء اللعب -->
-    <div id="room-id-display"></div>
-    <div id="player-count"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <!-- واجهة الدخول -->
-    <div id="menu" class="overlay">
-        <h1>NEON OVERDRIVE</h1>
-        <p style="color: #888; margin-bottom: 25px;">سباق نيون جماعي مدمر يتسع لـ 7 لاعبين فما فوق</p>
+    <div class="app-container">
         
-        <div class="setup-box">
-            <input type="text" id="username-input" placeholder="اكتب اسمك الكابتن..." maxlength="10">
-            <button class="btn btn-host" onclick="initHost()">إنشاء غرفة جديدة (Host)</button>
-            <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;">
-            <input type="text" id="room-id-input" placeholder="أدخل رمز الغرفة للإنضمام...">
-            <button class="btn btn-join" onclick="initJoin()">انضمام للسباق</button>
+        <div id="scr-start" class="screen active">
+            <h1>🏴‍☠️ FORTUNE STORM</h1>
+            <p>لعبة الذكاء والتشكيك والمناورة البصرية. مصممة لتناسب تجمعكم المكون من <b>7 لاعبين</b> على الطاولة.</p>
+            <div style="margin: 10px 0;"><span class="badge">👨‍👩‍👦‍👦 عدد اللاعبين المتصلين: 7</span></div>
+            <button class="neon-btn" onclick="generateRoles()">توليد الأدوار وتوزيع الخريطة 🎲</button>
         </div>
-    </div>
 
-    <!-- واجهة التحكم عبر الجوال في حال انضمام اللاعب كـ يد تحكم -->
-    <div id="controller-ui">
-        <div class="ctrl-btn ctrl-left" id="left-touch">◀ لـف يسار</div>
-        <div class="ctrl-btn ctrl-right" id="right-touch">لف يمين ▶</div>
-    </div>
+        <div id="scr-reveal" class="screen">
+            <h2 id="player-title" style="color:#00f0ff;">القرصان رقم 1</h2>
+            <p>إضغط على البطاقة السحرية لرؤية هويتك السرية، تأكد ألا يراها أحد بجانبك!</p>
+            
+            <div class="card-wrapper" onclick="flipCard()">
+                <div id="p-card" class="pirate-card">
+                    <div class="card-face card-front">
+                        <div class="card-icon" style="color: #00f0ff;">❓</div>
+                        <span style="font-weight:900; letter-spacing:1px;">إلمس للـكـشـف</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <div id="role-icon" class="card-icon">🏴‍☠️</div>
+                        <h3 id="role-name" style="font-size:1.8rem; font-weight:900;">ولاء حقيقي</h3>
+                        <p id="role-desc" style="font-size:0.85rem; margin-top:5px;"></p>
+                    </div>
+                </div>
+            </div>
 
-    <canvas id="gameCanvas"></canvas>
+            <button class="neon-btn" id="next-player-btn" onclick="goToNextPlayer()" style="display:none;">تم الحفظ، الكرت التالي ➡️</button>
+        </div>
+
+        <div id="scr-map" class="screen">
+            <h1>🗺️ خريطة جزر الهلاك</h1>
+            <p>الآن تم تمرير الهويات! الخريطة تحتوي على <b>3 صناديق ذهب مخفية</b> و <b>فخاخ متفجرة</b>. تشاوروا معاً لفتح المربعات!</p>
+            
+            <div class="map-grid" id="island-grid"></div>
+
+            <div style="display:flex; justify-content:space-around; width:100%; margin-top:10px;">
+                <span id="gold-counter" style="color:#ffdf00; font-weight:900;">💰 الذهب المكتشف: 0/3</span>
+                <span id="fail-counter" style="color:#ff0055; font-weight:900;">💥 الفخاخ: 0/2</span>
+            </div>
+
+            <button class="neon-btn danger" onclick="endGameReset()" style="margin-top:20px;">إنهاء الجولة وإعادة التوزيع 🔄</button>
+        </div>
+
+    </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
+        // محرك الجزيئات البصرية الخلفية المستمر (Custom Particle Engine)
+        const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        let pts = [];
 
-        let peer = null;
-        let connections = [];
-        let isHost = false;
-        let myId = "";
-        let myName = "";
+        for(let i=0; i<60; i++) pts.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+1, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, c: Math.random() > 0.5 ? '#00f0ff' : '#ff0055' });
         
-        // بيانات اللعبة والمحرك
-        let players = {}; 
-        const colors = ['#00f0ff', '#ff0055', '#00ff88', '#ffdf00', '#ff00ff', '#ffffff', '#ff9900'];
-        let stars = [];
-
-        // تهيئة النجوم في الخلفية لأثر السرعة
-        for(let i=0; i<150; i++) {
-            stars.push({ x: Math.random()*width, y: Math.random()*height, sz: Math.random()*2, spd: Math.random()*3 + 1 });
+        function animateBg() {
+            ctx.clearRect(0,0,w,h);
+            pts.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x<0 || p.x>w) p.vx *= -1; if(p.y<0 || p.y>h) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fillStyle = p.c; ctx.globalAlpha = 0.3; ctx.fill();
+            });
+            requestAnimationFrame(animateBg);
         }
+        animateBg();
+        window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
 
-        // --- كود الشبكة والـ Peer-to-Peer (القلب النابض) ---
+        // --- منطق اللعبة المطور لـ 7 لاعبين ---
+        let totalPlayers = 7;
+        let playerRoles = [];
+        let currentIdx = 0;
+        let isFlipped = false;
         
-        function getUsername() {
-            let name = document.getElementById('username-input').value.trim();
-            return name ? name : "لاعب_" + Math.floor(Math.random()*900 + 100);
+        // إعدادات الخريطة المخفية
+        let gridData = [];
+        let goldFound = 0;
+        let trapsTriggered = 0;
+
+        function changeScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        // 1. صانع الغرفة (الـ Host المضيف)
-        function initHost() {
-            myName = getUsername();
-            isHost = true;
-            // توليد رمز غرفة عشوائي قصير سهل النقل
-            let customRoomId = "NEON-" + Math.random().toString(36).substring(2,6).toUpperCase();
+        function generateRoles() {
+            // توزيع الأدوار لـ 7 لاعبين: 5 قراصنة شرفاء و 2 جواسيس خائنين لزيادة الحماس والتحدي في الكلام
+            let rolesPool = [
+                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
+                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
+                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
+                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
+                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
+                { name: "خائن مأجور 🏴‍☠️", icon: "🏴‍☠️", desc: "أنت جاسوس! هدفك توجيه القراصنة نحو الفخاخ لتفجير السفينة بدون كشف نفسك.", spy: true },
+                { name: "خائن مأجور 🏴‍☠️", icon: "🏴‍☠️", desc: "أنت جاسوس! هدفك توجيه القراصنة نحو الفخاخ لتفجير السفينة بدون كشف نفسك.", spy: true }
+            ];
+
+            // خلط الأدوار عشوائياً تماماً
+            playerRoles = rolesPool.sort(() => Math.random() - 0.5);
+            currentIdx = 0;
             
-            peer = new Peer(customRoomId);
+            // توليد شبكة الخريطة عشوائياً (9 مربعات: 3 ذهب، 2 قنابل، 4 فارغة)
+            let items = ['gold', 'gold', 'gold', 'bomb', 'bomb', 'empty', 'empty', 'empty', 'empty'];
+            gridData = items.sort(() => Math.random() - 0.5);
             
-            peer.on('open', (id) => {
-                myId = id;
-                document.getElementById('menu').style.opacity = '0';
-                setTimeout(() => document.getElementById('menu').style.display = 'none', 500);
-                document.getElementById('room-id-display').innerText = `رمز الغرفة: ${id} (شارك الرمز مع الـ 6 لاعبين الآخرين)`;
-                
-                // إضافة المضيف كلاعب أول سفينته زرقاء
-                addPlayer(myId, myName, 0);
-                startEngine();
-            });
-
-            // استقبال اتصالات اللاعبين الآخرين تلقائياً وبسرعة البرق
-            peer.on('connection', (conn) => {
-                connections.push(conn);
-                conn.on('data', (data) => {
-                    if(data.type === 'join_request') {
-                        let pCount = Object.keys(players).length;
-                        if(pCount >= 7) {
-                            conn.send({ type: 'rejected', reason: 'الغرفة ممتلئة بـ 7 لاعبين!' });
-                            return;
-                        }
-                        addPlayer(conn.peer, data.name, pCount);
-                        // نرسل لكل اللاعبين شجرة اللاعبين الحالية لتحديث الشاشات لديهم
-                        broadcast({ type: 'sync', players: players });
-                    }
-                    if(data.type === 'control') {
-                        if(players[conn.peer]) players[conn.peer].input = data.input;
-                    }
-                });
-            });
-        }
-
-        // 2. المنضم للغرفة (اللاعبون من 2 إلى 7)
-        function initJoin() {
-            myName = getUsername();
-            let targetRoomId = document.getElementById('room-id-input').value.trim().toUpperCase();
-            if(!targetRoomId) return alert("الرجاء إدخال رمز الغرفة!");
-
-            peer = new Peer();
-            peer.on('open', (id) => {
-                myId = id;
-                let conn = peer.connect(targetRoomId);
-                
-                conn.on('open', () => {
-                    conn.send({ type: 'join_request', name: myName });
-                });
-
-                conn.on('data', (data) => {
-                    if(data.type === 'sync') {
-                        players = data.players;
-                        // تحويل واجهة المنضم إلى يد تحكم جبارة تملأ الجوال
-                        document.getElementById('menu').style.display = 'none';
-                        document.getElementById('controller-ui').style.display = 'grid';
-                        setupControllerEvents(conn);
-                    }
-                    if(data.type === 'rejected') {
-                        alert(data.reason);
-                        location.reload();
-                    }
-                });
-            });
-        }
-
-        function broadcast(data) {
-            connections.forEach(conn => { if(conn.open) conn.send(data); });
-        }
-
-        // إرسال حركات اليد من الجوال إلى الـ Host
-        function setupControllerEvents(conn) {
-            let activeInput = { left: false, right: false };
+            goldFound = 0;
+            trapsTriggered = 0;
             
-            const sendInput = () => conn.send({ type: 'control', input: activeInput });
-
-            document.getElementById('left-touch').onpointerdown = (e) => { activeInput.left = true; sendInput(); };
-            document.getElementById('left-touch').onpointerup = (e) => { activeInput.left = false; sendInput(); };
-            document.getElementById('right-touch').onpointerdown = (e) => { activeInput.right = true; sendInput(); };
-            document.getElementById('right-touch').onpointerup = (e) => { activeInput.right = false; sendInput(); };
+            buildMapUI();
+            setupPlayerReveal();
+            changeScreen('scr-reveal');
         }
 
-        // --- محرك وقوانين حركة السفن السبعة ---
+        function setupPlayerReveal() {
+            isFlipped = false;
+            document.getElementById('p-card').classList.remove('flipped');
+            document.getElementById('player-title').innerText = `الكابتن رقم ${currentIdx + 1}`;
+            document.getElementById('next-player-btn').style.display = 'none';
 
-        function addPlayer(id, name, index) {
-            players[id] = {
-                name: name,
-                x: width / 2 + (index - 3) * 50, // توزيع السفن جنباً إلى جنب في خط البداية
-                y: height - 100,
-                angle: -Math.PI / 2,
-                speed: 4,
-                color: colors[index % colors.length],
-                input: { left: false, right: false },
-                score: 0
-            };
-            document.getElementById('player-count').innerText = `اللاعبين في الحلبة: ${Object.keys(players).length} / 7`;
+            // إعداد بيانات خلفية الكرت للقرصان الحالي
+            let r = playerRoles[currentIdx];
+            document.getElementById('role-icon').innerText = r.icon;
+            document.getElementById('role-name').innerText = r.name;
+            document.getElementById('role-name').style.color = r.spy ? '#ff0055' : '#00f0ff';
+            document.getElementById('role-desc').innerText = r.desc;
         }
 
-        // التحكم عبر كيبورد الكمبيوتر للـ Host أيضاً للتجربة
-        let hostKeys = { left: false, right: false };
-        window.addEventListener('keydown', (e) => {
-            if(e.key === 'ArrowLeft') hostKeys.left = true;
-            if(e.key === 'ArrowRight') hostKeys.right = true;
-            if(players[myId]) players[myId].input = hostKeys;
-        });
-        window.addEventListener('keyup', (e) => {
-            if(e.key === 'ArrowLeft') hostKeys.left = false;
-            if(e.key === 'ArrowRight') hostKeys.right = false;
-            if(players[myId]) players[myId].input = hostKeys;
-        });
-
-        // حلقة التحديث والرسم الرئيسية الـ 60 FPS
-        function startEngine() {
-            function loop() {
-                // رسم الفضاء المعتم مع Motion Blur
-                ctx.fillStyle = 'rgba(2, 2, 5, 0.3)';
-                ctx.fillRect(0, 0, width, height);
-
-                // رسم خلفية النجوم المتحركة بسرعة لأسفل الشاشة
-                ctx.fillStyle = '#fff';
-                stars.forEach(s => {
-                    s.y += s.spd;
-                    if(s.y > height) { s.y = 0; s.x = Math.random()*width; }
-                    ctx.fillRect(s.x, s.y, s.sz, s.sz);
-                });
-
-                // معالجة حركة كل سفينة من السفن السبعة
-                Object.keys(players).forEach(id => {
-                    let p = players[id];
-                    
-                    // الدوران بناءً على الأزرار المضغوطة
-                    if(p.input.left) p.angle -= 0.05;
-                    if(p.input.right) p.angle += 0.05;
-
-                    // فيزياء الحركة الموجهة بزاوية الدوران المتجهي
-                    p.x += Math.cos(p.angle) * p.speed;
-                    p.y += Math.sin(p.angle) * p.speed;
-
-                    // منع الخروج من حواف الشاشة ومحاكاة الارتداد النيوني
-                    if(p.x < 0) { p.x = 0; p.angle = Math.PI - p.angle; }
-                    if(p.x > width) { p.x = width; p.angle = Math.PI - p.angle; }
-                    if(p.y < 0) { p.y = height; p.score++; } // إذا تجاوز الأعلى يكسب نقطة ويلف مجدداً
-                    if(p.y > height) p.y = height;
-
-                    // --- رسم سفينة النيون ثلاثية الشكل ---
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.angle);
-                    
-                    // توهج النيون الخاص بالسفينة
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = p.color;
-                    ctx.strokeStyle = p.color;
-                    ctx.lineWidth = 3;
-                    ctx.fillStyle = '#111';
-
-                    ctx.beginPath();
-                    ctx.moveTo(15, 0);
-                    ctx.lineTo(-15, -10);
-                    ctx.lineTo(-10, 0);
-                    ctx.lineTo(-15, 10);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.restore();
-                    ctx.shadowBlur = 0;
-
-                    // كتابة اسم اللاعب والسكور فوق سفينته
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '12px Cairo';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${p.name} [${p.score}]`, p.x, p.y - 20);
-                });
-
-                // في حال كان المضيف يغذي البقية، نقوم ببث الإحداثيات المحدثة بشكل مستمر
-                if(isHost) {
-                    broadcast({ type: 'sync', players: players });
-                }
-
-                requestAnimationFrame(loop);
+        function flipCard() {
+            if(!isFlipped) {
+                document.getElementById('p-card').classList.add('flipped');
+                isFlipped = true;
+                document.getElementById('next-player-btn').style.display = 'block';
+                // تفعيل ميزة الاهتزاز البسيطة بالجوال لزيادة الإثارة والواقعية
+                if (navigator.vibrate) navigator.vibrate(50);
             }
-            requestAnimationFrame(loop);
         }
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
+        function goToNextPlayer() {
+            currentIdx++;
+            if(currentIdx < totalPlayers) {
+                setupPlayerReveal();
+            } else {
+                changeScreen('scr-map');
+            }
+        }
+
+        function buildMapUI() {
+            let container = document.getElementById('island-grid');
+            container.innerHTML = "";
+            
+            gridData.forEach((type, idx) => {
+                let tile = document.createElement('div');
+                tile.className = "map-tile";
+                tile.innerText = "❓";
+                tile.onclick = () => revealTile(tile, type, idx);
+                container.appendChild(tile);
+            });
+
+            document.getElementById('gold-counter').innerText = `💰 الذهب المكتشف: 0/3`;
+            document.getElementById('fail-counter').innerText = `💥 الفخاخ: 0/2`;
+        }
+
+        function revealTile(el, type, idx) {
+            if(el.classList.contains('revealed-gold') || el.classList.contains('revealed-bomb')) return;
+
+            if(type === 'gold') {
+                el.className = "map-tile revealed-gold";
+                el.innerText = "👑";
+                goldFound++;
+                document.getElementById('gold-counter').innerText = `💰 الذهب المكتشف: ${goldFound}/3`;
+                if(navigator.vibrate) navigator.vibrate([40, 40, 40]);
+            } else if(type === 'bomb') {
+                el.className = "map-tile revealed-bomb";
+                el.innerText = "💣";
+                trapsTriggered++;
+                document.getElementById('fail-counter').innerText = `💥 الفخاخ: ${trapsTriggered}/2`;
+                if(navigator.vibrate) navigator.vibrate(300); // اهتزاز قوي عند انفجار الفخ
+            } else {
+                el.style.borderColor = "rgba(255,255,255,0.3)";
+                el.innerText = "💨";
+            }
+
+            // فحص شروط الفوز أو الخسارة الفورية
+            setTimeout(() => {
+                if(goldFound === 3) {
+                    alert("🎉 انتصار ساحق للقراصنة الشرفاء! تم جمع الذهب بالكامل وطرد الخونة!");
+                    endGameReset();
+                } else if(trapsTriggered === 2) {
+                    alert("🏴‍☠️ انتصار الخونة! انفجرت السفينة وغرقت الصناديق في أعماق المحيط!");
+                    endGameReset();
+                }
+            }, 300);
+        }
+
+        function endGameReset() {
+            changeScreen('scr-start');
+        }
     </script>
 </body>
 </html>
