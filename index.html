@@ -270,7 +270,7 @@
         let isGameStartedLocally = false;
         
         const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
-              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events, SAT = Matter.SAT;
+              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events;
               
         let engine, render, runner;
         let myActiveBlock = null;
@@ -459,9 +459,11 @@
             };
 
             engine = Engine.create();
-            engine.positionIterations = 24;
-            engine.velocityIterations = 24;
-            engine.world.gravity.y = 1.5; 
+            
+            // رفع كفاءة محاذاة الإطارات لحل مشكلة الاختراق تماماً بطريقة حقيقية
+            engine.positionIterations = 30;
+            engine.velocityIterations = 30;
+            engine.world.gravity.y = 1.4; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -476,7 +478,7 @@
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            // ضبط موضع المستطيل (القاعدة الخشبية) بالبكسل لتطابق السطح تماماً
+            // ضبط القاعدة بشكل متزن تماماً
             myBase = Bodies.rectangle(myTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
             const oppBase = Bodies.rectangle(oppTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
             
@@ -489,14 +491,24 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
+            // محاكاة حقيقية نقية: بمجرد أن يلمس المكعب النشط أي جزء صلب تحت، يتحول فوراً لفيزياء حرة، والمحرك يتكفل بالتوازن
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
                     let bodyB = pair.bodyB;
+
+                    // فحص حساس منطقة الخسارة بالأسفل
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
                         if (block !== myBase && block !== oppBase && !block.isStatic) {
                             handleLoss();
+                        }
+                    }
+
+                    // نظام فك الثبات النقي: إذا تلامس المكعب النشط الحقيقي مع أي قطعة مستقرة
+                    if (myActiveBlock && myActiveBlock.isStatic) {
+                        if (bodyA === myActiveBlock || bodyB === myActiveBlock) {
+                            lockActiveBlock();
                         }
                     }
                 });
@@ -504,40 +516,14 @@
 
             Events.on(engine, 'beforeUpdate', function() {
                 if (myActiveBlock && myActiveBlock.isStatic) {
-                    // حركة انسيابية طبيعية بالكامل
+                    // نزول انسيابي مستقر 
                     Body.setPosition(myActiveBlock, { 
                         x: myActiveBlock.position.x, 
                         y: myActiveBlock.position.y + currentDropSpeed 
                     });
 
-                    // فحص رياضي هندسي استباقي لمنع التداخل والضغط بشكل كامل وقاطع
-                    let bodies = Composite.allBodies(engine.world);
-                    let shouldLock = false;
-                    let contactY = 0;
-
-                    for (let i = 0; i < bodies.length; i++) {
-                        let b = bodies[i];
-                        if (b !== myActiveBlock && b.label !== 'deathSensor') {
-                            // التحقق الشامل عبر خوارزمية SAT المدعومة برمجياً
-                            let collision = SAT.collides(myActiveBlock, b);
-                            if (collision.collided) {
-                                shouldLock = true;
-                                contactY = b.position.y;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (shouldLock) {
-                        // الحل القاطع: إلغاء الضغط بسحب المكعب ليكون فوق السطح تماماً بـ 2 بكسل وتصفير قوى الدفع
-                        Body.setPosition(myActiveBlock, { 
-                            x: myActiveBlock.position.x, 
-                            y: myActiveBlock.position.y - (currentDropSpeed + 2)
-                        });
-                        lockActiveBlock();
-                    }
-
-                    if (myActiveBlock && myActiveBlock.position.y > (h + cameraYOffset) - 100) {
+                    // قيد أمان في حال تجاوز الشاشة السفلية
+                    if (myActiveBlock.position.y > (h + cameraYOffset) - 100) {
                         lockActiveBlock();
                     }
                 }
@@ -572,14 +558,15 @@
 
         function createTetromino(type, x, y, isStaticOption) {
             const s = 25; 
+            // ضبط مصمت حقيقي (Rigid Body) يطابق تماسك الأخشاب الثقيلة لـ Tricky Towers ويمنع الاختراق كلياً
             const opt = { 
                 isStatic: isStaticOption, 
                 friction: 1.0,             // احتكاك كامل مانع للتزحلق السطحي العشوائي
-                frictionStatic: 1.0,       // تماسك قوي لقفص وحبس القطع فوق بعضها
-                frictionAir: 0.02,         
-                restitution: 0.0,          // تصفير كامل للارتداد لقتل ردات الفعل المنبثقة
-                density: 0.2,              // ثقل مادي رصين يمنع الأجسام من التخلخل
-                slop: 0.0,                 // تصفير كامل لقيمة الـ Overlap المسموحة في المحرك
+                frictionStatic: 1.0,       // تماسك هائل عند الاستقرار الفعلي فوق الأسطح
+                frictionAir: 0.01,         
+                restitution: 0.0,          // تصفير كامل للارتداد لقتل القفزات المزعجة
+                density: 0.25,             // ثقل حقيقي عالي يمنع تماماً دخول الأجسام في بعضها البعض
+                slop: 0.0,                 // تصفير كامل لقيمة التداخل المسموحة برمجياً لمنع التخلخل
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
@@ -604,7 +591,7 @@
             Composite.add(engine.world, myActiveBlock);
         }
 
-        // خطوة حركة دقيقة بمقدار 12 بكسل لضمان محاذاة زوايا هندسية صحيحة 100%
+        // حركة دقيقة (12 بكسل) لتمنحك وزناً خرافياً أثناء التحكم بمحاذاة الأطراف والزوايا
         function moveActive(dir) {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 12), y: myActiveBlock.position.y });
@@ -618,8 +605,9 @@
         function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             
-            // فك الثبات مع تصفير السرعة اللحظية تماماً لمنع توليد الدفع الانفجاري المتداخل
+            // فك الثبات النقي: نجعله حراً بشكل كامل ليستقر بفيزيائه الطبيعية بناء على مكانه
             Body.setStatic(myActiveBlock, false);
+            // تصفير أي تسارعات سابقة ليرسو بلين تماسك الخشب
             Body.setVelocity(myActiveBlock, { x: 0, y: 0.0 });
             Body.setAngularVelocity(myActiveBlock, 0);
             
