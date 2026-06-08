@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2 family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         
@@ -85,12 +85,12 @@
         #game-canvas-container { position: relative; width: 100%; height: 100%; }
         #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
         
-        .ingame-ui-header { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 15; pointer-events: none; }
+        .ingame-ui-header { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 100; pointer-events: none; }
         .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.7); padding: 10px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .header-ui-card .name { color: #fff; font-weight: bold; font-size: 1.1rem; font-family: 'Cairo'; }
         .header-ui-card .score { color: #00ff88; font-size: 1.3rem; font-family: 'Orbitron'; font-weight: 900; }
         
-        .mobile-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 20; }
+        .mobile-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 100; }
         .ctrl-btn { width: 65px; height: 65px; background: rgba(15,15,20,0.8); border: 2px solid rgba(0,240,255,0.5); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.6); transform: scale(1); }
         .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
 
@@ -98,7 +98,6 @@
         .vote-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s; position: relative; width: 160px; }
         .vote-card:hover, .vote-card.voted { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 25px rgba(255,215,0,0.2); }
 
-        /* تجميل شاشة الخسارة السينمائية الحمراء */
         .gameover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20, 3, 3, 0.92); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.4); }
         .gameover-overlay.active { opacity: 1; pointer-events: auto; }
         .gameover-title { color: #ff3333; font-size: 3rem; font-weight: 900; letter-spacing: 6px; text-shadow: 0 0 20px rgba(255, 51, 51, 0.7), 2px 2px 10px #000; font-family: 'Orbitron'; text-align: center; animation: pulseGlow 2s infinite ease-in-out; }
@@ -192,7 +191,7 @@
                 <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
                 <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
                 <p>تسريع نزول القطعة انسيابياً <span>[ S ] أو [ ⬇️ ]</span></p>
-                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! ستتحرك القطع للأسفل تلقائياً، وإذا اختل التوازن ستسقط وتخسر!</p>
+                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء تماسك حقيقية! ستتحرك الكاميرا للأعلى تلقائياً كلما ارتفع برجه، توازن جيداً لتفوز!</p>
                 <button class="sony-btn" onclick="hideInstructions()" style="color:#ffdf00; margin-top:15px; font-size:1rem;">إغلاق / CLOSE</button>
             </div>
         </div>
@@ -282,6 +281,9 @@
         let normalDropSpeed = 1.2;  
         let fastDropSpeed = 8.0;    
         let currentDropSpeed = normalDropSpeed; 
+
+        // متغير التحكم بارتفاع الكاميرا الافتراضي
+        let cameraYOffset = 0;
 
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
@@ -432,7 +434,6 @@
             document.getElementById('ingame-ui-header').innerHTML = html;
         }
 
-        // تحسين عرض الخسارة بشاشة حمراء مدمجة ومميزة
         function handleLoss() {
             if (runner) Runner.stop(runner);
             const overlay = document.getElementById('loss-overlay');
@@ -458,10 +459,10 @@
             };
 
             engine = Engine.create();
-            // وضع قيم ضبط استقرار عالم الفيزياء لمنع الرجرجة والانفجارات الفيزيائية
-            engine.positionIterations = 12;
-            engine.velocityIterations = 12;
-            engine.world.gravity.y = 1.4; 
+            // زيادة معدلات دقة فحص تصادم وحل أسطح البرج لمنع التفكك التلقائي
+            engine.positionIterations = 16;
+            engine.velocityIterations = 16;
+            engine.world.gravity.y = 1.5; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -479,7 +480,8 @@
             const myBase = Bodies.rectangle(myTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             const oppBase = Bodies.rectangle(oppTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             
-            const deathSensor = Bodies.rectangle(w / 2, h - 15, w, 30, { 
+            // مستشعر الموت يتحرك ديناميكياً مع حركة الكاميرا دائماً ليبقى بالأسفل تماماً
+            const deathSensor = Bodies.rectangle(w / 2, h - 15, w * 3, 40, { 
                 isSensor: true, 
                 isStatic: true,
                 label: 'deathSensor',
@@ -488,7 +490,6 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
-            // التحقق من لمس منطقة الموت السفلية
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
@@ -503,34 +504,58 @@
                 });
             });
 
-            // تحريك المكعب الفعال بسلاسة تامة مع فحص استباقي لمنع الرجرجة العنيفة
+            // حلقة التحديث المستمر للتحكم بالنزول ونظام الكاميرا الصاعدة الآلي
             Events.on(engine, 'beforeUpdate', function() {
+                // 1. تحريك قطعة التحكم الحالية بسلاسة لأسفل
                 if (myActiveBlock && myActiveBlock.isStatic) {
                     Body.setPosition(myActiveBlock, { 
                         x: myActiveBlock.position.x, 
                         y: myActiveBlock.position.y + currentDropSpeed 
                     });
 
-                    // فحص ذكي: إذا أصبح المكعب على بُعد مسافة تصادمية صغيرة جداً من أي قطعة مستقرة، نقوم بفك ثباته فوراً
-                    // لتتركه يهبط بنعومة متناهية بدون قوة دفع Teleportation مفاجئة تفكك البرج.
+                    // التحقق الذكي من ملامسة أسطح البرج الحالية
                     let bodies = Composite.allBodies(engine.world);
                     for (let i = 0; i < bodies.length; i++) {
                         let b = bodies[i];
                         if (b !== myActiveBlock && b.label !== 'deathSensor') {
-                            // حساب تقريبي للمسافة العمودية والعمق لمنع الانفجار الفيزيائي
                             let distY = Math.abs(myActiveBlock.position.y - b.position.y);
                             let distX = Math.abs(myActiveBlock.position.x - b.position.x);
-                            if (distY < 42 && distX < 65) {
+                            if (distY < 40 && distX < 60) {
                                 lockActiveBlock();
                                 break;
                             }
                         }
                     }
 
-                    if (myActiveBlock && myActiveBlock.position.y > h - 140) {
+                    // قيد الأمان لفك الثبات قبل الأرض بقليل في حال لم يلمس شيئاً
+                    if (myActiveBlock && myActiveBlock.position.y > (h + cameraYOffset) - 140) {
                         lockActiveBlock();
                     }
                 }
+
+                // 2. تحديث صعود الكاميرا الديناميكي بناءً على أعلى مكعب مستقر بالبرج
+                let highestY = h - 80; // نقطة بداية القاعدة
+                myPlacedBlocks.forEach(b => {
+                    if (b.position.y < highestY) {
+                        highestY = b.position.y;
+                    }
+                });
+
+                // إذا ارتفع البرج واقترب من سقف اللعبة الحالي (أقل من مسافة 250 بكسل من القمة)
+                let targetOffset = 0;
+                if (highestY < 250 + cameraYOffset) {
+                    targetOffset = highestY - 250;
+                }
+
+                // تطبيق التتبع السلس المريح للعين صعوداً وهبوطاً (Camera LERP Interpolation)
+                cameraYOffset += (targetOffset - cameraYOffset) * 0.05;
+
+                // تحريك عدسة العرض (العالم الافتراضي) ومستشعر الموت سوياً للأعلى
+                Render.lookAt(render, {
+                    min: { x: 0, y: cameraYOffset },
+                    max: { x: w, y: h + cameraYOffset }
+                });
+                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 15 });
             });
 
             Render.run(render);
@@ -543,13 +568,15 @@
 
         function createTetromino(type, x, y, isStaticOption) {
             const s = 25; 
-            // تم ضبط خيارات المادة الفيزيائية هنا لمنع الارتداد (Restitution = 0.01) وزيادة تماسك وثقل المكعبات (Friction & Density)
+            // خيارات فيزياء تماسك Tricky Towers: تصفير الارتداد، تعظيم الاحتكاك العالي، وتدوير الزوايا مجهرياً لتماسك الحواف
             const opt = { 
                 isStatic: isStaticOption, 
-                friction: 0.95, 
-                frictionAir: 0.02,
-                restitution: 0.01, 
-                density: 0.05, 
+                friction: 0.99,            // احتكاك هائل يمنع الانزلاق السطحي المزعج
+                frictionStatic: 1.0,       // تماسك قوي جداً عند استقرار القطع فوق بعضها
+                frictionAir: 0.03,         
+                restitution: 0.0,          // تصفير قوى الارتداد يمنع المكعبات من القفز وتفكيك البرج
+                density: 0.08,             // ثقل مميز وثابت للقطع
+                chamfer: { radius: 1.5 },  // تدوير الحواف لثبات هندسي متناسق
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
@@ -570,7 +597,8 @@
 
         function spawnNewBlock() {
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            myActiveBlock = createTetromino(randType, myTowerX, 80, true);
+            // توليد المكعب النشط دائماً عند قمة الشاشة العلوية الحالية للكاميرا لمنع اختفائه بالصعود
+            myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 80, true);
             Composite.add(engine.world, myActiveBlock);
         }
 
@@ -587,10 +615,9 @@
         function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             
-            // فك ثبات القطعة بنعومة بالغة
+            // فك الثبات وتثبيت السرعة لترسو القطعة بنعومة واستقرار بدون طاقة دفع مدمرة
             Body.setStatic(myActiveBlock, false);
-            // إعطاء دفعة خفيفة جداً لأسفل لضمان استقرار سريع دون انفجار فيزيائي
-            Body.setVelocity(myActiveBlock, { x: 0, y: 1 });
+            Body.setVelocity(myActiveBlock, { x: 0, y: 0.5 });
             
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
@@ -615,7 +642,7 @@
                 dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, x: myActiveBlock.position.x, y: myActiveBlock.position.y, angle: myActiveBlock.angle });
             }
             myPlacedBlocks.forEach(b => {
-                if(b.position.y < window.innerHeight + 200) {
+                if(b.position.y < window.innerHeight + cameraYOffset + 200) {
                     dataToSend.push({ id: b.myId, type: b.myType, x: b.position.x, y: b.position.y, angle: b.angle });
                 }
             });
