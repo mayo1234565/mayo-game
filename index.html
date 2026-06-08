@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Mayo Game - Ascension Towers</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,7 +11,11 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * { 
+            box-sizing: border-box; margin: 0; padding: 0; user-select: none; 
+            -webkit-touch-callout: none; -webkit-user-select: none; 
+            touch-action: manipulation; /* يمنع الزوم التلقائي عند النقر المتكرر على الجوال */
+        }
         
         body, html { 
             width: 100%; height: 100%; overflow: hidden; 
@@ -108,7 +112,6 @@
 <body>
 
     <div class="game-container">
-        
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
@@ -203,10 +206,10 @@
                 <div class="ingame-ui-header" id="ingame-ui-header"></div>
                 
                 <div class="mobile-controls">
-                    <button class="ctrl-btn" onmousedown="moveActive(-1)" ontouchstart="moveActive(-1)"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button class="ctrl-btn" onmousedown="rotateActive()" ontouchstart="rotateActive()"><i class="fa-solid fa-rotate-right"></i></button>
-                    <button class="ctrl-btn" onmousedown="setFastDrop(true)" onmouseup="setFastDrop(false)" ontouchstart="setFastDrop(true)" ontouchend="setFastDrop(false)"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="ctrl-btn" onmousedown="moveActive(1)" ontouchstart="moveActive(1)"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="ctrl-btn" id="ctrl-left"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="ctrl-btn" id="ctrl-rotate"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="ctrl-btn" id="ctrl-down"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="ctrl-btn" id="ctrl-right"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
 
@@ -222,7 +225,6 @@
             <div class="vote-grid" id="vote-grid-container"></div>
             <button class="sony-btn" style="margin-top: 30px; color:#ffdf00;" onclick="location.reload()">MAIN MENU</button>
         </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -237,7 +239,6 @@
         }
         document.addEventListener("DOMContentLoaded", clearAllInputs);
         window.addEventListener("pageshow", clearAllInputs);
-        window.onload = clearAllInputs;
 
         let db;
         try {
@@ -250,13 +251,9 @@
                 messagingSenderId: "153594840301",
                 appId: "1:153594840301:web:17e64f7ae8a1d7825a38e4"
             };
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch (error) {
-            console.error("Firebase Error:", error);
-        }
+        } catch (error) { console.error("Firebase Error:", error); }
 
         const animeHeroes = {
             'shadow': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shadow&backgroundColor=312e81' },
@@ -278,19 +275,18 @@
         let myPlacedBlocks = [];
         let oppPlacedBlocksMap = {}; 
 
-        let normalDropSpeed = 2.0;  
-        let fastDropSpeed = 8.0;    
+        let normalDropSpeed = 1.8;  
+        let fastDropSpeed = 7.0;    
         let currentDropSpeed = normalDropSpeed; 
+        let isWaitingForNextSpawn = false;
 
         let cameraYOffset = 0;
-        let myBase = null;
+        let myBase = null, oppBase = null;
 
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
 
-        try {
-            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`;
-        } catch(e) {}
+        try { document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`; } catch(e) {}
 
         function toggleMenu(event, menuId) { 
             event.stopPropagation();
@@ -299,10 +295,7 @@
             document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
             menu.style.display = isVisible ? 'none' : 'flex'; 
         }
-        
-        document.addEventListener('click', () => { 
-            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
-        });
+        document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
         
         function changeHero(key, el) { 
             currentHero = key; 
@@ -310,22 +303,18 @@
             document.querySelectorAll('#pop-hero .pop-opt').forEach(opt => opt.classList.remove('selected')); 
             el.classList.add('selected'); 
         }
-        
         function changeOrnament(tier, el) { 
             currentOrnament = tier; 
             document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; 
             document.querySelectorAll('#pop-tier .pop-opt').forEach(opt => opt.classList.remove('selected')); 
             el.classList.add('selected'); 
         }
-        
         function switchScreen(screenId) { 
             document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); }); 
             document.getElementById(screenId).classList.remove('hidden'); 
         }
-        
         function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); document.getElementById('join-room-code').focus(); }
         function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
-
         function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
         function hideInstructions() { document.getElementById('instructions-modal').classList.add('hidden'); }
 
@@ -336,43 +325,37 @@
         }
 
         function buildLobby(actionType) {
-            if(!db) return alert("خطأ: لم يتم الاتصال بقاعدة البيانات.");
-            
+            if(!db) return alert("خطأ في الاتصال بقاعدة البيانات.");
             const inputName = document.getElementById('player-name').value.trim();
-            if(!inputName) return alert("Please type your profile name first!");
+            if(!inputName) return alert("الرجاء كتابة اسم اللاعب أولاً!");
             pName = inputName;
             const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0 };
 
-            try {
-                if(actionType === 'create') {
-                    document.getElementById('btn-create').innerText = "LOADING...";
-                    currentRoomId = generateProRoomCode();
-                    myPlayerId = "p1"; 
-                    db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
-                        document.getElementById('btn-launch-match').style.display = 'block'; 
+            if(actionType === 'create') {
+                document.getElementById('btn-create').innerText = "LOADING...";
+                currentRoomId = generateProRoomCode();
+                myPlayerId = "p1"; 
+                db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
+                    document.getElementById('btn-launch-match').style.display = 'block'; 
+                    document.getElementById('lobby-room-number').innerText = currentRoomId;
+                    switchScreen('screen-lobby'); listenToRoomChanges();
+                });
+            } else if(actionType === 'join') {
+                let code = document.getElementById('join-room-code').value.trim().toUpperCase();
+                if(!code) return;
+                document.getElementById('btn-join').innerText = "WAIT...";
+                currentRoomId = code; myPlayerId = "p2";
+                db.ref('rooms/' + currentRoomId).once('value').then(snap => {
+                    if(snap.exists() && snap.val().status === "waiting") {
+                        db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
+                        db.ref('rooms/' + currentRoomId).update({ status: "full" });
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
                         switchScreen('screen-lobby'); listenToRoomChanges();
-                    });
-                } else if(actionType === 'join') {
-                    let code = document.getElementById('join-room-code').value.trim().toUpperCase();
-                    if(!code) return;
-                    document.getElementById('btn-join').innerText = "WAIT...";
-                    currentRoomId = code; myPlayerId = "p2";
-                    db.ref('rooms/' + currentRoomId).once('value').then(snap => {
-                        if(snap.exists() && snap.val().status === "waiting") {
-                            db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
-                            db.ref('rooms/' + currentRoomId).update({ status: "full" });
-                            document.getElementById('lobby-room-number').innerText = currentRoomId;
-                            switchScreen('screen-lobby'); listenToRoomChanges();
-                        } else {
-                            alert("الغرفة غير موجودة أو ممتلئة!");
-                            document.getElementById('btn-join').innerText = "ENTER";
-                        }
-                    });
-                }
-            } catch(err) {
-                console.error(err);
-                alert("حدث خطأ أثناء الإنشاء.");
+                    } else {
+                        alert("الغرفة غير موجودة أو ممتلئة!");
+                        document.getElementById('btn-join').innerText = "ENTER";
+                    }
+                });
             }
         }
 
@@ -382,21 +365,15 @@
             db.ref('rooms/' + currentRoomId).on('value', snap => {
                 const room = snap.val();
                 if(!room) return;
-                
                 if(room.status === "waiting" || room.status === "full") {
                     document.getElementById('player-mesh').innerHTML = (room.players.p1 ? generateLobbyCard("HOST", room.players.p1) : '') + (room.players.p2 ? generateLobbyCard("PARTY", room.players.p2) : '');
                 }
-                
                 if(room.status === "playing" && !isGameStartedLocally) {
                     isGameStartedLocally = true;
                     hideInstructions();
                     initGameplayUI(room.players);
                 }
-                
-                if(room.status === "playing" && engine) {
-                    updateHeaders(room.players);
-                }
-                
+                if(room.status === "playing" && engine) updateHeaders(room.players);
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
                     if(runner) Runner.stop(runner);
                     initVotingUI(room.players);
@@ -410,15 +387,17 @@
                 if(!data) return;
                 
                 Object.values(data).forEach(bData => {
+                    // المزامنة النسبية: حساب الموقع الحقيقي للخصم في جهة شاشتك الصحيحة
+                    let relativeX = bData.isMyActive ? (oppTowerX + bData.offsetX) : (oppTowerX + bData.offsetX);
+                    let relativeY = bData.y;
+
                     if(!oppPlacedBlocksMap[bData.id]) {
-                        // عند استقبال مكعب الخصم، ننشئه كجسم مستقر تماماً ومحاذاته صحيحة في جهته
-                        let b = createTetromino(bData.type, bData.x, bData.y, true); 
+                        let b = createTetromino(bData.type, relativeX, relativeY, true); 
                         b.myId = bData.id;
                         oppPlacedBlocksMap[bData.id] = b;
                         Composite.add(engine.world, b);
                     } else {
-                        // مزامنة انسيابية تمنع الارتجاج
-                        Body.setPosition(oppPlacedBlocksMap[bData.id], {x: bData.x, y: bData.y});
+                        Body.setPosition(oppPlacedBlocksMap[bData.id], { x: relativeX, y: relativeY });
                         Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
                     }
                 });
@@ -443,74 +422,80 @@
             if (overlay) overlay.classList.add('active');
         }
 
-        function setFastDrop(isFast) {
-            currentDropSpeed = isFast ? fastDropSpeed : normalDropSpeed;
-        }
-
         function initGameplayUI(players) {
             switchScreen('screen-gameplay');
             
+            // تهيئة وإصلاح أزرار الجوال لمنع عطل الـ Double-Tap Zoom تماماً
+            const buttons = [
+                { id: 'ctrl-left', action: () => moveActive(-1) },
+                { id: 'ctrl-right', action: () => moveActive(1) },
+                { id: 'ctrl-rotate', action: () => rotateActive() }
+            ];
+            buttons.forEach(btn => {
+                let el = document.getElementById(btn.id);
+                if(el) {
+                    el.addEventListener('touchstart', (e) => { e.preventDefault(); btn.action(); }, {passive: false});
+                    el.addEventListener('mousedown', (e) => { e.preventDefault(); btn.action(); });
+                }
+            });
+
+            let downBtn = document.getElementById('ctrl-down');
+            if(downBtn) {
+                downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); currentDropSpeed = fastDropSpeed; }, {passive: false});
+                downBtn.addEventListener('touchend', (e) => { e.preventDefault(); currentDropSpeed = normalDropSpeed; }, {passive: false});
+                downBtn.addEventListener('mousedown', (e) => { e.preventDefault(); currentDropSpeed = fastDropSpeed; });
+                downBtn.addEventListener('mouseup', (e) => { e.preventDefault(); currentDropSpeed = normalDropSpeed; });
+            }
+
+            // تحكم الكيبورد
             document.onkeydown = function(e) {
                 if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
                 if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-1);
                 if (e.key === 'ArrowRight' || e.key === 'd') moveActive(1);
-                if (e.key === 'ArrowDown' || e.key === 's') setFastDrop(true);
+                if (e.key === 'ArrowDown' || e.key === 's') currentDropSpeed = fastDropSpeed;
             };
-
             document.onkeyup = function(e) {
-                if (e.key === 'ArrowDown' || e.key === 's') setFastDrop(false);
+                if (e.key === 'ArrowDown' || e.key === 's') currentDropSpeed = normalDropSpeed;
             };
 
             engine = Engine.create();
-            
-            // تحسين معالجة المحرك للتصادمات المستمرة لمنع الاختراق نهائياً
-            engine.positionIterations = 25;
-            engine.velocityIterations = 25;
-            engine.world.gravity.y = 1.2; 
+            engine.positionIterations = 20;
+            engine.velocityIterations = 20;
+            engine.enableSleeping = true; // تفعيل ميزة النوم الفيزيائي لضبط الرسبون بدقة خرافية
+            engine.world.gravity.y = 0.0; // إلغاء الجاذبية الافتراضية للتحكم بالنزول النقي قبل اللمس
 
             const canvas = document.getElementById('physics-canvas');
-            const w = window.innerWidth;
-            const h = window.innerHeight;
+            const w = window.innerWidth, h = window.innerHeight;
             
             render = Render.create({
-                canvas: canvas,
-                engine: engine,
+                canvas: canvas, engine: engine,
                 options: { width: w, height: h, wireframes: false, background: 'transparent' }
             });
 
-            // حل مشكلة التواجد في نفس المكان: المضيف (p1) على اليسار، والمنضم (p2) على اليمين دائماً
-            myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
-            oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
+            // توزيع الأماكن: كل لاعب يرى نفسه في مكانه الصحيح والخصم في مكانه
+            myTowerX = myPlayerId === 'p1' ? w * 0.28 : w * 0.72;
+            oppTowerX = myPlayerId === 'p1' ? w * 0.72 : w * 0.28;
 
-            myBase = Bodies.rectangle(myTowerX, h - 60, 180, 30, { isStatic: true, render: { fillStyle: '#4e342e', strokeStyle: '#00f0ff', lineWidth: 3 } });
-            const oppBase = Bodies.rectangle(oppTowerX, h - 60, 180, 30, { isStatic: true, render: { fillStyle: '#4e342e', strokeStyle: '#ff4a4a', lineWidth: 3 } });
+            myBase = Bodies.rectangle(myTowerX, h - 80, 170, 25, { isStatic: true, render: { fillStyle: '#3e2723', strokeStyle: '#00f0ff', lineWidth: 3 } });
+            oppBase = Bodies.rectangle(oppTowerX, h - 80, 170, 25, { isStatic: true, render: { fillStyle: '#263238', strokeStyle: '#ff4a4a', lineWidth: 3 } });
             
-            const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { 
-                isSensor: true, 
-                isStatic: true,
-                label: 'deathSensor',
-                render: { visible: false }
-            });
-
+            const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { isSensor: true, isStatic: true, label: 'deathSensor', render: { visible: false } });
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
+            // نظام رسبون نقي وحقيقي مبني على الاصطدام الفعلي
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
-                    let bodyA = pair.bodyA;
-                    let bodyB = pair.bodyB;
-
+                    let bodyA = pair.bodyA, bodyB = pair.bodyB;
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
-                        if (block !== myBase && block !== oppBase && !block.isStatic) {
-                            handleLoss();
-                        }
+                        if (block !== myBase && block !== oppBase && !block.isStatic) handleLoss();
                     }
 
-                    // قفل وتحرير القطعة بمجرد ملامستها لأي سطح تحتها
-                    if (myActiveBlock && !myActiveBlock.isStatic) {
+                    // تفعيل الجاذبية فور ملامسة أي قطعة صلبة مستقرة
+                    if (myActiveBlock) {
                         if (bodyA === myActiveBlock || bodyB === myActiveBlock) {
-                            // إذا لمست القطعة الأساس أو قطعة مستقرة سابقة
-                            if(bodyA === myBase || bodyB === myBase || myPlacedBlocks.includes(bodyA) || myPlacedBlocks.includes(bodyB)) {
+                            let target = bodyA === myActiveBlock ? bodyB : bodyA;
+                            if (target === myBase || myPlacedBlocks.includes(target)) {
                                 lockActiveBlock();
                             }
                         }
@@ -519,33 +504,29 @@
             });
 
             Events.on(engine, 'beforeUpdate', function() {
-                if (myActiveBlock) {
-                    // حركة فيزيائية نقية: نتحكم بالسرعة المتجهة لأسفل بدلاً من تغيير الموقع الإحداثي قسرياً لمنع الـ Overlap
-                    Body.setVelocity(myActiveBlock, { x: myActiveBlock.velocity.x, y: currentDropSpeed });
+                if (myActiveBlock && !myActiveBlock.isStatic) {
+                    // حركة فيزيائية عبر الـ velocity تمنع الاختراقات والتجميد عشوائياً
+                    Body.setVelocity(myActiveBlock, { x: 0, y: currentDropSpeed });
+                }
 
-                    if (myActiveBlock.position.y > (h + cameraYOffset) - 80) {
-                        lockActiveBlock();
+                // الكاميرا الصاعدة التلقائية والناعمة
+                let highestY = h - 80; 
+                myPlacedBlocks.forEach(b => { if (b.position.y < highestY) highestY = b.position.y; });
+                let targetOffset = 0;
+                if (highestY < 320 + cameraYOffset) targetOffset = highestY - 320;
+                cameraYOffset += (targetOffset - cameraYOffset) * 0.05;
+
+                Render.lookAt(render, { min: { x: 0, y: cameraYOffset }, max: { x: w, y: h + cameraYOffset } });
+                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 5 });
+
+                // فحص النوم الفيزيائي: إذا نام المكعب واستقر، نرسل إشارة الرسبون الجديدة بأمان
+                if (isWaitingForNextSpawn) {
+                    let allStable = myPlacedBlocks.every(b => b.isSleeping || b.speed < 0.2);
+                    if (allStable) {
+                        isWaitingForNextSpawn = false;
+                        spawnNewBlock();
                     }
                 }
-
-                // حركة الكاميرا الصاعدة التلقائية والناعمة
-                let highestY = h - 60; 
-                myPlacedBlocks.forEach(b => {
-                    if (b.position.y < highestY) highestY = b.position.y;
-                });
-
-                let targetOffset = 0;
-                if (highestY < 300 + cameraYOffset) {
-                    targetOffset = highestY - 300;
-                }
-
-                cameraYOffset += (targetOffset - cameraYOffset) * 0.04;
-
-                Render.lookAt(render, {
-                    min: { x: 0, y: cameraYOffset },
-                    max: { x: w, y: h + cameraYOffset }
-                });
-                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 5 });
             });
 
             Render.run(render);
@@ -553,23 +534,17 @@
             Runner.run(runner, engine);
 
             spawnNewBlock();
-            setInterval(syncMyPhysicsToFirebase, 90);
+            setInterval(syncMyPhysicsToFirebase, 80);
         }
 
         function createTetromino(type, x, y, isStaticOption) {
-            const s = 24; 
+            const s = 22; 
             const opt = { 
-                isStatic: isStaticOption, 
-                friction: 0.9,           
-                frictionStatic: 1.0,       
-                frictionAir: 0.02,         
-                restitution: 0.02,          
-                density: 0.1,             
-                slop: 0.01,                 
+                isStatic: isStaticOption, friction: 0.85, frictionStatic: 1.0, frictionAir: 0.01,
+                restitution: 0.0, density: 0.05, sleepThreshold: 20,
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
-            
             switch(type) {
                 case 'I': body = Bodies.rectangle(x, y, s*4, s, opt); break;
                 case 'O': body = Bodies.rectangle(x, y, s*2, s*2, opt); break;
@@ -585,50 +560,53 @@
         }
 
         function spawnNewBlock() {
-            setFastDrop(false);
+            if(isWaitingForNextSpawn) return;
+            currentDropSpeed = normalDropSpeed;
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            // تولد القطعة في جهة البرج الخاص باللاعب الحالي دائماً فوق الكاميرا
             myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 60, false);
             Composite.add(engine.world, myActiveBlock);
         }
 
         function moveActive(dir) {
-            if(!myActiveBlock) return;
-            // استخدام تآزر فيزيائي لنقل الموضع مع تصفير الـ Inertia لمنع الانزلاق غير المرغوب
-            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 18), y: myActiveBlock.position.y });
+            if(!myActiveBlock || isWaitingForNextSpawn) return;
+            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 20), y: myActiveBlock.position.y });
         }
 
         function rotateActive() {
-            if(!myActiveBlock) return;
-            // دوران فيزيائي وإعادة ضبط مركز الكتلة لتجنب مشاكل الـ Compound bodies
+            if(!myActiveBlock || isWaitingForNextSpawn) return;
             Body.setAngle(myActiveBlock, myActiveBlock.angle + (Math.PI / 2));
         }
 
         function lockActiveBlock() {
             if(!myActiveBlock) return;
             
+            // تحرير جاذبية العالم الفردية للمكعب ليسقط ويتوازن بشكل طبيعي
+            myActiveBlock.gravityScale = 1.0;
+            engine.world.gravity.y = 1.3; // تفعيل جاذبية المحرك العامة لضمان سقوطه
+
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
+            isWaitingForNextSpawn = true; // ننتظر استقرار القطعة بالكامل قبل التوليد القادم لمنع التجميد والرسبون العشوائي
 
             let currentScore = myPlacedBlocks.length;
             db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ score: currentScore });
 
             if(currentScore >= 20) {
                 db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
-            } else {
-                setTimeout(spawnNewBlock, 600);
             }
         }
 
         function syncMyPhysicsToFirebase() {
             if(!currentRoomId || !myPlayerId) return;
             let dataToSend = [];
+            
             if(myActiveBlock) {
-                dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, x: myActiveBlock.position.x, y: myActiveBlock.position.y, angle: myActiveBlock.angle });
+                // نرسل الـ offsetX (الموقع بالنسبة لمركز البرج الخاص بك) حتى يفهم الخصم مكانها الصحيح في شاشته
+                dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, offsetX: (myActiveBlock.position.x - myTowerX), y: myActiveBlock.position.y, angle: myActiveBlock.angle, isMyActive: true });
             }
             myPlacedBlocks.forEach(b => {
                 if(b.position.y < window.innerHeight + cameraYOffset + 200) {
-                    dataToSend.push({ id: b.myId, type: b.myType, x: b.position.x, y: b.position.y, angle: b.angle });
+                    dataToSend.push({ id: b.myId, type: b.myType, offsetX: (b.position.x - myTowerX), y: b.position.y, angle: b.angle, isMyActive: false });
                 }
             });
             db.ref(`rooms/${currentRoomId}/physics_${myPlayerId}`).set(dataToSend);
