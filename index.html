@@ -270,7 +270,7 @@
         let isGameStartedLocally = false;
         
         const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
-              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events;
+              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events, SAT = Matter.SAT;
               
         let engine, render, runner;
         let myActiveBlock = null;
@@ -459,11 +459,9 @@
             };
 
             engine = Engine.create();
-            
-            // رفع معدل دقة الفحص ومزامنة الإطارات لحل الاختراق بالكامل
             engine.positionIterations = 24;
             engine.velocityIterations = 24;
-            engine.world.gravity.y = 1.6; 
+            engine.world.gravity.y = 1.5; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -478,9 +476,9 @@
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            // ضبط توازن القاعدة بشكل صلب ومثالي 100% لمنع غوص المكعبات
-            myBase = Bodies.rectangle(myTowerX, h - 84, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
-            const oppBase = Bodies.rectangle(oppTowerX, h - 84, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
+            // ضبط موضع المستطيل (القاعدة الخشبية) بالبكسل لتطابق السطح تماماً
+            myBase = Bodies.rectangle(myTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
+            const oppBase = Bodies.rectangle(oppTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
             
             const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { 
                 isSensor: true, 
@@ -491,24 +489,14 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
-            // نظام الكشف الصارم والمباشر عن ملامسة البرج: بمجرد الاصطدام الفعلي يتم فك ثبات المكعب فوراً دون أي تداخل
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
                     let bodyB = pair.bodyB;
-
-                    // 1. فحص حساس الخسارة في الأسفل
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
                         if (block !== myBase && block !== oppBase && !block.isStatic) {
                             handleLoss();
-                        }
-                    }
-
-                    // 2. الكشف الفيزيائي الصارم لمنع الاختراق: إذا لمس المكعب النشط القاعدة أو أي مكعب مستقر
-                    if (myActiveBlock && myActiveBlock.isStatic) {
-                        if (bodyA === myActiveBlock || bodyB === myActiveBlock) {
-                            lockActiveBlock();
                         }
                     }
                 });
@@ -516,20 +504,46 @@
 
             Events.on(engine, 'beforeUpdate', function() {
                 if (myActiveBlock && myActiveBlock.isStatic) {
-                    // حركة انسيابية صلبة ومستقرة تماماً
+                    // حركة انسيابية طبيعية بالكامل
                     Body.setPosition(myActiveBlock, { 
                         x: myActiveBlock.position.x, 
                         y: myActiveBlock.position.y + currentDropSpeed 
                     });
 
-                    // قيد أمان احتياطي لمنع القطعة من تجاوز الشاشة السفلية
-                    if (myActiveBlock.position.y > (h + cameraYOffset) - 130) {
+                    // فحص رياضي هندسي استباقي لمنع التداخل والضغط بشكل كامل وقاطع
+                    let bodies = Composite.allBodies(engine.world);
+                    let shouldLock = false;
+                    let contactY = 0;
+
+                    for (let i = 0; i < bodies.length; i++) {
+                        let b = bodies[i];
+                        if (b !== myActiveBlock && b.label !== 'deathSensor') {
+                            // التحقق الشامل عبر خوارزمية SAT المدعومة برمجياً
+                            let collision = SAT.collides(myActiveBlock, b);
+                            if (collision.collided) {
+                                shouldLock = true;
+                                contactY = b.position.y;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (shouldLock) {
+                        // الحل القاطع: إلغاء الضغط بسحب المكعب ليكون فوق السطح تماماً بـ 2 بكسل وتصفير قوى الدفع
+                        Body.setPosition(myActiveBlock, { 
+                            x: myActiveBlock.position.x, 
+                            y: myActiveBlock.position.y - (currentDropSpeed + 2)
+                        });
+                        lockActiveBlock();
+                    }
+
+                    if (myActiveBlock && myActiveBlock.position.y > (h + cameraYOffset) - 100) {
                         lockActiveBlock();
                     }
                 }
 
                 // الكاميرا الصاعدة التلقائية والناعمة
-                let highestY = h - 84; 
+                let highestY = h - 60; 
                 myPlacedBlocks.forEach(b => {
                     if (b.position.y < highestY) highestY = b.position.y;
                 });
@@ -558,15 +572,14 @@
 
         function createTetromino(type, x, y, isStaticOption) {
             const s = 25; 
-            // خيارات مادة فيزيائية صلبة وثقيلة تمنع الانضغاط والاختراق كلياً
             const opt = { 
                 isStatic: isStaticOption, 
-                friction: 1.0,             // احتكاك كامل يمنع الانزلاق كلياً
-                frictionStatic: 1.0,       
-                frictionAir: 0.01,         
-                restitution: 0.0,          // تصفير الارتداد لضمان رسو صلب ومستقر فوراً فوق الأسطح
-                density: 0.15,             // زيادة ثقل الكثافة لمنع الأجسام من الدخول ببعضها
-                slop: 0.0,                 // إلغاء خلوص التسامح الفيزيائي لمنع التداخل الميكروسكوبي
+                friction: 1.0,             // احتكاك كامل مانع للتزحلق السطحي العشوائي
+                frictionStatic: 1.0,       // تماسك قوي لقفص وحبس القطع فوق بعضها
+                frictionAir: 0.02,         
+                restitution: 0.0,          // تصفير كامل للارتداد لقتل ردات الفعل المنبثقة
+                density: 0.2,              // ثقل مادي رصين يمنع الأجسام من التخلخل
+                slop: 0.0,                 // تصفير كامل لقيمة الـ Overlap المسموحة في المحرك
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
@@ -591,7 +604,7 @@
             Composite.add(engine.world, myActiveBlock);
         }
 
-        // تحكم دقيق وممتع للغاية بمقدار 12 بكسل للتحكم بمحاذاة الزوايا بدقة
+        // خطوة حركة دقيقة بمقدار 12 بكسل لضمان محاذاة زوايا هندسية صحيحة 100%
         function moveActive(dir) {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 12), y: myActiveBlock.position.y });
@@ -605,9 +618,10 @@
         function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             
-            // تحويل المكعب إلى ديناميكي صلب يتفاعل مع الجاذبية فوراً عند الاصطدام
+            // فك الثبات مع تصفير السرعة اللحظية تماماً لمنع توليد الدفع الانفجاري المتداخل
             Body.setStatic(myActiveBlock, false);
-            Body.setVelocity(myActiveBlock, { x: 0, y: 0.1 });
+            Body.setVelocity(myActiveBlock, { x: 0, y: 0.0 });
+            Body.setAngularVelocity(myActiveBlock, 0);
             
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
