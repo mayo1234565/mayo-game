@@ -188,7 +188,7 @@
         <div id="instructions-modal" class="hidden">
             <div class="instructions-panel">
                 <h2>🎮 كيف تلعب Tricky Towers؟</h2>
-                <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
+                <p>تحريك القطعة يمين ويسار بدقة <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
                 <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
                 <p>تسريع نزول القطعة انسيابياً <span>[ S ] أو [ ⬇️ ]</span></p>
                 <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء تماسك حقيقية! ستتحرك الكاميرا للأعلى تلقائياً كلما ارتفع برجه، توازن جيداً لتفوز!</p>
@@ -270,7 +270,7 @@
         let isGameStartedLocally = false;
         
         const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
-              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events;
+              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events, SAT = Matter.SAT;
               
         let engine, render, runner;
         let myActiveBlock = null;
@@ -278,12 +278,12 @@
         let myPlacedBlocks = [];
         let oppPlacedBlocksMap = {}; 
 
-        let normalDropSpeed = 1.2;  
-        let fastDropSpeed = 8.0;    
+        let normalDropSpeed = 1.3;  
+        let fastDropSpeed = 8.5;    
         let currentDropSpeed = normalDropSpeed; 
 
-        // متغير التحكم بارتفاع الكاميرا الافتراضي
         let cameraYOffset = 0;
+        let myBase = null;
 
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
@@ -459,10 +459,9 @@
             };
 
             engine = Engine.create();
-            // زيادة معدلات دقة فحص تصادم وحل أسطح البرج لمنع التفكك التلقائي
-            engine.positionIterations = 16;
-            engine.velocityIterations = 16;
-            engine.world.gravity.y = 1.5; 
+            engine.positionIterations = 18;
+            engine.velocityIterations = 18;
+            engine.world.gravity.y = 1.4; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -477,11 +476,11 @@
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            const myBase = Bodies.rectangle(myTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
-            const oppBase = Bodies.rectangle(oppTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
+            // تم وزن وضبط إحداثيات القاعدة هنا لمنع غوص أول مكعب بالبكسل
+            myBase = Bodies.rectangle(myTowerX, h - 84, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 6 } });
+            const oppBase = Bodies.rectangle(oppTowerX, h - 84, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 6 } });
             
-            // مستشعر الموت يتحرك ديناميكياً مع حركة الكاميرا دائماً ليبقى بالأسفل تماماً
-            const deathSensor = Bodies.rectangle(w / 2, h - 15, w * 3, 40, { 
+            const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { 
                 isSensor: true, 
                 isStatic: true,
                 label: 'deathSensor',
@@ -494,7 +493,6 @@
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
                     let bodyB = pair.bodyB;
-
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
                         if (block !== myBase && block !== oppBase && !block.isStatic) {
@@ -504,58 +502,62 @@
                 });
             });
 
-            // حلقة التحديث المستمر للتحكم بالنزول ونظام الكاميرا الصاعدة الآلي
             Events.on(engine, 'beforeUpdate', function() {
-                // 1. تحريك قطعة التحكم الحالية بسلاسة لأسفل
                 if (myActiveBlock && myActiveBlock.isStatic) {
+                    // تحريك هبوط انسيابي
                     Body.setPosition(myActiveBlock, { 
                         x: myActiveBlock.position.x, 
                         y: myActiveBlock.position.y + currentDropSpeed 
                     });
 
-                    // التحقق الذكي من ملامسة أسطح البرج الحالية
+                    // فحص هندسي خارق يعتمد على خوارزمية السطح العازل (SAT) لمنع تداخل الأجسام والضغط نهائياً
                     let bodies = Composite.allBodies(engine.world);
+                    let detectedCollision = false;
+
                     for (let i = 0; i < bodies.length; i++) {
                         let b = bodies[i];
                         if (b !== myActiveBlock && b.label !== 'deathSensor') {
-                            let distY = Math.abs(myActiveBlock.position.y - b.position.y);
-                            let distX = Math.abs(myActiveBlock.position.x - b.position.x);
-                            if (distY < 40 && distX < 60) {
-                                lockActiveBlock();
+                            // استخدام أداة SAT الخاصة بـ Matter لتوقع اللمس بدقة مجهرية قبل حدوث الغوص
+                            let collision = SAT.collides(myActiveBlock, b);
+                            if (collision.collided || (Math.abs(myActiveBlock.position.y - b.position.y) < 36 && Math.abs(myActiveBlock.position.x - b.position.x) < 55)) {
+                                detectedCollision = true;
                                 break;
                             }
                         }
                     }
 
-                    // قيد الأمان لفك الثبات قبل الأرض بقليل في حال لم يلمس شيئاً
+                    if (detectedCollision) {
+                        // سحب القطعة لأعلى بـ 1 بكسل فوراً لتجلس فوق السطح دون ضغط داخلي
+                        Body.setPosition(myActiveBlock, { 
+                            x: myActiveBlock.position.x, 
+                            y: myActiveBlock.position.y - 1 
+                        });
+                        lockActiveBlock();
+                    }
+
                     if (myActiveBlock && myActiveBlock.position.y > (h + cameraYOffset) - 140) {
                         lockActiveBlock();
                     }
                 }
 
-                // 2. تحديث صعود الكاميرا الديناميكي بناءً على أعلى مكعب مستقر بالبرج
-                let highestY = h - 80; // نقطة بداية القاعدة
+                // الكاميرا الصاعدة الآلية المريحة
+                let highestY = h - 84; 
                 myPlacedBlocks.forEach(b => {
-                    if (b.position.y < highestY) {
-                        highestY = b.position.y;
-                    }
+                    if (b.position.y < highestY) highestY = b.position.y;
                 });
 
-                // إذا ارتفع البرج واقترب من سقف اللعبة الحالي (أقل من مسافة 250 بكسل من القمة)
                 let targetOffset = 0;
                 if (highestY < 250 + cameraYOffset) {
                     targetOffset = highestY - 250;
                 }
 
-                // تطبيق التتبع السلس المريح للعين صعوداً وهبوطاً (Camera LERP Interpolation)
                 cameraYOffset += (targetOffset - cameraYOffset) * 0.05;
 
-                // تحريك عدسة العرض (العالم الافتراضي) ومستشعر الموت سوياً للأعلى
                 Render.lookAt(render, {
                     min: { x: 0, y: cameraYOffset },
                     max: { x: w, y: h + cameraYOffset }
                 });
-                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 15 });
+                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 5 });
             });
 
             Render.run(render);
@@ -568,15 +570,14 @@
 
         function createTetromino(type, x, y, isStaticOption) {
             const s = 25; 
-            // خيارات فيزياء تماسك Tricky Towers: تصفير الارتداد، تعظيم الاحتكاك العالي، وتدوير الزوايا مجهرياً لتماسك الحواف
             const opt = { 
                 isStatic: isStaticOption, 
-                friction: 0.99,            // احتكاك هائل يمنع الانزلاق السطحي المزعج
-                frictionStatic: 1.0,       // تماسك قوي جداً عند استقرار القطع فوق بعضها
-                frictionAir: 0.03,         
-                restitution: 0.0,          // تصفير قوى الارتداد يمنع المكعبات من القفز وتفكيك البرج
-                density: 0.08,             // ثقل مميز وثابت للقطع
-                chamfer: { radius: 1.5 },  // تدوير الحواف لثبات هندسي متناسق
+                friction: 0.99,            
+                frictionStatic: 1.0,       
+                frictionAir: 0.02,         
+                restitution: 0.0,          
+                density: 0.1,             
+                chamfer: { radius: 1.2 },  
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
@@ -597,14 +598,14 @@
 
         function spawnNewBlock() {
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            // توليد المكعب النشط دائماً عند قمة الشاشة العلوية الحالية للكاميرا لمنع اختفائه بالصعود
             myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 80, true);
             Composite.add(engine.world, myActiveBlock);
         }
 
+        // تم تحسين دقة لف ونقل المكعب خطوة بخطوة (12 بكسل بدل 30) لتوجيه دقيق وموزون تماماً
         function moveActive(dir) {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
-            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 30), y: myActiveBlock.position.y });
+            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 12), y: myActiveBlock.position.y });
         }
 
         function rotateActive() {
@@ -615,9 +616,8 @@
         function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             
-            // فك الثبات وتثبيت السرعة لترسو القطعة بنعومة واستقرار بدون طاقة دفع مدمرة
             Body.setStatic(myActiveBlock, false);
-            Body.setVelocity(myActiveBlock, { x: 0, y: 0.5 });
+            Body.setVelocity(myActiveBlock, { x: 0, y: 0.2 });
             
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
