@@ -1,296 +1,129 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏴‍☠️ PIRATE'S BLIND FORTUNE 🏴‍☠️</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@700;900&display=swap');
+import pygame
+import sys
+
+# 1. تهيئة مكتبة Pygame
+pygame.init()
+pygame.font.init()
+
+# 2. إعدادات الشاشة والألوان
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 700
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("The Angry Teddy Bear Game 🧸")
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BEAR_BROWN = (139, 69, 19)
+MUZZLE_CREAM = (245, 222, 179)
+KEFFIYEH_BLUE = (0, 100, 150)
+RED = (200, 0, 0)
+
+# إعداد الخطوط للكتابة العربية/الإنجليزية (استخدم خط يدعم العربية في جهازك إذا لزم الأمر)
+try:
+    font = pygame.font.SysFont("Arial", 24)
+    dialogue_font = pygame.font.SysFont("Arial", 28, bold=True)
+except:
+    font = pygame.font.Font(None, 36)
+    dialogue_font = pygame.font.Font(None, 40)
+
+# 3. حالات اللعبة (States)
+# "GREETING" -> يرحب بك
+# "ANGRY"    -> عصب وطلع المسدس
+current_state = "GREETING"
+text_bubble = "أهلاً بك! أنا أتكلم معك الآن 👋"
+
+# 4. دالة رسم الدب بناءً على حالته
+def draw_bear(state):
+    # رسم الخلفية والملابس (الشماغ الأزرق)
+    screen.fill((230, 240, 255)) # خلفية الغرفة
+    
+    # الجسد
+    pygame.draw.ellipse(screen, BEAR_BROWN, (150, 400, 300, 300))
+    
+    # الأذنين
+    pygame.draw.circle(screen, BEAR_BROWN, (180, 220), 45)
+    pygame.draw.circle(screen, BEAR_BROWN, (420, 220), 45)
+    
+    # الرأس (موقع اللمس الأساسي)
+    bear_head_rect = pygame.Rect(160, 220, 280, 260)
+    pygame.draw.ellipse(screen, BEAR_BROWN, bear_head_rect)
+    
+    # الشماغ/الغطاء الأزرق فوق الرأس (نفس شكل الصورة)
+    pygame.draw.arc(screen, KEFFIYEH_BLUE, (155, 200, 290, 100), 0, 3.14, 25)
+    
+    # منطقة الفم والأنف (البيج)
+    pygame.draw.ellipse(screen, MUZZLE_CREAM, (230, 340, 140, 110))
+    
+    # الأنف البني
+    pygame.draw.ellipse(screen, (90, 45, 10), (275, 350, 50, 35))
+    
+    # العيون والتعابير حسب الحالة
+    if state == "GREETING":
+        # عيون عادية
+        pygame.draw.circle(screen, BLACK, (260, 300), 12)
+        pygame.draw.circle(screen, BLACK, (340, 300), 12)
+        # ابتسامة سعيدة
+        pygame.draw.arc(screen, BLACK, (260, 380, 80, 40), 3.14, 0, 3)
+    
+    elif state == "ANGRY":
+        # عيون غاضبة (مائلة)
+        pygame.draw.circle(screen, RED, (260, 300), 14)
+        pygame.draw.circle(screen, RED, (340, 300), 14)
+        # حواجب غاضبة
+        pygame.draw.line(screen, BLACK, (240, 270), (280, 290), 5)
+        pygame.draw.line(screen, BLACK, (360, 270), (320, 290), 5)
+        # فم حزين/معصب
+        pygame.draw.arc(screen, BLACK, (260, 400, 80, 40), 0, 3.14, 3)
         
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-        
-        body, html {
-            width: 100%; height: 100%; overflow: hidden;
-            background: #030308; color: #fff;
-            font-family: 'Cairo', 'Orbitron', sans-serif;
-        }
+        # 🔫 رسم مسدس بسيط في يد الدب
+        # اليد (المخالب)
+        pygame.draw.circle(screen, BEAR_BROWN, (140, 480), 35)
+        # المسدس (مستطيلات رمادية)
+        pygame.draw.rect(screen, (80, 80, 80), (70, 440, 70, 25)) # السبطانة
+        pygame.draw.rect(screen, (50, 50, 50), (110, 440, 25, 50)) # المقبض
 
-        /* خلفية جزيئات النيون المتحركة */
-        #bg-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1; pointer-events: none; }
+    return bear_head_rect
 
-        .app-container {
-            position: relative; z-index: 10; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px;
-        }
+# 5. دالة رسم فقاعة الكلام
+def draw_speech_bubble(text, is_angry):
+    bubble_color = (255, 230, 230) if is_angry else WHITE
+    border_color = RED if is_angry else BLACK
+    
+    # صندوق الكلام
+    pygame.draw.rect(screen, bubble_color, (50, 50, 500, 80), border_radius=15)
+    pygame.draw.rect(screen, border_color, (50, 50, 500, 80), width=3, border_radius=15)
+    
+    # نص الكلام (ملاحظة: لإنياك النصوص العربية بشكل مثالي قد تحتاج مكتبة bidi، هنا وضعنا نص توضيحي)
+    text_surface = dialogue_font.render(text, True, BLACK)
+    text_rect = text_surface.get_rect(center=(300, 90))
+    screen.blit(text_surface, text_rect)
 
-        .screen {
-            display: none; width: 100%; max-width: 440px;
-            animation: fadeIn 0.4s ease-out forwards;
-            text-align: center;
-        }
-        .screen.active { display: flex; flex-direction: column; gap: 20px; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        h1 { font-size: 2.2rem; font-weight: 900; color: #ff0055; text-shadow: 0 0 15px #ff0055; letter-spacing: 2px; }
-        p { color: #8a8da4; font-size: 1rem; line-height: 1.6; }
-
-        /* الأزرار النيون المشعة */
-        .neon-btn {
-            background: transparent; border: 2px solid #00f0ff; color: #00f0ff;
-            padding: 15px 30px; font-size: 1.2rem; font-weight: 900; border-radius: 12px;
-            cursor: pointer; transition: all 0.2s; text-shadow: 0 0 10px #00f0ff;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); width: 100%;
-            margin-top: 10px;
-        }
-        .neon-btn:opacity { opacity: 0.8; }
-        .neon-btn:active { transform: scale(0.98); background: #00f0ff; color: #000; box-shadow: 0 0 25px #00f0ff; }
-
-        .neon-btn.danger { border-color: #ff0055; color: #ff0055; text-shadow: 0 0 10px #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
-        .neon-btn.danger:active { background: #ff0055; color: #fff; box-shadow: 0 0 25px #ff0055; }
-
-        /* بطاقة الهوية ثلاثية الأبعاد */
-        .card-wrapper { perspective: 1000px; width: 100%; height: 260px; margin: 20px 0; }
-        .pirate-card {
-            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
-        }
-        .pirate-card.flipped { transform: rotateY(180deg); }
-
-        .card-face {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            border-radius: 20px; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; padding: 20px; border: 2px solid rgba(255,255,255,0.1);
-        }
-        
-        .card-front {
-            background: linear-gradient(135deg, #0f0f26, #050510);
-            border-color: #00f0ff; box-shadow: 0 0 20px rgba(0,240,255,0.15);
-        }
-        .card-back {
-            background: linear-gradient(135deg, #1f0515, #0a0005);
-            transform: rotateY(180deg); border-color: #ff0055;
-            box-shadow: 0 0 20px rgba(255,0,85,0.15);
-        }
-
-        .card-icon { font-size: 4.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px currentColor); }
-
-        /* شبكة الخريطة التفاعلية للكنز */
-        .map-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin: 15px 0; }
-        .map-tile {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center;
-            justify-content: center; font-size: 1.8rem; cursor: pointer; transition: all 0.2s;
-        }
-        .map-tile:active { transform: scale(0.95); }
-        .map-tile.revealed-gold { background: rgba(255, 223, 0, 0.15); border-color: #ffdf00; box-shadow: 0 0 15px rgba(255, 223, 0, 0.3); }
-        .map-tile.revealed-bomb { background: rgba(255, 0, 85, 0.15); border-color: #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.3); }
-
-        .badge { background: rgba(255,255,255,0.07); padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; color: #00f0ff; display: inline-block; }
-    </style>
-</head>
-<body>
-
-    <canvas id="bg-canvas"></canvas>
-
-    <div class="app-container">
-        
-        <div id="scr-start" class="screen active">
-            <h1>🏴‍☠️ FORTUNE STORM</h1>
-            <p>لعبة الذكاء والتشكيك والمناورة البصرية. مصممة لتناسب تجمعكم المكون من <b>7 لاعبين</b> على الطاولة.</p>
-            <div style="margin: 10px 0;"><span class="badge">👨‍👩‍👦‍👦 عدد اللاعبين المتصلين: 7</span></div>
-            <button class="neon-btn" onclick="generateRoles()">توليد الأدوار وتوزيع الخريطة 🎲</button>
-        </div>
-
-        <div id="scr-reveal" class="screen">
-            <h2 id="player-title" style="color:#00f0ff;">القرصان رقم 1</h2>
-            <p>إضغط على البطاقة السحرية لرؤية هويتك السرية، تأكد ألا يراها أحد بجانبك!</p>
+# 6. حلقة اللعبة الرئيسية (Game Loop)
+running = True
+while running:
+    # الحصول على إحداثيات الماوس
+    mouse_pos = pygame.mouse.get_pos()
+    
+    # رسم الدب والحصول على منطقة الرأس الحساسة للمس
+    bear_rect = draw_bear(current_state)
+    draw_speech_bubble(text_bubble, current_state == "ANGRY")
+    
+    # إدارة الأحداث (Events)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+            sys.exit()
             
-            <div class="card-wrapper" onclick="flipCard()">
-                <div id="p-card" class="pirate-card">
-                    <div class="card-face card-front">
-                        <div class="card-icon" style="color: #00f0ff;">❓</div>
-                        <span style="font-weight:900; letter-spacing:1px;">إلمس للـكـشـف</span>
-                    </div>
-                    <div class="card-face card-back">
-                        <div id="role-icon" class="card-icon">🏴‍☠️</div>
-                        <h3 id="role-name" style="font-size:1.8rem; font-weight:900;">ولاء حقيقي</h3>
-                        <p id="role-desc" style="font-size:0.85rem; margin-top:5px;"></p>
-                    </div>
-                </div>
-            </div>
+        # التحقق من لمس (الضغط بالماوس) على الدب
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if bear_rect.collidepoint(mouse_pos):
+                if current_state == "GREETING":
+                    current_state = "ANGRY"
+                    text_bubble = "لقد حذرتك! الآن ستواجه العواقب! 😡🔫"
+            else:
+                # إذا ضغطت في مكان آخر يرجع لحالته الطبيعية
+                current_state = "GREETING"
+                text_bubble = "أهلاً بك! أنا أتكلم معك الآن 👋"
 
-            <button class="neon-btn" id="next-player-btn" onclick="goToNextPlayer()" style="display:none;">تم الحفظ، الكرت التالي ➡️</button>
-        </div>
-
-        <div id="scr-map" class="screen">
-            <h1>🗺️ خريطة جزر الهلاك</h1>
-            <p>الآن تم تمرير الهويات! الخريطة تحتوي على <b>3 صناديق ذهب مخفية</b> و <b>فخاخ متفجرة</b>. تشاوروا معاً لفتح المربعات!</p>
-            
-            <div class="map-grid" id="island-grid"></div>
-
-            <div style="display:flex; justify-content:space-around; width:100%; margin-top:10px;">
-                <span id="gold-counter" style="color:#ffdf00; font-weight:900;">💰 الذهب المكتشف: 0/3</span>
-                <span id="fail-counter" style="color:#ff0055; font-weight:900;">💥 الفخاخ: 0/2</span>
-            </div>
-
-            <button class="neon-btn danger" onclick="endGameReset()" style="margin-top:20px;">إنهاء الجولة وإعادة التوزيع 🔄</button>
-        </div>
-
-    </div>
-
-    <script>
-        // محرك الجزيئات البصرية الخلفية المستمر (Custom Particle Engine)
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
-        let pts = [];
-
-        for(let i=0; i<60; i++) pts.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+1, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, c: Math.random() > 0.5 ? '#00f0ff' : '#ff0055' });
-        
-        function animateBg() {
-            ctx.clearRect(0,0,w,h);
-            pts.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x<0 || p.x>w) p.vx *= -1; if(p.y<0 || p.y>h) p.vy *= -1;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-                ctx.fillStyle = p.c; ctx.globalAlpha = 0.3; ctx.fill();
-            });
-            requestAnimationFrame(animateBg);
-        }
-        animateBg();
-        window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
-
-        // --- منطق اللعبة المطور لـ 7 لاعبين ---
-        let totalPlayers = 7;
-        let playerRoles = [];
-        let currentIdx = 0;
-        let isFlipped = false;
-        
-        // إعدادات الخريطة المخفية
-        let gridData = [];
-        let goldFound = 0;
-        let trapsTriggered = 0;
-
-        function changeScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function generateRoles() {
-            // توزيع الأدوار لـ 7 لاعبين: 5 قراصنة شرفاء و 2 جواسيس خائنين لزيادة الحماس والتحدي في الكلام
-            let rolesPool = [
-                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
-                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
-                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
-                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
-                { name: "قرصان شريف 🔱", icon: "🔱", desc: "هدفك البحث عن صناديق الذهب الثلاثة وتجنب الفخاخ الملعونة.", spy: false },
-                { name: "خائن مأجور 🏴‍☠️", icon: "🏴‍☠️", desc: "أنت جاسوس! هدفك توجيه القراصنة نحو الفخاخ لتفجير السفينة بدون كشف نفسك.", spy: true },
-                { name: "خائن مأجور 🏴‍☠️", icon: "🏴‍☠️", desc: "أنت جاسوس! هدفك توجيه القراصنة نحو الفخاخ لتفجير السفينة بدون كشف نفسك.", spy: true }
-            ];
-
-            // خلط الأدوار عشوائياً تماماً
-            playerRoles = rolesPool.sort(() => Math.random() - 0.5);
-            currentIdx = 0;
-            
-            // توليد شبكة الخريطة عشوائياً (9 مربعات: 3 ذهب، 2 قنابل، 4 فارغة)
-            let items = ['gold', 'gold', 'gold', 'bomb', 'bomb', 'empty', 'empty', 'empty', 'empty'];
-            gridData = items.sort(() => Math.random() - 0.5);
-            
-            goldFound = 0;
-            trapsTriggered = 0;
-            
-            buildMapUI();
-            setupPlayerReveal();
-            changeScreen('scr-reveal');
-        }
-
-        function setupPlayerReveal() {
-            isFlipped = false;
-            document.getElementById('p-card').classList.remove('flipped');
-            document.getElementById('player-title').innerText = `الكابتن رقم ${currentIdx + 1}`;
-            document.getElementById('next-player-btn').style.display = 'none';
-
-            // إعداد بيانات خلفية الكرت للقرصان الحالي
-            let r = playerRoles[currentIdx];
-            document.getElementById('role-icon').innerText = r.icon;
-            document.getElementById('role-name').innerText = r.name;
-            document.getElementById('role-name').style.color = r.spy ? '#ff0055' : '#00f0ff';
-            document.getElementById('role-desc').innerText = r.desc;
-        }
-
-        function flipCard() {
-            if(!isFlipped) {
-                document.getElementById('p-card').classList.add('flipped');
-                isFlipped = true;
-                document.getElementById('next-player-btn').style.display = 'block';
-                // تفعيل ميزة الاهتزاز البسيطة بالجوال لزيادة الإثارة والواقعية
-                if (navigator.vibrate) navigator.vibrate(50);
-            }
-        }
-
-        function goToNextPlayer() {
-            currentIdx++;
-            if(currentIdx < totalPlayers) {
-                setupPlayerReveal();
-            } else {
-                changeScreen('scr-map');
-            }
-        }
-
-        function buildMapUI() {
-            let container = document.getElementById('island-grid');
-            container.innerHTML = "";
-            
-            gridData.forEach((type, idx) => {
-                let tile = document.createElement('div');
-                tile.className = "map-tile";
-                tile.innerText = "❓";
-                tile.onclick = () => revealTile(tile, type, idx);
-                container.appendChild(tile);
-            });
-
-            document.getElementById('gold-counter').innerText = `💰 الذهب المكتشف: 0/3`;
-            document.getElementById('fail-counter').innerText = `💥 الفخاخ: 0/2`;
-        }
-
-        function revealTile(el, type, idx) {
-            if(el.classList.contains('revealed-gold') || el.classList.contains('revealed-bomb')) return;
-
-            if(type === 'gold') {
-                el.className = "map-tile revealed-gold";
-                el.innerText = "👑";
-                goldFound++;
-                document.getElementById('gold-counter').innerText = `💰 الذهب المكتشف: ${goldFound}/3`;
-                if(navigator.vibrate) navigator.vibrate([40, 40, 40]);
-            } else if(type === 'bomb') {
-                el.className = "map-tile revealed-bomb";
-                el.innerText = "💣";
-                trapsTriggered++;
-                document.getElementById('fail-counter').innerText = `💥 الفخاخ: ${trapsTriggered}/2`;
-                if(navigator.vibrate) navigator.vibrate(300); // اهتزاز قوي عند انفجار الفخ
-            } else {
-                el.style.borderColor = "rgba(255,255,255,0.3)";
-                el.innerText = "💨";
-            }
-
-            // فحص شروط الفوز أو الخسارة الفورية
-            setTimeout(() => {
-                if(goldFound === 3) {
-                    alert("🎉 انتصار ساحق للقراصنة الشرفاء! تم جمع الذهب بالكامل وطرد الخونة!");
-                    endGameReset();
-                } else if(trapsTriggered === 2) {
-                    alert("🏴‍☠️ انتصار الخونة! انفجرت السفينة وغرقت الصناديق في أعماق المحيط!");
-                    endGameReset();
-                }
-            }, 300);
-        }
-
-        function endGameReset() {
-            changeScreen('scr-start');
-        }
-    </script>
-</body>
-</html>
+    pygame.display.flip()
