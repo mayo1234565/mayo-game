@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الدب الغاضب 🧸🔫</title>
+    <title>لعبة الدب الضاحك والغاضب 🧸</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #e6f0ff;
+            background-color: #f0f4f8;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,116 +19,136 @@
             user-select: none;
         }
 
-        /* فقاعة الكلام */
+        /* فقاعة المحادثة */
         .speech-bubble {
             background: white;
-            border: 4px solid #141414;
-            border-radius: 20px;
+            border: 4px solid #2b1d12;
+            border-radius: 25px;
             padding: 15px 30px;
             font-size: 24px;
             font-weight: bold;
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
             direction: rtl;
+            z-index: 10;
         }
 
         .speech-bubble.angry {
             background: #ffe6e6;
             border-color: #dc143c;
             color: #dc143c;
-            transform: scale(1.05);
+            transform: scale(1.05) rotate(-1deg);
+            animation: shake 0.3s infinite;
         }
 
-        /* مسرح اللعبة (الدب) */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* حاوية اللعبة */
         .game-container {
             position: relative;
-            width: 400px;
-            height: 450px;
+            width: 420px;
+            height: 460px;
             cursor: pointer;
         }
 
-        /* جسم الدب الرئيسي */
+        /* الدب الفروي المطور */
         .teddy {
             position: relative;
             width: 100%;
             height: 100%;
         }
 
-        .body {
+        /* الأكتاف والجسم */
+        .body-fur {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 320px;
-            height: 250px;
-            background: #82461e;
-            border-radius: 50% 50% 40% 40%;
+            width: 350px;
+            height: 220px;
+            background: #a05a2c; /* بني دافئ فروي نفس الصورة */
+            border-radius: 50% 50% 30% 30%;
+            box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2);
         }
 
         /* الأذنين */
         .ear {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background: #82461e;
+            width: 90px;
+            height: 90px;
+            background: #a05a2c;
             border-radius: 50%;
-            top: 40px;
+            top: 25px;
         }
-        .ear.left { left: 40px; }
-        .ear.right { right: 40px; }
+        .ear.left { left: 45px; }
+        .ear.right { right: 45px; }
         .ear::after {
             content: '';
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #f2d4a9;
+            width: 50px;
+            height: 50px;
+            background: #cca07a;
             border-radius: 50%;
             top: 20px;
             left: 20px;
         }
 
-        /* الرأس والملمس */
+        /* رأس الدب الدائري */
         .head {
             position: absolute;
-            top: 70px;
+            top: 60px;
             left: 50%;
             transform: translateX(-50%);
-            width: 280px;
-            height: 240px;
-            background: #82461e;
-            border-radius: 50%;
+            width: 310px;
+            height: 270px;
+            background: #a05a2c;
+            border-radius: 50% 50% 48% 48%;
             z-index: 2;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-        /* الشماغ الأزرق التكتيكي */
-        .keffiyeh {
+        /* الشماغ/العصابة الزرقاء المنقوشة (نفس الصورة تماماً) */
+        .keffiyeh-hat {
             position: absolute;
-            top: -5px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 285px;
-            height: 80px;
-            background: repeating-linear-gradient(45deg, #0f5282, #0f5282 10px, #052846 10px, #052846 20px);
-            border-radius: 140px 140px 20px 20px;
-            z-index: 3;
+            width: 316px;
+            height: 95px;
+            background: repeating-linear-gradient(45deg, #10629a, #10629a 8px, #052c4c 8px, #052c4c 16px);
+            border-radius: 160px 160px 30px 30px;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* العيون */
+        /* عيون خرزية سوداء لامعة */
         .eye {
             position: absolute;
-            top: 100px;
-            width: 24px;
-            height: 24px;
-            background: #141414;
+            top: 115px;
+            width: 20px;
+            height: 20px;
+            background: #050505;
             border-radius: 50%;
-            z-index: 4;
-            transition: all 0.2s ease;
+            z-index: 6;
+            transition: all 0.15s ease;
         }
-        .eye.left { left: 65px; }
-        .eye.right { right: 65px; }
+        .eye.left { left: 80px; }
+        .eye.right { right: 80px; }
         .eye::after {
             content: '';
             position: absolute;
@@ -136,230 +156,266 @@
             height: 6px;
             background: white;
             border-radius: 50%;
-            top: 4px;
+            top: 3px;
             left: 4px;
         }
 
-        /* الحواجب الغاضبة مخفية بالبداية */
-        .brow {
+        /* حواجب الغضب المخفية */
+        .eyebrow {
             position: absolute;
-            top: 85px;
-            width: 40px;
-            height: 8px;
-            background: #141414;
-            z-index: 5;
+            top: 95px;
+            width: 35px;
+            height: 7px;
+            background: #2b1d12;
+            z-index: 7;
             opacity: 0;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
-        .brow.left { left: 55px; transform: rotate(0deg); }
-        .brow.right { right: 55px; transform: rotate(0deg); }
+        .eyebrow.left { left: 70px; }
+        .eyebrow.right { right: 70px; }
 
-        /* منطقة الأنف والفم الكبيرة */
+        /* منطقة الخطم الدائرية (البيج الفاتح) */
         .muzzle {
             position: absolute;
-            bottom: 25px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 140px;
-            height: 100px;
-            background: #f2d4a9;
+            width: 170px;
+            height: 125px;
+            background: #eadecc; /* لون بيج كريمي نفس خامة الصورة */
             border-radius: 50%;
-            z-index: 4;
+            z-index: 6;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
         }
 
+        /* الأنف الشامواه الكبير */
         .nose {
-            width: 60px;
-            height: 38px;
-            background: #141414;
-            border-radius: 50%;
-            margin-top: -10px;
+            width: 75px;
+            height: 50px;
+            background: #54311c; /* بني غامق شمواه */
+            border-radius: 50% 50% 45% 45%;
+            margin-top: 15px;
+            position: relative;
+        }
+        .nose::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 25px;
+            background: #2b1d12;
+            bottom: -23px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        /* الفم */
-        .mouth {
-            width: 60px;
-            height: 25px;
-            border-bottom: 4px solid #141414;
-            border-radius: 0 0 30px 30px;
-            margin-top: 5px;
+        /* الفم الضاحك السعيد جداً (الافتراضي) */
+        .mouth-container {
+            width: 100px;
+            height: 45px;
+            position: relative;
+            margin-top: 8px;
+            overflow: hidden;
             transition: all 0.2s ease;
         }
 
-        /* اليد المرفوعة للسلام */
+        .mouth-happy {
+            position: absolute;
+            top: -30px;
+            width: 100px;
+            height: 70px;
+            background: #802020; /* تجويف الفم */
+            border: 4px solid #2b1d12;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* اللسان الضاحك */
+        .tongue {
+            width: 50px;
+            height: 20px;
+            background: #ff7373;
+            border-radius: 20px 20px 0 0;
+            margin-bottom: -2px;
+        }
+
+        /* يد السلام الـWaving */
         .hand-wave {
             position: absolute;
-            right: 20px;
+            right: 10px;
             top: 220px;
-            width: 70px;
-            height: 70px;
-            background: #82461e;
-            border-radius: 50%;
-            z-index: 3;
-            transform-origin: bottom center;
-            animation: wave 1.5s infinite ease-in-out;
-            display: block;
-        }
-
-        @keyframes wave {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(20deg); }
-        }
-
-        /* 🔫 المسدس المخفي */
-        .gun-hand {
-            position: absolute;
-            left: -20px;
-            bottom: 80px;
             width: 80px;
             height: 80px;
-            background: #82461e;
+            background: #a05a2c;
             border-radius: 50%;
-            z-index: 6;
+            z-index: 4;
+            transform-origin: bottom center;
+            animation: waveAction 1.2s infinite ease-in-out;
+        }
+
+        @keyframes waveAction {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(25deg); }
+        }
+
+        /* 🔫 المسدس التكتيكي المخفي */
+        .gun-hand {
+            position: absolute;
+            left: -10px;
+            bottom: 90px;
+            width: 85px;
+            height: 85px;
+            background: #a05a2c;
+            border-radius: 50%;
+            z-index: 8;
             opacity: 0;
             transform: scale(0) rotate(45deg);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* تصميم شكل المسدس */
-        .gun {
+        .pistol {
             position: absolute;
-            top: -20px;
-            left: -30px;
-            width: 80px;
-            height: 25px;
-            background: #4a4a4a;
-            border-radius: 5px;
-            transform: rotate(-15deg);
+            top: -15px;
+            left: -35px;
+            width: 90px;
+            height: 30px;
+            background: #3a3d40;
+            border-radius: 4px;
+            transform: rotate(-10deg);
+            box-shadow: -2px 4px 5px rgba(0,0,0,0.2);
         }
-        .gun::after {
+        .pistol::after {
             content: '';
             position: absolute;
-            right: 10px;
-            top: 20px;
-            width: 25px;
-            height: 45px;
-            background: #2b2b2b;
-            border-radius: 5px;
+            right: 8px;
+            top: 25px;
+            width: 28px;
+            height: 48px;
+            background: #1e2022;
+            border-radius: 4px;
         }
 
-        /* 😡 حالة الغضب العارم عند اللمس */
+        /* 😡 التحول لحالة الغضب العارم عند اللمس */
         .game-container.is-angry .eye {
-            background: #dc143c;
-            transform: scaleY(0.7);
+            background: #ff0033;
+            transform: scaleY(0.6);
+            box-shadow: 0 0 10px #ff0033;
         }
         .game-container.is-angry .eye::after { display: none; }
-        
-        .game-container.is-angry .brow.left { opacity: 1; transform: rotate(25deg); top: 92px; }
-        .game-container.is-angry .brow.right { opacity: 1; transform: rotate(-25deg); top: 92px; }
 
-        .game-container.is-angry .mouth {
-            border-bottom: none;
-            border-top: 4px solid #141414;
-            border-radius: 30px 30px 0 0;
+        .game-container.is-angry .eyebrow.left { opacity: 1; transform: rotate(30deg); top: 102px; }
+        .game-container.is-angry .eyebrow.right { opacity: 1; transform: rotate(-30deg); top: 102px; }
+
+        /* تغيير الفم إلى خط عابس مشدود */
+        .game-container.is-angry .mouth-container {
+            height: 20px;
             margin-top: 15px;
         }
-
-        .game-container.is-angry .hand-wave {
-            display: none;
+        .game-container.is-angry .mouth-happy {
+            top: 10px;
+            width: 80px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            border-top: 5px solid #2b1d12;
+            border-radius: 50%;
         }
+        .game-container.is-angry .tongue { display: none; }
 
+        /* إخفاء يد السلام وإظهار المسدس فوراً */
+        .game-container.is-angry .hand-wave { display: none; }
         .game-container.is-angry .gun-hand {
             opacity: 1;
-            transform: scale(1.2) rotate(0deg);
+            transform: scale(1.3) rotate(0deg);
         }
 
-        /* نص توضيحي بالأسفل */
-        .hint {
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
+        .footer-hint {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 15px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 
-    <div class="speech-bubble" id="quote">أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋</div>
+    <div class="speech-bubble" id="dialogue">مرحباً! أنا الدب المتكلم السعيد.. اضغط علي لنتحدث! هههههه 😂👋</div>
 
-    <div class="game-container" id="teddy-game">
+    <div class="game-container" id="bear-target">
         <div class="teddy">
             <div class="ear left"></div>
             <div class="ear right"></div>
             
-            <div class="body"></div>
+            <div class="body-fur"></div>
             
             <div class="head">
-                <div class="keffiyeh"></div> <div class="brow left"></div>
-                <div class="brow right"></div>
+                <div class="keffiyeh-hat"></div> <div class="eyebrow left"></div>
+                <div class="eyebrow right"></div>
                 <div class="eye left"></div>
                 <div class="eye right"></div>
                 
                 <div class="muzzle">
                     <div class="nose"></div>
-                    <div class="mouth"></div>
+                    <div class="mouth-container">
+                        <div class="mouth-happy">
+                            <div class="tongue"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="hand-wave"></div>
 
             <div class="gun-hand">
-                <div class="gun"></div>
+                <div class="pistol"></div>
             </div>
         </div>
     </div>
 
-    <div class="hint">انقر/المس الدب لترى ماذا سيحدث!</div>
+    <div class="footer-hint">اضغط مع الاستمرار على الدب لتلمسه وتغضبه! 👆</div>
 
     <script>
-        const gameContainer = document.getElementById('teddy-game');
-        const quoteBox = document.getElementById('quote');
+        const bearTarget = document.getElementById('bear-target');
+        const dialogueBox = document.getElementById('dialogue');
 
-        // مصفوفة من العبارات العشوائية عند التهديد
-        const angryQuotes = [
-            "لقد حذرتك! لا تلمسني! 😡🔫",
-            "ابتعد عني وإلا أطلقت النار! 🤬",
-            "ألم أقل لك لا تلمس وجهي الشريف؟! 💥",
-            "ستواجه العواقب الآن! خذ هذه! 💀"
+        const angryPhrases = [
+            "لقد حذرتك!! الآن ستواجه العواقب!! 😡🔫",
+            "ابتعد بيدك عن أنفي وإلا أطلقت النار! 🤬💥",
+            "ألم أقل لك لا تلمسني؟! خذ هذه! 💀",
+            "لا تختبر صبري أيها البشري! 🔫😤"
         ];
 
-        // عند الضغط على الدب (اللمس)
-        gameContainer.addEventListener('mousedown', () => {
-            gameContainer.classList.add('is-angry');
-            quoteBox.classList.add('angry');
-            
-            // اختيار عبارة غاضبة عشوائية
-            const randomQuote = angryQuotes[Math.floor(Math.random() * angryQuotes.length)];
-            quoteBox.innerText = randomQuote;
-        });
+        // دالة التفعيل عند اللمس أو الضغط
+        function triggerAngry() {
+            bearTarget.classList.add('is-angry');
+            dialogueBox.classList.add('angry');
+            const randomText = angryPhrases[Math.floor(Math.random() * angryPhrases.length)];
+            dialogueBox.innerText = randomText;
+        }
 
-        // عند رفع الإصبع أو الماوس (يرجع طبيعي)
-        window.addEventListener('mouseup', () => {
-            if(gameContainer.classList.contains('is-angry')) {
-                gameContainer.classList.remove('is-angry');
-                quoteBox.classList.remove('angry');
-                quoteBox.innerText = "أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋";
+        // دالة العودة للوضع الطبيعي الضاحك
+        function triggerHappy() {
+            if (bearTarget.classList.contains('is-angry')) {
+                bearTarget.classList.remove('is-angry');
+                dialogueBox.classList.remove('angry');
+                dialogueBox.innerText = "مرحباً! أنا الدب المتكلم السعيد.. اضغط علي لنتحدث! هههههه 😂👋";
             }
-        });
+        }
 
-        // لدعم شاشات الجوال باللمس الفعلي (Touch)
-        gameContainer.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            gameContainer.classList.add('is-angry');
-            quoteBox.classList.add('angry');
-            const randomQuote = angryQuotes[Math.floor(Math.random() * angryQuotes.length)];
-            quoteBox.innerText = randomQuote;
-        });
+        // أحداث الماوس للكمبيوتر
+        bearTarget.addEventListener('mousedown', triggerAngry);
+        window.addEventListener('mouseup', triggerHappy);
 
-        window.addEventListener('touchend', () => {
-            if(gameContainer.classList.contains('is-angry')) {
-                gameContainer.classList.remove('is-angry');
-                quoteBox.classList.remove('angry');
-                quoteBox.innerText = "أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋";
-            }
+        // أحداث اللمس للشاشات والجوالات
+        bearTarget.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // منع التمرير المزعج أثناء اللعب
+            triggerAngry();
         });
+        window.addEventListener('touchend', triggerHappy);
     </script>
 </body>
 </html>
