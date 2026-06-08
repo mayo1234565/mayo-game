@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>Mayo Game - Ascension Towers</title>
+    <title>Mayo Quiz - Ascension Tournament</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
@@ -14,25 +13,26 @@
         * { 
             box-sizing: border-box; margin: 0; padding: 0; user-select: none; 
             -webkit-touch-callout: none; -webkit-user-select: none; 
-            touch-action: manipulation; /* يمنع الزوم التلقائي عند النقر المتكرر على الجوال */
+            touch-action: manipulation;
         }
         
         body, html { 
-            width: 100%; height: 100%; overflow: hidden; 
+            width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto;
             background-color: #030305; 
             background-image: url('./background2.png'); 
             background-size: cover; background-position: center; background-repeat: no-repeat;
             font-family: 'Orbitron', 'Cairo', sans-serif; 
+            color: #fff;
         }
 
-        .game-container { position: relative; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.5); display: flex; }
+        .game-container { position: relative; width: 100%; min-height: 100%; background: rgba(3, 3, 5, 0.65); display: flex; flex-direction: column; }
 
-        .screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 20; width: 100%; height: 100%; transition: opacity 0.3s ease; }
+        .screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 25px; z-index: 20; width: 100%; min-height: 100%; transition: opacity 0.3s ease; padding: 20px; }
         .hidden { opacity: 0 !important; pointer-events: none !important; display: none !important; }
 
         #screen-start { align-items: flex-end; justify-content: flex-end; padding-bottom: 8%; padding-right: 10%; }
 
-        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 5px 15px; }
+        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 8px 20px; }
         .sony-btn::after { content: ''; width: 0; height: 3px; background-color: #00f0ff; position: absolute; bottom: -5px; right: 0; transition: width 0.3s ease; box-shadow: 0 0 10px #00f0ff; }
         .sony-btn:hover { color: #ffffff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 1); transform: translateX(-5px); }
         .sony-btn:hover::after { width: 100%; }
@@ -54,13 +54,12 @@
         .pop-opt:hover, .pop-opt.selected { background: rgba(0, 240, 255, 0.2); color: #fff; }
 
         .preview-column { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; gap: 25px; }
-        .avatar-frame-wrapper { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; }
+        .avatar-frame-wrapper { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; }
         
-        .core-avatar { width: 100px; height: 100px; border-radius: 50%; background-color: #222; background-size: cover; background-position: center; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.6); transition: background-image 0.3s ease; }
-        .ornament-border { position: absolute; width: 100px; height: 100px; z-index: 3; pointer-events: none; border-radius: 50%; transition: all 0.2s ease; }
-
-        .ornament-diamond { border: 4px solid #b9f2ff; box-shadow: 0 0 20px #00f0ff, inset 0 0 15px rgba(0, 240, 255, 0.5); }
-        .ornament-galaxy { border: 4px solid #a855f7; box-shadow: 0 0 25px rgba(168, 85, 247, 0.6), inset 0 0 10px rgba(0,0,0,0.8); }
+        .core-avatar { width: 80px; height: 80px; border-radius: 50%; background-color: #222; background-size: cover; background-position: center; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.6); }
+        .ornament-border { position: absolute; width: 85px; height: 85px; z-index: 3; pointer-events: none; border-radius: 50%; }
+        .ornament-diamond { border: 4px solid #b9f2ff; box-shadow: 0 0 20px #00f0ff; }
+        .ornament-galaxy { border: 4px solid #a855f7; box-shadow: 0 0 25px rgba(168, 85, 247, 0.6); }
         .ornament-bronze { border: 4px solid #cd7f32; }
         .ornament-gold { border: 5px solid #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.3); }
 
@@ -70,48 +69,43 @@
         .central-lobby { display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; }
         .central-player-grid { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; width: 90%; }
         .lobby-card { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
-        .room-badge { color: #ffdf00; font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 223, 0, 0.6), 2px 2px 4px #000; margin-top: 5px; text-align: center;}
+        .room-badge { color: #ffdf00; font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 223, 0, 0.6); text-align: center;}
         .host-indicator { position: absolute; top: -22px; background: #ffdf00; color: #000; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 3px; box-shadow: 0 0 10px #ffdf00; z-index: 10; }
         
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.4); }
-        .back-mini-btn:hover { color: #ff4a4a; }
-        .back-mini-btn:hover::after { background-color: #ff4a4a; }
+        .player-tag-name { color: #ffffff; font-size: 1.1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
 
-        .player-tag-name { color: #ffffff; font-size: 1.1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        /* تصفيف شاشة المسابقة الجديدة */
+        .quiz-card { background: rgba(10, 10, 18, 0.9); border: 2px solid #00f0ff; border-radius: 20px; padding: 30px; width: 100%; max-width: 700px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; }
+        .quiz-header { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .timer-badge { background: #ff3333; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 900; animation: pulse 1s infinite alternate; }
+        .question-img { width: 100%; max-width: 400px; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: #111; }
+        .question-text { font-family: 'Cairo'; font-size: 1.5rem; font-weight: 800; color: #fff; margin: 10px 0; }
+        .options-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .option-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 15px; color: #fff; font-family: 'Cairo'; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .option-btn:hover { background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; transform: translateY(-2px); }
+        .option-btn.selected { background: #00f0ff !important; color: #000 !important; font-weight: bold; }
 
-        #instructions-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .instructions-panel { background: rgba(10, 10, 15, 0.95); border: 2px solid #00f0ff; border-radius: 15px; padding: 30px; color: #fff; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,240,255,0.2); display: flex; flex-direction: column; gap: 15px; }
-        .instructions-panel h2 { color: #ffdf00; font-family: 'Cairo'; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,223,0,0.5); }
-        .instructions-panel p { font-size: 1.1rem; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-family: 'Cairo'; }
-        .instructions-panel span { color: #00ff88; font-family: 'Orbitron'; font-weight: bold; }
-        .instructions-panel .warning { color: #ff4a4a; font-size: 0.9rem; margin-top: 10px; font-weight: bold; border: none; justify-content: center; }
+        /* تصفيف شجرة البطولة الرهيبة */
+        .bracket-container { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; max-width: 1100px; overflow-x: auto; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .bracket-column { display: flex; flex-direction: column; justify-content: space-around; gap: 30px; height: 500px; min-width: 180px; }
+        .match-box { display: flex; flex-direction: column; background: rgba(20,20,30,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 100%; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .match-box.active-match { border-color: #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+        .bracket-player { display: flex; justify-content: space-between; align-items: center; padding: 10px; font-size: 0.9rem; font-family: 'Cairo'; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
+        .bracket-player:last-child { border-bottom: none; }
+        .bracket-player.winner { color: #00ff88; font-weight: bold; background: rgba(0, 255, 136, 0.08); }
+        .bracket-player.eliminated { color: #ff4a4a; text-decoration: line-through; opacity: 0.6; }
+        .champion-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-width: 200px; text-align: center; }
+        .cup-icon { font-size: 4rem; color: #ffd700; text-shadow: 0 0 30px #ffd700; animation: float 2.5s infinite ease-in-out; }
 
-        #game-canvas-container { position: relative; width: 100%; height: 100%; }
-        #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
-        
-        .ingame-ui-header { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 100; pointer-events: none; }
-        .header-ui-card { display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.7); padding: 10px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .header-ui-card .name { color: #fff; font-weight: bold; font-size: 1.1rem; font-family: 'Cairo'; }
-        .header-ui-card .score { color: #00ff88; font-size: 1.3rem; font-family: 'Orbitron'; font-weight: 900; }
-        
-        .mobile-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 100; }
-        .ctrl-btn { width: 65px; height: 65px; background: rgba(15,15,20,0.8); border: 2px solid rgba(0,240,255,0.5); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.6); transform: scale(1); }
-        .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
-
-        .vote-grid { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; justify-content: center;}
-        .vote-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s; position: relative; width: 160px; }
-        .vote-card:hover, .vote-card.voted { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 25px rgba(255,215,0,0.2); }
-
-        .gameover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20, 3, 3, 0.92); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.4); }
-        .gameover-overlay.active { opacity: 1; pointer-events: auto; }
-        .gameover-title { color: #ff3333; font-size: 3rem; font-weight: 900; letter-spacing: 6px; text-shadow: 0 0 20px rgba(255, 51, 51, 0.7), 2px 2px 10px #000; font-family: 'Orbitron'; text-align: center; animation: pulseGlow 2s infinite ease-in-out; }
-        .gameover-sub { color: #ffffff; font-family: 'Cairo'; font-size: 1.2rem; opacity: 0.8; text-align: center; }
-        @keyframes pulseGlow { 0%, 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 51, 51, 0.7); } 50% { transform: scale(1.03); text-shadow: 0 0 35px rgba(255, 51, 51, 1); } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
 
     <div class="game-container">
+        
         <div id="screen-start" class="screen">
             <button class="sony-btn start-title" onclick="switchScreen('screen-identity')">START</button>
         </div>
@@ -121,7 +115,7 @@
                 <div class="controls-column">
                     <div class="input-group">
                         <span class="input-label">PLAYER NAME</span>
-                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12" autocomplete="new-password">
+                        <input type="text" id="player-name" class="sony-input" placeholder="ENTER NAME..." maxlength="12">
                     </div>
                     
                     <div style="position: relative;">
@@ -162,7 +156,7 @@
                     </div>
 
                     <div class="lobby-action-row hidden" id="join-input-area">
-                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX" autocomplete="new-password">
+                        <input type="text" id="join-room-code" class="sony-input" placeholder="CODE: XXXXX">
                         <div style="display:flex; gap:10px;">
                             <button id="btn-join" class="sony-btn" onclick="buildLobby('join')" style="color:#00ff88;">ENTER</button>
                             <button class="sony-btn back-mini-btn" onclick="hideJoinInput()">CANCEL</button>
@@ -181,66 +175,99 @@
                 </div>
                 <div class="central-player-grid" id="player-mesh"></div>
                 <div class="lobby-buttons" style="display:flex; flex-direction:column; align-items:center; gap:15px;">
-                    <button class="sony-btn" style="color: #00f0ff;" onclick="showInstructions()">HOW TO PLAY 📖</button>
-                    <button class="sony-btn" id="btn-launch-match" style="color: #00ff88; display:none;" onclick="triggerGameStart()">LAUNCH MATCH</button>
+                    <button class="sony-btn" id="btn-launch-match" style="color: #00ff88; display:none;" onclick="triggerGameStart()">LAUNCH TOURNAMENT</button>
                     <button class="sony-btn back-mini-btn" onclick="location.reload()">LEAVE LOBBY</button>
                 </div>
             </div>
         </div>
 
-        <div id="instructions-modal" class="hidden">
-            <div class="instructions-panel">
-                <h2>🎮 كيف تلعب Tricky Towers؟</h2>
-                <p>تحريك القطعة يمين ويسار بدقة <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
-                <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
-                <p>تسريع نزول القطعة انسيابياً <span>[ S ] أو [ ⬇️ ]</span></p>
-                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء تماسك صلبة! ستتحرك الكاميرا للأعلى تلقائياً كلما ارتفع برجه، توازن جيداً لتفوز!</p>
-                <button class="sony-btn" onclick="hideInstructions()" style="color:#ffdf00; margin-top:15px; font-size:1rem;">إغلاق / CLOSE</button>
-            </div>
-        </div>
-
-        <div id="screen-gameplay" class="screen hidden">
-            <div id="game-canvas-container">
-                <canvas id="physics-canvas"></canvas>
-                
-                <div class="ingame-ui-header" id="ingame-ui-header"></div>
-                
-                <div class="mobile-controls">
-                    <button class="ctrl-btn" id="ctrl-left"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button class="ctrl-btn" id="ctrl-rotate"><i class="fa-solid fa-rotate-right"></i></button>
-                    <button class="ctrl-btn" id="ctrl-down"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="ctrl-btn" id="ctrl-right"><i class="fa-solid fa-arrow-right"></i></button>
+        <div id="screen-bracket" class="screen hidden">
+            <h2 id="bracket-stage-title" style="color: #ffdf00; letter-spacing: 4px;">TOURNAMENT BRACKET - دور الـ 8</h2>
+            
+            <div class="bracket-container">
+                <div class="bracket-column" id="col-round8"></div>
+                <div class="bracket-column" id="col-round4"></div>
+                <div class="bracket-column" id="col-final"></div>
+                <div class="champion-box">
+                    <i class="fa-solid fa-trophy cup-icon"></i>
+                    <div class="input-label" style="color: #ffd700;">CHAMPION</div>
+                    <div id="bracket-winner-name" class="player-tag-name" style="border-color: #ffd700; color: #ffd700;">???</div>
                 </div>
             </div>
 
-            <div id="loss-overlay" class="gameover-overlay">
-                <div class="gameover-title">GAME OVER</div>
-                <div class="gameover-sub">💥 سقط المكعب وفقدت توازن البرج!</div>
-                <button class="sony-btn" style="color: #ffdf00; margin-top: 20px;" onclick="location.reload()">RETRY / إعـادة</button>
+            <button id="btn-start-quiz-round" class="sony-btn" style="color: #00f0ff;" onclick="startActualQuizRound()">START ROUND ⚔️</button>
+        </div>
+
+        <div id="screen-gameplay" class="screen hidden">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span id="quiz-category" style="color: #00f0ff; font-weight: bold;">تصنيف السؤال</span>
+                    <div class="timer-badge"><i class="fa-solid fa-clock"></i> <span id="quiz-timer">20</span>s</div>
+                    <span id="quiz-question-number" style="opacity: 0.7;">السؤال 1 / 15</span>
+                </div>
+                
+                <img id="quiz-image" class="question-img" src="" alt="Question Image">
+                <div id="quiz-text" class="question-text">جاري تحميل السؤال الحماسي...</div>
+                
+                <div class="options-grid" id="quiz-options-container"></div>
+                
+                <div style="width: 100%; display: flex; justify-content: space-between; margin-top: 15px;">
+                    <span style="font-size: 0.9rem; opacity: 0.6; padding-top: 10px;">إجاباتك الصحيحة: <span id="my-live-score" style="color: #00ff88; font-weight: bold;">0</span></span>
+                    <button class="sony-btn" style="font-size: 1rem; color: #ff4a4a;" onclick="skipQuestion()">SKIP / سكب ➡️</button>
+                </div>
             </div>
         </div>
 
-        <div id="screen-voting" class="screen hidden">
-            <span class="input-label" style="color:#ffd700; text-align:center;">MATCH FINISHED</span>
-            <div class="vote-grid" id="vote-grid-container"></div>
-            <button class="sony-btn" style="margin-top: 30px; color:#ffdf00;" onclick="location.reload()">MAIN MENU</button>
-        </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <script>
-        function clearAllInputs() {
-            let nameIn = document.getElementById('player-name');
-            let roomIn = document.getElementById('join-room-code');
-            if (nameIn) nameIn.value = '';
-            if (roomIn) roomIn.value = '';
-        }
-        document.addEventListener("DOMContentLoaded", clearAllInputs);
-        window.addEventListener("pageshow", clearAllInputs);
+        // قاعدة بيانات الأسئلة المتنوعة والمقسمة بالتساوي (سيتم اختيار 5 من كل تصنيف عشوائياً)
+        const questionsBank = {
+            religious: [
+                { q: "ما هي أطول سورة في القرآن الكريم؟", o: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة المائدة"], a: 0, img: "https://images.unsplash.com/photo-1609599006353-e629f1d50668?w=500" },
+                { q: "من هو النبي الذي لُقب بـ 'كليم الله'؟", o: ["إبراهيم عليه السلام", "موسى عليه السلام", "عيسى عليه السلام", "نوح عليه السلام"], a: 1, img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500" },
+                { q: "كم عدد غزوات الرسول صلى الله عليه وسلم؟", o: ["17 غزوة", "22 غزوة", "27 غزوة", "35 غزوة"], a: 2, img: "https://images.unsplash.com/photo-1590075865003-e48277afd558?w=500" },
+                { q: "في أي شهر هجري يقع صيام عيد الفطر؟", o: ["رمضان", "شوال", "ذو الحجة", "شعبان"], a: 1, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=500" },
+                { q: "ما هو أول المسجد بني في الإسلام؟", o: ["المسجد الحرام", "المسجد النبوي", "مسجد قباء", "المسجد الأقصى"], a: 2, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=500" }
+            ],
+            general: [
+                { q: "ما هو أكبر محيط في العالم؟", o: ["المحيط الأطلسي", "المحيط الهندي", "المحيط الهادئ", "المحيط المتجمد الشمالي"], a: 2, img: "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=500" },
+                { q: "ما هو العضو الأكبر في جسم الإنسان؟", o: ["الكبد", "الجلد", "الرئتين", "الأمعاء الغليظة"], a: 1, img: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=500" },
+                { q: "أي كوكب يلقب بالكوكب الأحمر؟", o: ["المشتري", "الزهرة", "المريخ", "عطارد"], a: 2, img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=500" },
+                { q: "ما هي عاصمة اليابان؟", o: ["بكين", "سول", "طوكيو", "بانكوك"], a: 2, img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500" },
+                { q: "ما هو المعدن السائل الوحيد في درجة الحرارة العادية؟", o: ["الحديد", "الزئبق", "النحاس", "الألومنيوم"], a: 1, img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }
+            ],
+            history: [
+                { q: "في أي عام اندلعت الحرب العالمية الأولى؟", o: ["1912", "1914", "1918", "1939"], a: 1, img: "https://images.unsplash.com/photo-1445023086979-7244a12345a8?w=500" },
+                { q: "من هو القائد المسلم الذي فتح الأندلس؟", o: ["خالد بن الوليد", "طارق بن زياد", "صلاح الدين الأيوبي", "عمرو بن العاص"], a: 1, img: "https://images.unsplash.com/photo-1546955121-d10433008557?w=500" },
+                { q: "بناة الأهرامات الثلاثة هم من حضارة أي بلد؟", o: ["العراق", "مصر", "اليونان", "إيطاليا"], a: 1, img: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=500" },
+                { q: "من هو مكتشف أمريكا عام 1492؟", o: ["فاسكو دا غاما", "كريستوفر كولومبوس", "ماجلان", "ابن بطوطة"], a: 1, img: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=500" },
+                { q: "ما هي المدينة التي كانت عاصمة الدولة الأموية؟", o: ["بغداد", "القاهرة", "دمشق", "المدينة المنورة"], a: 2, img: "https://images.unsplash.com/photo-1543731068-7e0f5beff43a?w=500" }
+            ]
+        };
 
         let db;
+        let currentRoomId = null, myPlayerId = null;
+        let pName = "", currentHero = "shadow", currentOrnament = "diamond";
+        let activeTournamentQuestions = [];
+        let currentQuestionIndex = 0;
+        let quizTimerInterval;
+        let timeLeft = 20;
+        let myCorrectAnswersCount = 0;
+
+        // هيكل البطولة
+        let tournamentData = {
+            round8: [], // 4 مباريات (8 لاعبين)
+            round4: [], // مباراتين (4 لاعبين)
+            final: [],  // مباراة واحدة (لاعبين)
+            winner: null,
+            currentRoundIndex: 8 // 8 ثم 4 ثم 2
+        };
+
+        // أسماء البوتات الشاغرة لإكمال دور الـ 8 بذكاء وعشوائية
+        const botNames = ["AlphaBot", "ZetaStriker", "FrostByte", "VoltMech", "BlazeCore", "ShadowX", "OmegaPro", "PixelHero"];
+
+        // إدارة الـ Firebase والقوائم
         try {
             const firebaseConfig = {
                 apiKey: "AIzaSyCOGGmv-bjlZlBLr1T8tAvBtALAcp-7HEw",
@@ -253,113 +280,51 @@
             };
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch (error) { console.error("Firebase Error:", error); }
+        } catch (e) { console.error(e); }
 
-        const animeHeroes = {
-            'shadow': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shadow&backgroundColor=312e81' },
-            'blaze': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=blaze&backgroundColor=991b1b' },
-            'frost': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=frost&backgroundColor=065f46' },
-            'volt': { url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=volt&backgroundColor=854d0e' }
-        };
-
-        let currentHero = 'shadow', currentOrnament = 'diamond', pName = "";
-        let currentRoomId = null, myPlayerId = null;
-        let isGameStartedLocally = false;
-        
-        const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner,
-              Bodies = Matter.Bodies, Body = Matter.Body, Composite = Matter.Composite, Events = Matter.Events;
-              
-        let engine, render, runner;
-        let myActiveBlock = null;
-        let myTowerX = 0, oppTowerX = 0;
-        let myPlacedBlocks = [];
-        let oppPlacedBlocksMap = {}; 
-
-        let normalDropSpeed = 1.8;  
-        let fastDropSpeed = 7.0;    
-        let currentDropSpeed = normalDropSpeed; 
-        let isWaitingForNextSpawn = false;
-
-        let cameraYOffset = 0;
-        let myBase = null, oppBase = null;
-
-        const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
-        const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
-
-        try { document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes['shadow'].url}')`; } catch(e) {}
-
-        function toggleMenu(event, menuId) { 
+        function toggleMenu(event, menuId) {
             event.stopPropagation();
-            const menu = document.getElementById(menuId); 
-            const isVisible = menu.style.display === 'flex'; 
-            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); 
-            menu.style.display = isVisible ? 'none' : 'flex'; 
+            const menu = document.getElementById(menuId);
+            const isVisible = menu.style.display === 'flex';
+            document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none');
+            if(!isVisible) menu.style.display = 'flex';
         }
-        document.addEventListener('click', () => { document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'); });
-        
-        function changeHero(key, el) { 
-            currentHero = key; 
-            document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; 
-            document.querySelectorAll('#pop-hero .pop-opt').forEach(opt => opt.classList.remove('selected')); 
-            el.classList.add('selected'); 
-        }
-        function changeOrnament(tier, el) { 
-            currentOrnament = tier; 
-            document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; 
-            document.querySelectorAll('#pop-tier .pop-opt').forEach(opt => opt.classList.remove('selected')); 
-            el.classList.add('selected'); 
-        }
-        function switchScreen(screenId) { 
-            document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); }); 
-            document.getElementById(screenId).classList.remove('hidden'); 
-        }
-        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); document.getElementById('join-room-code').focus(); }
-        function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
-        function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
-        function hideInstructions() { document.getElementById('instructions-modal').classList.add('hidden'); }
+        document.addEventListener('click', () => document.querySelectorAll('.pop-menu').forEach(m => m.style.display = 'none'));
 
-        function generateProRoomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
-            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-            return code;
-        }
+        function changeHero(key, el) { currentHero = key; document.getElementById('avatar-live-core').style.backgroundImage = `url('${animeHeroes[key].url}')`; document.querySelectorAll('#pop-hero .pop-opt').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+        function changeOrnament(tier, el) { currentOrnament = tier; document.getElementById('ornament-live-border').className = 'ornament-border ornament-' + tier; document.querySelectorAll('#pop-tier .pop-opt').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+        function switchScreen(screenId) { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById(screenId).classList.remove('hidden'); }
+        function showJoinInput() { document.getElementById('action-buttons-area').classList.add('hidden'); document.getElementById('join-input-area').classList.remove('hidden'); }
+        function hideJoinInput() { document.getElementById('action-buttons-area').classList.remove('hidden'); document.getElementById('join-input-area').classList.add('hidden'); }
 
         function buildLobby(actionType) {
-            if(!db) return alert("خطأ في الاتصال بقاعدة البيانات.");
             const inputName = document.getElementById('player-name').value.trim();
-            if(!inputName) return alert("الرجاء كتابة اسم اللاعب أولاً!");
+            if(!inputName) return alert("الرجاء إدخال اسمك أولاً!");
             pName = inputName;
-            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0 };
+            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0, currentRoundScore: 0, eliminated: false };
 
             if(actionType === 'create') {
-                document.getElementById('btn-create').innerText = "LOADING...";
-                currentRoomId = generateProRoomCode();
-                myPlayerId = "p1"; 
+                currentRoomId = Math.random().toString(36).substring(2,7).toUpperCase();
+                myPlayerId = "p1";
                 db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
-                    document.getElementById('btn-launch-match').style.display = 'block'; 
+                    document.getElementById('btn-launch-match').style.display = 'block';
                     document.getElementById('lobby-room-number').innerText = currentRoomId;
                     switchScreen('screen-lobby'); listenToRoomChanges();
                 });
             } else if(actionType === 'join') {
                 let code = document.getElementById('join-room-code').value.trim().toUpperCase();
                 if(!code) return;
-                document.getElementById('btn-join').innerText = "WAIT...";
-                currentRoomId = code; myPlayerId = "p2";
+                myPlayerId = "p2"; currentRoomId = code;
                 db.ref('rooms/' + currentRoomId).once('value').then(snap => {
                     if(snap.exists() && snap.val().status === "waiting") {
                         db.ref('rooms/' + currentRoomId + '/players/p2').set(myData);
                         db.ref('rooms/' + currentRoomId).update({ status: "full" });
                         document.getElementById('lobby-room-number').innerText = currentRoomId;
                         switchScreen('screen-lobby'); listenToRoomChanges();
-                    } else {
-                        alert("الغرفة غير موجودة أو ممتلئة!");
-                        document.getElementById('btn-join').innerText = "ENTER";
-                    }
+                    } else alert("الغرفة ممتلئة أو غير موجودة!");
                 });
             }
         }
-
-        function triggerGameStart() { if(myPlayerId === 'p1' && db) db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
 
         function listenToRoomChanges() {
             db.ref('rooms/' + currentRoomId).on('value', snap => {
@@ -370,267 +335,265 @@
                 }
                 if(room.status === "playing" && !isGameStartedLocally) {
                     isGameStartedLocally = true;
-                    hideInstructions();
-                    initGameplayUI(room.players);
+                    setupTournamentTree(room.players);
                 }
-                if(room.status === "playing" && engine) updateHeaders(room.players);
-                if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
-                    if(runner) Runner.stop(runner);
-                    initVotingUI(room.players);
+                // استقبال حالة الانتقال بين الأدوار والأسئلة من المضيف
+                if(room.tournamentTree) {
+                    tournamentData = room.tournamentTree;
+                    renderBracketUI();
+                }
+                if(room.status === "quiz_round" && document.getElementById('screen-gameplay').classList.contains('hidden')) {
+                    activeTournamentQuestions = room.currentQuestions;
+                    startQuizCountdown();
                 }
             });
-
-            const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
-            db.ref(`rooms/${currentRoomId}/physics_${oppId}`).on('value', snap => {
-                if(!engine) return;
-                const data = snap.val();
-                if(!data) return;
-                
-                Object.values(data).forEach(bData => {
-                    // المزامنة النسبية: حساب الموقع الحقيقي للخصم في جهة شاشتك الصحيحة
-                    let relativeX = bData.isMyActive ? (oppTowerX + bData.offsetX) : (oppTowerX + bData.offsetX);
-                    let relativeY = bData.y;
-
-                    if(!oppPlacedBlocksMap[bData.id]) {
-                        let b = createTetromino(bData.type, relativeX, relativeY, true); 
-                        b.myId = bData.id;
-                        oppPlacedBlocksMap[bData.id] = b;
-                        Composite.add(engine.world, b);
-                    } else {
-                        Body.setPosition(oppPlacedBlocksMap[bData.id], { x: relativeX, y: relativeY });
-                        Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
-                    }
-                });
-            });
         }
 
-        function generateLobbyCard(label, data) {
-            return `<div class="lobby-card"><span class="host-indicator">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar" style="background-image: url('${animeHeroes[data.hero].url}')"></div></div><div class="player-tag-name">${data.name}</div></div>`;
-        }
+        function generateLobbyCard(label, data) { return `<div class="lobby-card"><span class="host-indicator">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar" style="background-image: url('${animeHeroes[data.hero].url}')"></div></div><div class="player-tag-name">${data.name}</div></div>`; }
+        function triggerGameStart() { if(myPlayerId !== 'p1') return; db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
 
-        function updateHeaders(players) {
-            let html = '';
-            ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) html += `<div class="header-ui-card"><span class="name">${players[pid].name}</span><span class="score">${players[pid].score || 0}</span></div>`;
-            });
-            document.getElementById('ingame-ui-header').innerHTML = html;
-        }
+        // تهيئة بطولة دور الـ 8 وملء الباقي ببوتات ذكية بشكل عشوائي وممتع
+        function setupTournamentTree(playersList) {
+            if(myPlayerId !== 'p1') { switchScreen('screen-bracket'); return; }
 
-        function handleLoss() {
-            if (runner) Runner.stop(runner);
-            const overlay = document.getElementById('loss-overlay');
-            if (overlay) overlay.classList.add('active');
-        }
+            let pool = [];
+            if(playersList.p1) pool.push({ name: playersList.p1.name, id: "p1", score: 0, eliminated: false });
+            if(playersList.p2) pool.push({ name: playersList.p2.name, id: "p2", score: 0, eliminated: false });
 
-        function initGameplayUI(players) {
-            switchScreen('screen-gameplay');
-            
-            // تهيئة وإصلاح أزرار الجوال لمنع عطل الـ Double-Tap Zoom تماماً
-            const buttons = [
-                { id: 'ctrl-left', action: () => moveActive(-1) },
-                { id: 'ctrl-right', action: () => moveActive(1) },
-                { id: 'ctrl-rotate', action: () => rotateActive() }
+            // إكمال العدد إلى 8 لاعبين بالبوتات
+            let shadowBots = [...botNames];
+            while(pool.length < 8) {
+                let rIdx = Math.floor(Math.random() * shadowBots.length);
+                pool.push({ name: shadowBots.splice(rIdx, 1)[0], id: "bot_" + pool.length, score: 0, eliminated: false });
+            }
+
+            // خلط اللاعبين عشوائياً لإنشاء الـ دور الـ 8
+            pool.sort(() => Math.random() - 0.5);
+
+            tournamentData.round8 = [
+                { p1: pool[0], p2: pool[1], winner: null },
+                { p1: pool[2], p2: pool[3], winner: null },
+                { p1: pool[4], p2: pool[5], winner: null },
+                { p1: pool[6], p2: pool[7], winner: null }
             ];
-            buttons.forEach(btn => {
-                let el = document.getElementById(btn.id);
-                if(el) {
-                    el.addEventListener('touchstart', (e) => { e.preventDefault(); btn.action(); }, {passive: false});
-                    el.addEventListener('mousedown', (e) => { e.preventDefault(); btn.action(); });
-                }
-            });
+            tournamentData.round4 = [
+                { p1: { name: "???", id: null }, p2: { name: "???", id: null }, winner: null },
+                { p1: { name: "???", id: null }, p2: { name: "???", id: null }, winner: null }
+            ];
+            tournamentData.final = [
+                { p1: { name: "???", id: null }, p2: { name: "???", id: null }, winner: null }
+            ];
+            tournamentData.currentRoundIndex = 8;
+            tournamentData.winner = null;
 
-            let downBtn = document.getElementById('ctrl-down');
-            if(downBtn) {
-                downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); currentDropSpeed = fastDropSpeed; }, {passive: false});
-                downBtn.addEventListener('touchend', (e) => { e.preventDefault(); currentDropSpeed = normalDropSpeed; }, {passive: false});
-                downBtn.addEventListener('mousedown', (e) => { e.preventDefault(); currentDropSpeed = fastDropSpeed; });
-                downBtn.addEventListener('mouseup', (e) => { e.preventDefault(); currentDropSpeed = normalDropSpeed; });
+            db.ref('rooms/' + currentRoomId).update({ tournamentTree: tournamentData });
+            switchScreen('screen-bracket');
+        }
+
+        // بناء وعرض شجرة البطولة دور الـ 8 أمام الجميع بطريقة جميلة وانسيابية
+        function renderBracketUI() {
+            switchScreen('screen-bracket');
+            document.getElementById('bracket-stage-title').innerText = `TOURNAMENT BRACKET - دور الـ ${tournamentData.currentRoundIndex}`;
+
+            // إخفاء زر بدء الجولة لغير المستضيف
+            document.getElementById('btn-start-quiz-round').style.display = (myPlayerId === 'p1' && !tournamentData.winner) ? 'block' : 'none';
+
+            // بناء جولة الـ 8
+            let r8Html = "";
+            tournamentData.round8.forEach(m => {
+                r8Html += `<div class="match-box">
+                    <div class="bracket-player ${m.winner?.id===m.p1.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p1.name}</span><strong>${m.p1.score}</strong></div>
+                    <div class="bracket-player ${m.winner?.id===m.p2.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p2.name}</span><strong>${m.p2.score}</strong></div>
+                </div>`;
+            });
+            document.getElementById('col-round8').innerHTML = r8Html;
+
+            // بناء جولة الـ 4
+            let r4Html = "";
+            tournamentData.round4.forEach(m => {
+                r4Html += `<div class="match-box">
+                    <div class="bracket-player ${m.winner?.id===m.p1.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p1.name}</span><strong>${m.p1.score || 0}</strong></div>
+                    <div class="bracket-player ${m.winner?.id===m.p2.id?'winner':(m.winner?'eliminated':'')}"><span>${m.p2.name}</span><strong>${m.p2.score || 0}</strong></div>
+                </div>`;
+            });
+            document.getElementById('col-round4').innerHTML = r4Html;
+
+            // النهائي
+            let f = tournamentData.final[0];
+            let fHtml = `<div class="match-box">
+                <div class="bracket-player ${f.winner?.id===f.p1.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p1.name}</span><strong>${f.p1.score || 0}</strong></div>
+                <div class="bracket-player ${f.winner?.id===f.p2.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p2.name}</span><strong>${f.p2.score || 0}</strong></div>
+            </div>`;
+            document.getElementById('col-final').innerHTML = fHtml;
+
+            if(tournamentData.winner) {
+                document.getElementById('bracket-winner-name').innerText = tournamentData.winner.name;
+            }
+        }
+
+        // إنشاء الـ 15 سؤال المتنوعة (5 دينية، 5 عامة، 5 تاريخ) وعمل رسبون عشوائي لها عند الدخول
+        function generateMixedQuiz() {
+            let selected = [];
+            const gather = (arr) => {
+                let copy = [...arr].sort(() => Math.random() - 0.5);
+                return copy.slice(0, 5);
+            };
+            selected.push(...gather(questionsBank.religious));
+            selected.push(...gather(questionsBank.general));
+            selected.push(...gather(questionsBank.history));
+            return selected.sort(() => Math.random() - 0.5); // خلطها نهائياً لضمان التنوع العشوائي في كل قيم
+        }
+
+        function startActualQuizRound() {
+            if(myPlayerId !== 'p1') return;
+            let currentQuestions = generateMixedQuiz();
+            db.ref('rooms/' + currentRoomId).update({
+                status: "quiz_round",
+                currentQuestions: currentQuestions
+            });
+        }
+
+        function startQuizCountdown() {
+            switchScreen('screen-gameplay');
+            currentQuestionIndex = 0;
+            myCorrectAnswersCount = 0;
+            document.getElementById('my-live-score').innerText = "0";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            clearInterval(quizTimerInterval);
+            if(currentQuestionIndex >= 15) {
+                endQuizRoundLocally();
+                return;
             }
 
-            // تحكم الكيبورد
-            document.onkeydown = function(e) {
-                if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
-                if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-1);
-                if (e.key === 'ArrowRight' || e.key === 'd') moveActive(1);
-                if (e.key === 'ArrowDown' || e.key === 's') currentDropSpeed = fastDropSpeed;
-            };
-            document.onkeyup = function(e) {
-                if (e.key === 'ArrowDown' || e.key === 's') currentDropSpeed = normalDropSpeed;
-            };
-
-            engine = Engine.create();
-            engine.positionIterations = 20;
-            engine.velocityIterations = 20;
-            engine.enableSleeping = true; // تفعيل ميزة النوم الفيزيائي لضبط الرسبون بدقة خرافية
-            engine.world.gravity.y = 0.0; // إلغاء الجاذبية الافتراضية للتحكم بالنزول النقي قبل اللمس
-
-            const canvas = document.getElementById('physics-canvas');
-            const w = window.innerWidth, h = window.innerHeight;
+            let qData = activeTournamentQuestions[currentQuestionIndex];
+            document.getElementById('quiz-question-number').innerText = `السؤال ${currentQuestionIndex + 1} / 15`;
+            document.getElementById('quiz-text').innerText = qData.q;
+            document.getElementById('quiz-image').src = qData.img;
             
-            render = Render.create({
-                canvas: canvas, engine: engine,
-                options: { width: w, height: h, wireframes: false, background: 'transparent' }
+            // تحديد التصنيف للعرض الجمالي باللغة العربية
+            let catName = "معلومات عامة 🧠";
+            if(questionsBank.religious.some(x => x.q === qData.q)) catName = "مسابقة دينية 🕋";
+            if(questionsBank.history.some(x => x.q === qData.q)) catName = "تاريخ وأحداث ⏳";
+            document.getElementById('quiz-category').innerText = catName;
+
+            let optContainer = document.getElementById('quiz-options-container');
+            optContainer.innerHTML = "";
+            qData.o.forEach((opt, idx) => {
+                let btn = document.createElement('button');
+                btn.className = "option-btn";
+                btn.innerText = opt;
+                btn.onclick = () => submitAnswer(idx, btn);
+                optContainer.appendChild(btn);
             });
 
-            // توزيع الأماكن: كل لاعب يرى نفسه في مكانه الصحيح والخصم في مكانه
-            myTowerX = myPlayerId === 'p1' ? w * 0.28 : w * 0.72;
-            oppTowerX = myPlayerId === 'p1' ? w * 0.72 : w * 0.28;
+            timeLeft = 15; // 15 ثانية لكل سؤال
+            document.getElementById('quiz-timer').innerText = timeLeft;
+            quizTimerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('quiz-timer').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    currentQuestionIndex++;
+                    showQuestion();
+                }
+            }, 1000);
+        }
 
-            myBase = Bodies.rectangle(myTowerX, h - 80, 170, 25, { isStatic: true, render: { fillStyle: '#3e2723', strokeStyle: '#00f0ff', lineWidth: 3 } });
-            oppBase = Bodies.rectangle(oppTowerX, h - 80, 170, 25, { isStatic: true, render: { fillStyle: '#263238', strokeStyle: '#ff4a4a', lineWidth: 3 } });
+        function submitAnswer(idx, btnElement) {
+            clearInterval(quizTimerInterval);
+            let qData = activeTournamentQuestions[currentQuestionIndex];
             
-            const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { isSensor: true, isStatic: true, label: 'deathSensor', render: { visible: false } });
-            Composite.add(engine.world, [myBase, oppBase, deathSensor]);
+            // قفل الخيارات
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
 
-            // نظام رسبون نقي وحقيقي مبني على الاصطدام الفعلي
-            Events.on(engine, 'collisionStart', function(event) {
-                event.pairs.forEach((pair) => {
-                    let bodyA = pair.bodyA, bodyB = pair.bodyB;
-                    if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
-                        let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
-                        if (block !== myBase && block !== oppBase && !block.isStatic) handleLoss();
+            if(idx === qData.a) {
+                btnElement.style.background = "#00ff88";
+                btnElement.style.color = "#000";
+                myCorrectAnswersCount++;
+                document.getElementById('my-live-score').innerText = myCorrectAnswersCount;
+            } else {
+                btnElement.style.background = "#ff4a4a";
+                // تلوين الإجابة الصحيحة باللون الأخضر فوراً
+                document.querySelectorAll('.option-btn')[qData.a].style.background = "#00ff88";
+                document.querySelectorAll('.option-btn')[qData.a].style.color = "#000";
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                showQuestion();
+            }, 1200);
+        }
+
+        function skipQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        // نهاية الجولة وحساب نقاط البوتات وإقصاء الأقل كفاءة بشكل تصاعدي
+        function endQuizRoundLocally() {
+            clearInterval(quizTimerInterval);
+            switchScreen('screen-bracket');
+            document.getElementById('bracket-stage-title').innerText = "جاري احتساب النتائج وتحديث الشجرة...⏳";
+
+            if(myPlayerId === 'p1') {
+                // البوتات تجيب بنقاط عشوائية متزنة
+                const simulateBotScore = () => Math.floor(Math.random() * 8) + 6; // نقاط من 6 إلى 14
+
+                db.ref('rooms/' + currentRoomId + '/players').once('value').then(snap => {
+                    let playersData = snap.val();
+                    let p1Score = playersData.p1 ? playersData.p1.currentRoundScore : 0;
+                    let p2Score = playersData.p2 ? playersData.p2.currentRoundScore : 0;
+
+                    if(myPlayerId === 'p1') p1Score = myCorrectAnswersCount;
+
+                    // تحديث الشجرة بناء على الجولة النشطة حالياً
+                    if(tournamentData.currentRoundIndex === 8) {
+                        tournamentData.round8.forEach(m => {
+                            let s1 = m.p1.id === "p1" ? p1Score : (m.p1.id === "p2" ? p2Score : simulateBotScore());
+                            let s2 = m.p2.id === "p1" ? p1Score : (m.p2.id === "p2" ? p2Score : simulateBotScore());
+                            m.p1.score = s1; m.p2.score = s2;
+                            m.winner = s1 >= s2 ? m.p1 : m.p2;
+                        });
+                        // نقل المتأهلين لدور الـ 4
+                        tournamentData.round4[0].p1 = tournamentData.round8[0].winner;
+                        tournamentData.round4[0].p2 = tournamentData.round8[1].winner;
+                        tournamentData.round4[1].p1 = tournamentData.round8[2].winner;
+                        tournamentData.round4[1].p2 = tournamentData.round8[3].winner;
+                        tournamentData.currentRoundIndex = 4;
+                    } 
+                    else if(tournamentData.currentRoundIndex === 4) {
+                        tournamentData.round4.forEach(m => {
+                            let s1 = m.p1.id === "p1" ? p1Score : (m.p1.id === "p2" ? p2Score : simulateBotScore());
+                            let s2 = m.p2.id === "p1" ? p1Score : (m.p2.id === "p2" ? p2Score : simulateBotScore());
+                            m.p1.score = s1; m.p2.score = s2;
+                            m.winner = s1 >= s2 ? m.p1 : m.p2;
+                        });
+                        // نقل للنهائي
+                        tournamentData.final[0].p1 = tournamentData.round4[0].winner;
+                        tournamentData.final[0].p2 = tournamentData.round4[1].winner;
+                        tournamentData.currentRoundIndex = 2;
+                    } 
+                    else if(tournamentData.currentRoundIndex === 2) {
+                        let m = tournamentData.final[0];
+                        let s1 = m.p1.id === "p1" ? p1Score : (m.p1.id === "p2" ? p2Score : simulateBotScore());
+                        let s2 = m.p2.id === "p1" ? p1Score : (m.p2.id === "p2" ? p2Score : simulateBotScore());
+                        m.p1.score = s1; m.p2.score = s2;
+                        m.winner = s1 >= s2 ? m.p1 : m.p2;
+                        tournamentData.winner = m.winner;
                     }
 
-                    // تفعيل الجاذبية فور ملامسة أي قطعة صلبة مستقرة
-                    if (myActiveBlock) {
-                        if (bodyA === myActiveBlock || bodyB === myActiveBlock) {
-                            let target = bodyA === myActiveBlock ? bodyB : bodyA;
-                            if (target === myBase || myPlacedBlocks.includes(target)) {
-                                lockActiveBlock();
-                            }
-                        }
-                    }
+                    db.ref('rooms/' + currentRoomId).update({
+                        status: "playing",
+                        tournamentTree: tournamentData
+                    });
                 });
-            });
-
-            Events.on(engine, 'beforeUpdate', function() {
-                if (myActiveBlock && !myActiveBlock.isStatic) {
-                    // حركة فيزيائية عبر الـ velocity تمنع الاختراقات والتجميد عشوائياً
-                    Body.setVelocity(myActiveBlock, { x: 0, y: currentDropSpeed });
-                }
-
-                // الكاميرا الصاعدة التلقائية والناعمة
-                let highestY = h - 80; 
-                myPlacedBlocks.forEach(b => { if (b.position.y < highestY) highestY = b.position.y; });
-                let targetOffset = 0;
-                if (highestY < 320 + cameraYOffset) targetOffset = highestY - 320;
-                cameraYOffset += (targetOffset - cameraYOffset) * 0.05;
-
-                Render.lookAt(render, { min: { x: 0, y: cameraYOffset }, max: { x: w, y: h + cameraYOffset } });
-                Body.setPosition(deathSensor, { x: w / 2, y: h + cameraYOffset - 5 });
-
-                // فحص النوم الفيزيائي: إذا نام المكعب واستقر، نرسل إشارة الرسبون الجديدة بأمان
-                if (isWaitingForNextSpawn) {
-                    let allStable = myPlacedBlocks.every(b => b.isSleeping || b.speed < 0.2);
-                    if (allStable) {
-                        isWaitingForNextSpawn = false;
-                        spawnNewBlock();
-                    }
-                }
-            });
-
-            Render.run(render);
-            runner = Runner.create();
-            Runner.run(runner, engine);
-
-            spawnNewBlock();
-            setInterval(syncMyPhysicsToFirebase, 80);
-        }
-
-        function createTetromino(type, x, y, isStaticOption) {
-            const s = 22; 
-            const opt = { 
-                isStatic: isStaticOption, friction: 0.85, frictionStatic: 1.0, frictionAir: 0.01,
-                restitution: 0.0, density: 0.05, sleepThreshold: 20,
-                render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
-            };
-            let body;
-            switch(type) {
-                case 'I': body = Bodies.rectangle(x, y, s*4, s, opt); break;
-                case 'O': body = Bodies.rectangle(x, y, s*2, s*2, opt); break;
-                case 'T': body = Body.create({parts: [Bodies.rectangle(x, y+s/2, s*3, s, opt), Bodies.rectangle(x, y-s/2, s, s, opt)], ...opt}); break;
-                case 'L': body = Body.create({parts: [Bodies.rectangle(x-s/2, y, s, s*3, opt), Bodies.rectangle(x+s/2, y+s, s, s, opt)], ...opt}); break;
-                case 'J': body = Body.create({parts: [Bodies.rectangle(x+s/2, y, s, s*3, opt), Bodies.rectangle(x-s/2, y+s, s, s, opt)], ...opt}); break;
-                case 'S': body = Body.create({parts: [Bodies.rectangle(x+s/2, y-s/2, s*2, s, opt), Bodies.rectangle(x-s/2, y+s/2, s*2, s, opt)], ...opt}); break;
-                case 'Z': body = Body.create({parts: [Bodies.rectangle(x-s/2, y-s/2, s*2, s, opt), Bodies.rectangle(x+s/2, y+s/2, s*2, s, opt)], ...opt}); break;
-            }
-            body.myType = type;
-            body.myId = Date.now() + Math.random(); 
-            return body;
-        }
-
-        function spawnNewBlock() {
-            if(isWaitingForNextSpawn) return;
-            currentDropSpeed = normalDropSpeed;
-            const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 60, false);
-            Composite.add(engine.world, myActiveBlock);
-        }
-
-        function moveActive(dir) {
-            if(!myActiveBlock || isWaitingForNextSpawn) return;
-            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 20), y: myActiveBlock.position.y });
-        }
-
-        function rotateActive() {
-            if(!myActiveBlock || isWaitingForNextSpawn) return;
-            Body.setAngle(myActiveBlock, myActiveBlock.angle + (Math.PI / 2));
-        }
-
-        function lockActiveBlock() {
-            if(!myActiveBlock) return;
-            
-            // تحرير جاذبية العالم الفردية للمكعب ليسقط ويتوازن بشكل طبيعي
-            myActiveBlock.gravityScale = 1.0;
-            engine.world.gravity.y = 1.3; // تفعيل جاذبية المحرك العامة لضمان سقوطه
-
-            myPlacedBlocks.push(myActiveBlock);
-            myActiveBlock = null;
-            isWaitingForNextSpawn = true; // ننتظر استقرار القطعة بالكامل قبل التوليد القادم لمنع التجميد والرسبون العشوائي
-
-            let currentScore = myPlacedBlocks.length;
-            db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ score: currentScore });
-
-            if(currentScore >= 20) {
-                db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
+            } else {
+                // إرسال النتيجة الفردية لـ p2 إلى السيرفر ليراها p1 ويحسب الشجرة
+                db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ currentRoundScore: myCorrectAnswersCount });
             }
         }
-
-        function syncMyPhysicsToFirebase() {
-            if(!currentRoomId || !myPlayerId) return;
-            let dataToSend = [];
-            
-            if(myActiveBlock) {
-                // نرسل الـ offsetX (الموقع بالنسبة لمركز البرج الخاص بك) حتى يفهم الخصم مكانها الصحيح في شاشته
-                dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, offsetX: (myActiveBlock.position.x - myTowerX), y: myActiveBlock.position.y, angle: myActiveBlock.angle, isMyActive: true });
-            }
-            myPlacedBlocks.forEach(b => {
-                if(b.position.y < window.innerHeight + cameraYOffset + 200) {
-                    dataToSend.push({ id: b.myId, type: b.myType, offsetX: (b.position.x - myTowerX), y: b.position.y, angle: b.angle, isMyActive: false });
-                }
-            });
-            db.ref(`rooms/${currentRoomId}/physics_${myPlayerId}`).set(dataToSend);
-        }
-
-        function initVotingUI(players) {
-            switchScreen('screen-voting');
-            let html = '';
-            ['p1', 'p2'].forEach(pid => {
-                if(players[pid]) {
-                    html += `
-                    <div class="vote-card" id="vote-card-${pid}" onclick="castVote('${pid}')">
-                        <div class="avatar-frame-wrapper">
-                            <div class="ornament-border ornament-${players[pid].ornament}"></div>
-                            <div class="core-avatar" style="background-image: url('${animeHeroes[players[pid].hero].url}')"></div>
-                        </div>
-                        <div class="player-tag-name">${players[pid].name} <br> <small id="votecount-${pid}">0 Votes</small></div>
-                    </div>`;
-                }
-            });
-            document.getElementById('vote-grid-container').innerHTML = html;
-        }
-        
-        function castVote(targetPid) { db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid); }
     </script>
 </body>
 </html>
