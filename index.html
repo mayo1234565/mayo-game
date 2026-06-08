@@ -91,7 +91,7 @@
         .header-ui-card .score { color: #00ff88; font-size: 1.3rem; font-family: 'Orbitron'; font-weight: 900; }
         
         .mobile-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 20; }
-        .ctrl-btn { width: 65px; height: 65px; background: rgba(15,15,20,0.8); border: 2px solid rgba(0,240,255,0.5); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.6);}
+        .ctrl-btn { width: 65px; height: 65px; background: rgba(15,15,20,0.8); border: 2px solid rgba(0,240,255,0.5); border-radius: 50%; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.6); transform: scale(1); }
         .ctrl-btn:active { background: #00f0ff; color: #000; transform: scale(0.9); }
 
         .vote-grid { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; justify-content: center;}
@@ -184,7 +184,7 @@
                 <h2>🎮 كيف تلعب Tricky Towers؟</h2>
                 <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
                 <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
-                <p>إسقاط القطعة بسرعة <span>[ S ] أو [ ⬇️ ]</span></p>
+                <p>تسريع نزول القطعة انسيابياً <span>[ S ] أو [ ⬇️ ]</span></p>
                 <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! ستتحرك القطع للأسفل تلقائياً، وإذا اختل التوازن ستسقط وتخسر!</p>
                 <button class="sony-btn" onclick="hideInstructions()" style="color:#ffdf00; margin-top:15px; font-size:1rem;">إغلاق / CLOSE</button>
             </div>
@@ -197,10 +197,10 @@
                 <div class="ingame-ui-header" id="ingame-ui-header"></div>
                 
                 <div class="mobile-controls">
-                    <button class="ctrl-btn" onclick="moveActive(-1)"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button class="ctrl-btn" onclick="rotateActive()"><i class="fa-solid fa-rotate-right"></i></button>
-                    <button class="ctrl-btn" onclick="dropActive()"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="ctrl-btn" onclick="moveActive(1)"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="ctrl-btn" onmousedown="moveActive(-1)" ontouchstart="moveActive(-1)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="ctrl-btn" onmousedown="rotateActive()" ontouchstart="rotateActive()"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="ctrl-btn" onmousedown="setFastDrop(true)" onmouseup="setFastDrop(false)" ontouchstart="setFastDrop(true)" ontouchend="setFastDrop(false)"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="ctrl-btn" onmousedown="moveActive(1)" ontouchstart="moveActive(1)"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
@@ -265,7 +265,11 @@
         let myTowerX = 0, oppTowerX = 0;
         let myPlacedBlocks = [];
         let oppPlacedBlocksMap = {}; 
-        let autoDropInterval = null; // مُوّقِت الهبوط التلقائي
+
+        // متغيرات التحكم بالسرعة الانسيابية الجديدة
+        let normalDropSpeed = 1.2;  // السرعة الطبيعية للنزول
+        let fastDropSpeed = 8.0;    // سرعة النزول السريع عند الضغط
+        let currentDropSpeed = normalDropSpeed; 
 
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
@@ -381,7 +385,6 @@
                 
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
                     if(runner) Runner.stop(runner);
-                    if(autoDropInterval) clearInterval(autoDropInterval);
                     initVotingUI(room.players);
                 }
             });
@@ -419,19 +422,28 @@
 
         function handleLoss() {
             if (runner) Runner.stop(runner);
-            if (autoDropInterval) clearInterval(autoDropInterval);
             alert("💥 لقد سقط المكعب وفقدت التوازن! خسرت المباراة.");
             location.reload(); 
+        }
+
+        // دالة تفعيل وإلغاء التسريع الانسيابي
+        function setFastDrop(isFast) {
+            currentDropSpeed = isFast ? fastDropSpeed : normalDropSpeed;
         }
 
         function initGameplayUI(players) {
             switchScreen('screen-gameplay');
             
+            // مراقبة لوحة المفاتيح: السهم لأسفل أو S لتسريع النزول الانسيابي
             document.onkeydown = function(e) {
                 if (e.key === 'ArrowUp' || e.key === 'w') rotateActive();
-                if (e.key === 'ArrowDown' || e.key === 's') dropActive();
                 if (e.key === 'ArrowLeft' || e.key === 'a') moveActive(-1);
                 if (e.key === 'ArrowRight' || e.key === 'd') moveActive(1);
+                if (e.key === 'ArrowDown' || e.key === 's') setFastDrop(true);
+            };
+
+            document.onkeyup = function(e) {
+                if (e.key === 'ArrowDown' || e.key === 's') setFastDrop(false);
             };
 
             engine = Engine.create();
@@ -476,34 +488,28 @@
                 });
             });
 
+            // تعديل انسيابي: تحريك المكعب داخل حلقة تحديث المحرك الرئيسية (تمنع التقطيع تماماً)
+            Events.on(engine, 'beforeUpdate', function() {
+                if (myActiveBlock && myActiveBlock.isStatic) {
+                    // زيادة موضع Y بكسل تلو الآخر بسلاسة فائقة
+                    Body.setPosition(myActiveBlock, { 
+                        x: myActiveBlock.position.x, 
+                        y: myActiveBlock.position.y + currentDropSpeed 
+                    });
+
+                    // إذا اقترب المكعب من الأرض، يترك للفيزياء تلقائياً
+                    if (myActiveBlock.position.y > h - 160) {
+                        lockActiveBlock();
+                    }
+                }
+            });
+
             Render.run(render);
             runner = Runner.create();
             Runner.run(runner, engine);
 
             spawnNewBlock();
             setInterval(syncMyPhysicsToFirebase, 100);
-
-            // تشغيل النزول التلقائي للمكعبات (يتحرك المكعب لأسفل كل 800 مللي ثانية)
-            startAutoDrop();
-        }
-
-        // دالة تحريك المكعب للأسفل تلقائياً
-        function startAutoDrop() {
-            if(autoDropInterval) clearInterval(autoDropInterval);
-            autoDropInterval = setInterval(() => {
-                if (myActiveBlock && myActiveBlock.isStatic) {
-                    // إذا وصل المكعب بالقرب من الأرض أو البرج، نقوم بفك ثباته ليصطدم بالفيزياء طبيعياً
-                    if (myActiveBlock.position.y > window.innerHeight - 150) {
-                        dropActive();
-                    } else {
-                        // تحريكه لأسفل بمقدار 25 بكسل تدريجياً
-                        Body.setPosition(myActiveBlock, { 
-                            x: myActiveBlock.position.x, 
-                            y: myActiveBlock.position.y + 25 
-                        });
-                    }
-                }
-            }, 800); // يمكنك تعديل الرقم (800) لزيادة أو تقليل سرعة النزول التلقائي
         }
 
         function createTetromino(type, x, y, isStaticOption) {
@@ -527,7 +533,7 @@
 
         function spawnNewBlock() {
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            // توليد المكعب عند أعلى نقطة بالبرج الخاص باللاعب
+            // توليد المكعب بالأعلى
             myActiveBlock = createTetromino(randType, myTowerX, 80, true);
             Composite.add(engine.world, myActiveBlock);
         }
@@ -542,7 +548,8 @@
             Body.setAngle(myActiveBlock, myActiveBlock.angle + (Math.PI / 2));
         }
 
-        function dropActive() {
+        // تحويل المكعب من ثابت إلى ديناميكي يتأثر بالفيزياء عند ملامسة البرج أو إسقاطه
+        function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             Body.setStatic(myActiveBlock, false);
             myPlacedBlocks.push(myActiveBlock);
@@ -556,6 +563,11 @@
             } else {
                 setTimeout(spawnNewBlock, 1000);
             }
+        }
+
+        // عند الرغبة في التثبيت الفوري (إسقاط مفاجئ إن وُجد)
+        function dropActive() {
+            lockActiveBlock();
         }
 
         function syncMyPhysicsToFirebase() {
