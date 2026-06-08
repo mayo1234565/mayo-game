@@ -1,316 +1,288 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ HYPERSPACE CORE: 3D ENGINE ⚡</title>
+    <title>🚀 NEON OVERDRIVE: 7-PLAYER SHOWDOWN 🚀</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { 
-            width: 100%; height: 100%; overflow: hidden; 
-            background: #000; font-family: 'Orbitron', sans-serif;
-        }
-        canvas { 
-            display: block; width: 100vw; height: 100vh; 
-            cursor: crosshair; touch-action: none;
-        }
-        #ui-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 20px;
-        }
-        .hud-text {
-            color: #00f0ff; font-size: 1.5rem; font-weight: 900;
-            text-shadow: 0 0 10px #00f0ff; letter-spacing: 2px;
-        }
-        #crosshair {
-            position: absolute; top: 50%; left: 50%;
-            width: 30px; height: 30px; border: 2px dashed #ff0055;
-            border-radius: 50%; transform: translate(-50%, -50%);
-            pointer-events: none; animation: rotateCH 10s infinite linear;
-            box-shadow: 0 0 8px #ff0055;
-        }
-        @keyframes rotateCH { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        #start-screen {
-            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; color: #fff; text-align: center; transition: opacity 0.5s;
-        }
-        .glow-btn {
-            background: transparent; border: 2px solid #00f0ff; color: #00f0ff;
-            padding: 15px 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer;
-            margin-top: 20px; text-shadow: 0 0 10px #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.4);
-            border-radius: 4px; text-transform: uppercase; transition: all 0.3s;
-        }
-        .glow-btn:hover { background: #00f0ff; color: #000; box-shadow: 0 0 30px #00f0ff; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #050508; font-family: 'Orbitron', 'Cairo', sans-serif; color: #fff; }
+        canvas { display: block; width: 100vw; height: 100vh; background: #020205; }
+        
+        /* واجهة القائمة الرئيسية */
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(5,5,10,0.9); z-index:100; padding: 20px; transition: all 0.5s; }
+        h1 { font-size: 3rem; color: #00f0ff; text-shadow: 0 0 20px #00f0ff; margin-bottom: 10px; text-align: center; }
+        .setup-box { background: rgba(255,255,255,0.03); border: 2px solid #ff0055; padding: 30px; border-radius: 15px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(255,0,85,0.2); }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #00f0ff; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-radius: 5px; }
+        .btn { width: 100%; padding: 15px; border: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; border-radius: 5px; margin-bottom: 10px; transition: 0.3s; }
+        .btn-host { background: #00f0ff; color: #000; box-shadow: 0 0 15px #00f0ff; }
+        .btn-join { background: #ff0055; color: #fff; box-shadow: 0 0 15px #ff0055; }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        
+        /* شاشة التحكم للجوال */
+        #controller-ui { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background:#111; z-index:150; grid-template-columns: 1fr 1fr; }
+        .ctrl-btn { display:flex; align-items:center; justify-content:center; font-size: 3rem; user-select:none; -webkit-user-select:none; }
+        .ctrl-left { background: #ff005522; border-right: 1px solid #ff005555; color: #ff0055; }
+        .ctrl-right { background: #00f0ff22; border-left: 1px solid #00f0ff55; color: #00f0ff; }
+        
+        #room-id-display { position: absolute; top: 15px; left: 15px; color: #00f0ff; font-size: 1.2rem; z-index: 50; text-shadow: 0 0 5px #00f0ff; }
+        #player-count { position: absolute; top: 15px; right: 15px; color: #ff0055; font-size: 1.2rem; z-index: 50; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <!-- مكتبة الـ Peer-to-Peer السحرية للربط الشبكي بدون سيرفر -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-    <div id="start-screen">
-        <h1 style="font-size: 3.5rem; letter-spacing: 5px; color: #ff0055; text-shadow: 0 0 20px #ff0055;">HYPERSPACE 3D</h1>
-        <p style="color: #888; margin-top: 10px; font-size: 1.1rem;">محرك فضاء ثلاثي الأبعاد نقي مكتوب بالكامل بدون أي مكتبات خارجية</p>
-        <p style="color: #00f0ff; margin-top: 5px; font-size: 0.9rem;">التحكم: الماوس أو اللمس للتوجيه والإطلاق</p>
-        <button class="glow-btn" onclick="initGame()">LAUNCH ENGINE</button>
-    </div>
+    <!-- عرض رقم الغرفة واللاعبين أثناء اللعب -->
+    <div id="room-id-display"></div>
+    <div id="player-count"></div>
 
-    <div id="ui-layer">
-        <div style="display: flex; justify-content: space-between; width: 100%;">
-            <div class="hud-text" id="score-val">SCORE: 0000</div>
-            <div class="hud-text" id="hull-val" style="color: #ff0055; text-shadow: 0 0 10px #ff0055;">HULL: 100%</div>
+    <!-- واجهة الدخول -->
+    <div id="menu" class="overlay">
+        <h1>NEON OVERDRIVE</h1>
+        <p style="color: #888; margin-bottom: 25px;">سباق نيون جماعي مدمر يتسع لـ 7 لاعبين فما فوق</p>
+        
+        <div class="setup-box">
+            <input type="text" id="username-input" placeholder="اكتب اسمك الكابتن..." maxlength="10">
+            <button class="btn btn-host" onclick="initHost()">إنشاء غرفة جديدة (Host)</button>
+            <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;">
+            <input type="text" id="room-id-input" placeholder="أدخل رمز الغرفة للإنضمام...">
+            <button class="btn btn-join" onclick="initJoin()">انضمام للسباق</button>
         </div>
-        <div id="crosshair"></div>
-        <div class="hud-text" style="font-size: 0.8rem; opacity: 0.5; text-align: center; width: 100%;">PURE JAVASCRIPT 3D ENGINE ACTIVE</div>
     </div>
 
-    <canvas id="renderCanvas"></canvas>
+    <!-- واجهة التحكم عبر الجوال في حال انضمام اللاعب كـ يد تحكم -->
+    <div id="controller-ui">
+        <div class="ctrl-btn ctrl-left" id="left-touch">◀ لـف يسار</div>
+        <div class="ctrl-btn ctrl-right" id="right-touch">لف يمين ▶</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
 
     <script>
-        const canvas = document.getElementById('renderCanvas');
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        let width, height, cx, cy;
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            cx = width / 2;
-            cy = height / 2;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // إعدادات الكاميرا والمنظور الرياضي الـ 3D
-        const FOV = 250; // البعد البؤري لإسقاط الأبعاد
-        let score = 0;
-        let health = 100;
-        let gameActive = false;
-
-        let mouse = { x: cx, y: cy, down: false };
-
-        // كائنات اللعبة
+        let peer = null;
+        let connections = [];
+        let isHost = false;
+        let myId = "";
+        let myName = "";
+        
+        // بيانات اللعبة والمحرك
+        let players = {}; 
+        const colors = ['#00f0ff', '#ff0055', '#00ff88', '#ffdf00', '#ff00ff', '#ffffff', '#ff9900'];
         let stars = [];
-        let enemies = [];
-        let lasers = [];
-        let particles = [];
 
-        class Star {
-            constructor() { this.reset(); this.z = Math.random() * 2000; }
-            reset() {
-                this.x = (Math.random() - 0.5) * 3000;
-                this.y = (Math.random() - 0.5) * 3000;
-                this.z = 2000;
-            }
-            update(speed) {
-                this.z -= speed;
-                if (this.z <= 0) this.reset();
-            }
-            render() {
-                // معادلة الإسقاط من 3D إلى 2D
-                let sx = (this.x / this.z) * FOV + cx;
-                let sy = (this.y / this.z) * FOV + cy;
-                let size = (1 - this.z / 2000) * 3;
-
-                if (sx >= 0 && sx <= width && sy >= 0 && sy <= height) {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z / 2000})`;
-                    ctx.fillRect(sx, sy, size, size);
-                }
-            }
+        // تهيئة النجوم في الخلفية لأثر السرعة
+        for(let i=0; i<150; i++) {
+            stars.push({ x: Math.random()*width, y: Math.random()*height, sz: Math.random()*2, spd: Math.random()*3 + 1 });
         }
 
-        class EnemyShip {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = (Math.random() - 0.5) * 1500;
-                this.y = (Math.random() - 0.5) * 1500;
-                this.z = 2000;
-                this.size = 60;
-                this.speed = Math.random() * 8 + 7;
-                this.hue = Math.random() * 360;
-            }
-            update() {
-                this.z -= this.speed;
-                // مطاردة طفيفة نحو مركز شاشة اللاعب
-                this.x += ((mouse.x - cx) * 0.5 - this.x) * 0.01;
-                this.y += ((mouse.y - cy) * 0.5 - this.y) * 0.01;
+        // --- كود الشبكة والـ Peer-to-Peer (القلب النابض) ---
+        
+        function getUsername() {
+            let name = document.getElementById('username-input').value.trim();
+            return name ? name : "لاعب_" + Math.floor(Math.random()*900 + 100);
+        }
 
-                if (this.z <= 10) {
-                    health -= 15;
-                    if(health < 0) health = 0;
-                    document.getElementById('hull-val').innerText = `HULL: ${health}%`;
-                    this.reset();
-                }
-            }
-            render() {
-                let sx = (this.x / this.z) * FOV + cx;
-                let sy = (this.y / this.z) * FOV + cy;
-                let r = (this.size / this.z) * FOV;
+        // 1. صانع الغرفة (الـ Host المضيف)
+        function initHost() {
+            myName = getUsername();
+            isHost = true;
+            // توليد رمز غرفة عشوائي قصير سهل النقل
+            let customRoomId = "NEON-" + Math.random().toString(36).substring(2,6).toUpperCase();
+            
+            peer = new Peer(customRoomId);
+            
+            peer.on('open', (id) => {
+                myId = id;
+                document.getElementById('menu').style.opacity = '0';
+                setTimeout(() => document.getElementById('menu').style.display = 'none', 500);
+                document.getElementById('room-id-display').innerText = `رمز الغرفة: ${id} (شارك الرمز مع الـ 6 لاعبين الآخرين)`;
+                
+                // إضافة المضيف كلاعب أول سفينته زرقاء
+                addPlayer(myId, myName, 0);
+                startEngine();
+            });
 
-                if (sx > -r && sx < width + r && sy > -r && sy < height + r && this.z > 0) {
-                    // رسم هيكل السفينة ثلاثي الأبعاد عبر المضلعات الرياضية المباشرة
-                    ctx.strokeStyle = `hsl(${this.hue}, 100%, 60%)`;
-                    ctx.lineWidth = Math.max(1, 200 / this.z);
-                    ctx.fillStyle = "rgba(10, 10, 20, 0.8)";
+            // استقبال اتصالات اللاعبين الآخرين تلقائياً وبسرعة البرق
+            peer.on('connection', (conn) => {
+                connections.push(conn);
+                conn.on('data', (data) => {
+                    if(data.type === 'join_request') {
+                        let pCount = Object.keys(players).length;
+                        if(pCount >= 7) {
+                            conn.send({ type: 'rejected', reason: 'الغرفة ممتلئة بـ 7 لاعبين!' });
+                            return;
+                        }
+                        addPlayer(conn.peer, data.name, pCount);
+                        // نرسل لكل اللاعبين شجرة اللاعبين الحالية لتحديث الشاشات لديهم
+                        broadcast({ type: 'sync', players: players });
+                    }
+                    if(data.type === 'control') {
+                        if(players[conn.peer]) players[conn.peer].input = data.input;
+                    }
+                });
+            });
+        }
+
+        // 2. المنضم للغرفة (اللاعبون من 2 إلى 7)
+        function initJoin() {
+            myName = getUsername();
+            let targetRoomId = document.getElementById('room-id-input').value.trim().toUpperCase();
+            if(!targetRoomId) return alert("الرجاء إدخال رمز الغرفة!");
+
+            peer = new Peer();
+            peer.on('open', (id) => {
+                myId = id;
+                let conn = peer.connect(targetRoomId);
+                
+                conn.on('open', () => {
+                    conn.send({ type: 'join_request', name: myName });
+                });
+
+                conn.on('data', (data) => {
+                    if(data.type === 'sync') {
+                        players = data.players;
+                        // تحويل واجهة المنضم إلى يد تحكم جبارة تملأ الجوال
+                        document.getElementById('menu').style.display = 'none';
+                        document.getElementById('controller-ui').style.display = 'grid';
+                        setupControllerEvents(conn);
+                    }
+                    if(data.type === 'rejected') {
+                        alert(data.reason);
+                        location.reload();
+                    }
+                });
+            });
+        }
+
+        function broadcast(data) {
+            connections.forEach(conn => { if(conn.open) conn.send(data); });
+        }
+
+        // إرسال حركات اليد من الجوال إلى الـ Host
+        function setupControllerEvents(conn) {
+            let activeInput = { left: false, right: false };
+            
+            const sendInput = () => conn.send({ type: 'control', input: activeInput });
+
+            document.getElementById('left-touch').onpointerdown = (e) => { activeInput.left = true; sendInput(); };
+            document.getElementById('left-touch').onpointerup = (e) => { activeInput.left = false; sendInput(); };
+            document.getElementById('right-touch').onpointerdown = (e) => { activeInput.right = true; sendInput(); };
+            document.getElementById('right-touch').onpointerup = (e) => { activeInput.right = false; sendInput(); };
+        }
+
+        // --- محرك وقوانين حركة السفن السبعة ---
+
+        function addPlayer(id, name, index) {
+            players[id] = {
+                name: name,
+                x: width / 2 + (index - 3) * 50, // توزيع السفن جنباً إلى جنب في خط البداية
+                y: height - 100,
+                angle: -Math.PI / 2,
+                speed: 4,
+                color: colors[index % colors.length],
+                input: { left: false, right: false },
+                score: 0
+            };
+            document.getElementById('player-count').innerText = `اللاعبين في الحلبة: ${Object.keys(players).length} / 7`;
+        }
+
+        // التحكم عبر كيبورد الكمبيوتر للـ Host أيضاً للتجربة
+        let hostKeys = { left: false, right: false };
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft') hostKeys.left = true;
+            if(e.key === 'ArrowRight') hostKeys.right = true;
+            if(players[myId]) players[myId].input = hostKeys;
+        });
+        window.addEventListener('keyup', (e) => {
+            if(e.key === 'ArrowLeft') hostKeys.left = false;
+            if(e.key === 'ArrowRight') hostKeys.right = false;
+            if(players[myId]) players[myId].input = hostKeys;
+        });
+
+        // حلقة التحديث والرسم الرئيسية الـ 60 FPS
+        function startEngine() {
+            function loop() {
+                // رسم الفضاء المعتم مع Motion Blur
+                ctx.fillStyle = 'rgba(2, 2, 5, 0.3)';
+                ctx.fillRect(0, 0, width, height);
+
+                // رسم خلفية النجوم المتحركة بسرعة لأسفل الشاشة
+                ctx.fillStyle = '#fff';
+                stars.forEach(s => {
+                    s.y += s.spd;
+                    if(s.y > height) { s.y = 0; s.x = Math.random()*width; }
+                    ctx.fillRect(s.x, s.y, s.sz, s.sz);
+                });
+
+                // معالجة حركة كل سفينة من السفن السبعة
+                Object.keys(players).forEach(id => {
+                    let p = players[id];
                     
+                    // الدوران بناءً على الأزرار المضغوطة
+                    if(p.input.left) p.angle -= 0.05;
+                    if(p.input.right) p.angle += 0.05;
+
+                    // فيزياء الحركة الموجهة بزاوية الدوران المتجهي
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+
+                    // منع الخروج من حواف الشاشة ومحاكاة الارتداد النيوني
+                    if(p.x < 0) { p.x = 0; p.angle = Math.PI - p.angle; }
+                    if(p.x > width) { p.x = width; p.angle = Math.PI - p.angle; }
+                    if(p.y < 0) { p.y = height; p.score++; } // إذا تجاوز الأعلى يكسب نقطة ويلف مجدداً
+                    if(p.y > height) p.y = height;
+
+                    // --- رسم سفينة النيون ثلاثية الشكل ---
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle);
+                    
+                    // توهج النيون الخاص بالسفينة
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = p.color;
+                    ctx.strokeStyle = p.color;
+                    ctx.lineWidth = 3;
+                    ctx.fillStyle = '#111';
+
                     ctx.beginPath();
-                    ctx.moveTo(sx, sy - r); // النقطة العلوية
-                    ctx.lineTo(sx + r, sy + r/2);
-                    ctx.lineTo(sx, sy + r/4);
-                    ctx.lineTo(sx - r, sy + r/2);
+                    ctx.moveTo(15, 0);
+                    ctx.lineTo(-15, -10);
+                    ctx.lineTo(-10, 0);
+                    ctx.lineTo(-15, 10);
                     ctx.closePath();
                     ctx.fill();
                     ctx.stroke();
+                    ctx.restore();
+                    ctx.shadowBlur = 0;
 
-                    // المحركات الخلفية المضيئة
-                    ctx.fillStyle = "#ff0055";
-                    ctx.beginPath();
-                    ctx.arc(sx, sy + r/4, r/4, 0, Math.PI * 2);
-                    ctx.fill();
+                    // كتابة اسم اللاعب والسكور فوق سفينته
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '12px Cairo';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${p.name} [${p.score}]`, p.x, p.y - 20);
+                });
+
+                // في حال كان المضيف يغذي البقية، نقوم ببث الإحداثيات المحدثة بشكل مستمر
+                if(isHost) {
+                    broadcast({ type: 'sync', players: players });
                 }
+
+                requestAnimationFrame(loop);
             }
-        }
-
-        class Laser {
-            constructor(targetX, targetY) {
-                // ينطلق الليزر من أسفل الشاشة (جناح السفينة التخيلية للاعب) نحو الهدف 3D
-                this.sx = Math.random() > 0.5 ? 0 : width;
-                this.sy = height;
-                this.tx = targetX;
-                this.ty = targetY;
-                this.progress = 0;
-                this.speed = 0.12;
-            }
-            update() {
-                this.progress += this.speed;
-                return this.progress >= 1;
-            }
-            render() {
-                ctx.strokeStyle = "#00f0ff";
-                ctx.lineWidth = 4 * (1 - this.progress);
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = "#00f0ff";
-                ctx.beginPath();
-                ctx.moveTo(this.sx, this.sy);
-                let lx = this.sx + (this.tx - this.sx) * this.progress;
-                let ly = this.sy + (this.ty - this.sy) * this.progress;
-                ctx.lineTo(lx, ly);
-                ctx.stroke();
-                ctx.shadowBlur = 0; // إعادة ضبط التوهج للأداء
-            }
-        }
-
-        class Particle {
-            constructor(x, y) {
-                this.x = x; this.y = y;
-                this.vx = (Math.random() - 0.5) * 12;
-                this.vy = (Math.random() - 0.5) * 12;
-                this.alpha = 1;
-                this.color = Math.random() > 0.5 ? "#ff0055" : "#ffd700";
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                this.alpha -= 0.02;
-                return this.alpha <= 0;
-            }
-            render() {
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.alpha;
-                ctx.fillRect(this.x, this.y, 4, 4);
-                ctx.globalAlpha = 1;
-            }
-        }
-
-        // إدخال البيانات وتتبع الحركة
-        function updateMouse(e) {
-            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            let clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            if(clientX !== undefined) {
-                mouse.x = clientX;
-                mouse.y = clientY;
-            }
-        }
-        window.addEventListener('mousemove', updateMouse);
-        window.addEventListener('touchmove', updateMouse);
-        
-        window.addEventListener('mousedown', () => { mouse.down = true; fireLaser(); });
-        window.addEventListener('touchstart', (e) => { mouse.down = true; updateMouse(e); fireLaser(); });
-
-        function fireLaser() {
-            if(!gameActive) return;
-            lasers.push(new Laser(mouse.x, mouse.y));
-
-            // كشف الاصطدام ثلاثي الأبعاد المباشر (3D Collision Matrix)
-            enemies.forEach(enemy => {
-                let sx = (enemy.x / enemy.z) * FOV + cx;
-                let sy = (enemy.y / enemy.z) * FOV + cy;
-                let r = (enemy.size / enemy.z) * FOV;
-
-                let dist = Math.hypot(mouse.x - sx, mouse.y - sy);
-                if (dist < r + 15 && enemy.z > 100) {
-                    // تفجير العدو
-                    for(let i=0; i<25; i++) particles.push(new Particle(sx, sy));
-                    score += Math.floor(enemy.z / 10);
-                    document.getElementById('score-val').innerText = `SCORE: ${String(score).padStart(4, '0')}`;
-                    enemy.reset();
-                }
-            });
-        }
-
-        // تهيئة محتويات الفضاء
-        for (let i = 0; i < 400; i++) stars.push(new Star());
-        for (let i = 0; i < 3; i++) enemies.push(new EnemyShip());
-
-        function initGame() {
-            document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => document.getElementById('start-screen').style.display = 'none', 500);
-            gameActive = true;
-            loop();
-        }
-
-        // حلقة اللعب ومحرك التحديث (The Engine Loop)
-        function loop() {
-            if (health <= 0) {
-                alert(`GAME OVER\nFINAL SCORE: ${score}`);
-                location.reload();
-                return;
-            }
-
-            // رسم الخلفية الكونية العميقة وتأثير الـ Motion Blur الخفيف
-            ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-            ctx.fillRect(0, 0, width, height);
-
-            // انحراف الكاميرا الديناميكي حسب حركة الماوس لإعطاء إحساس بالطيران الحقيقي
-            let targetCamX = (mouse.x - cx) * 0.1;
-            let targetCamY = (mouse.y - cy) * 0.1;
-
-            // 1. تحديث ورسم النجوم الخلفية
-            stars.forEach(star => {
-                star.x -= targetCamX * 0.05;
-                star.y -= targetCamY * 0.05;
-                star.update(12);
-                star.render();
-            });
-
-            // 2. تحديث ورسم أشعة الليزر
-            for (let i = lasers.length - 1; i >= 0; i--) {
-                if (lasers[i].update()) lasers.splice(i, 1);
-                else lasers[i].render();
-            }
-
-            // 3. تحديث ورسم سفن الأعداء الـ 3D
-            enemies.forEach(enemy => {
-                enemy.update();
-                enemy.render();
-            });
-
-            // 4. تحديث ورسم جزيئات الانفجارات
-            for (let i = particles.length - 1; i >= 0; i--) {
-                if (particles[i].update()) particles.splice(i, 1);
-                else particles[i].render();
-            }
-
             requestAnimationFrame(loop);
         }
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
