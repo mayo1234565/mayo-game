@@ -185,7 +185,7 @@
                 <p>تحريك القطعة يمين ويسار <span>[ A / D ] أو [ ⬅️ / ➡️ ]</span></p>
                 <p>تدوير وتغيير شكل القطعة <span>[ W ] أو [ ⬆️ ]</span></p>
                 <p>إسقاط القطعة بسرعة <span>[ S ] أو [ ⬇️ ]</span></p>
-                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! إذا حطيت القطعة على الطرف، راح يختل التوازن وتطيح!</p>
+                <p class="warning">⚠️ انتبه: اللعبة فيها فيزياء! ستتحرك القطع للأسفل تلقائياً، وإذا اختل التوازن ستسقط وتخسر!</p>
                 <button class="sony-btn" onclick="hideInstructions()" style="color:#ffdf00; margin-top:15px; font-size:1rem;">إغلاق / CLOSE</button>
             </div>
         </div>
@@ -265,6 +265,7 @@
         let myTowerX = 0, oppTowerX = 0;
         let myPlacedBlocks = [];
         let oppPlacedBlocksMap = {}; 
+        let autoDropInterval = null; // مُوّقِت الهبوط التلقائي
 
         const blockColors = { 'I': '#00f0ff', 'O': '#ffd700', 'T': '#a855f7', 'L': '#ff7f00', 'J': '#0000ff', 'S': '#00ff88', 'Z': '#ff4a4a' };
         const blockTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
@@ -380,6 +381,7 @@
                 
                 if(room.status === "voting" && document.getElementById('screen-voting').classList.contains('hidden')) {
                     if(runner) Runner.stop(runner);
+                    if(autoDropInterval) clearInterval(autoDropInterval);
                     initVotingUI(room.players);
                 }
             });
@@ -415,9 +417,9 @@
             document.getElementById('ingame-ui-header').innerHTML = html;
         }
 
-        // دالة الخسارة عند سقوط أي مكعب
         function handleLoss() {
             if (runner) Runner.stop(runner);
+            if (autoDropInterval) clearInterval(autoDropInterval);
             alert("💥 لقد سقط المكعب وفقدت التوازن! خسرت المباراة.");
             location.reload(); 
         }
@@ -451,7 +453,6 @@
             const myBase = Bodies.rectangle(myTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             const oppBase = Bodies.rectangle(oppTowerX, h - 80, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 8 } });
             
-            // إضافة مستشعر غير مرئي بالأسفل لاكتشاف سقوط المكعبات
             const deathSensor = Bodies.rectangle(w / 2, h - 15, w, 30, { 
                 isSensor: true, 
                 isStatic: true,
@@ -461,7 +462,6 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
-            // التحقق من التصادم مع منطقة الموت لخسارة اللاعب
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
@@ -469,7 +469,6 @@
 
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
-                        // نتحقق أن الجسم الساقط ليس القواعد الثابتة، وأنه جسم متحرك سقط بالفعل
                         if (block !== myBase && block !== oppBase && !block.isStatic) {
                             handleLoss();
                         }
@@ -483,6 +482,28 @@
 
             spawnNewBlock();
             setInterval(syncMyPhysicsToFirebase, 100);
+
+            // تشغيل النزول التلقائي للمكعبات (يتحرك المكعب لأسفل كل 800 مللي ثانية)
+            startAutoDrop();
+        }
+
+        // دالة تحريك المكعب للأسفل تلقائياً
+        function startAutoDrop() {
+            if(autoDropInterval) clearInterval(autoDropInterval);
+            autoDropInterval = setInterval(() => {
+                if (myActiveBlock && myActiveBlock.isStatic) {
+                    // إذا وصل المكعب بالقرب من الأرض أو البرج، نقوم بفك ثباته ليصطدم بالفيزياء طبيعياً
+                    if (myActiveBlock.position.y > window.innerHeight - 150) {
+                        dropActive();
+                    } else {
+                        // تحريكه لأسفل بمقدار 25 بكسل تدريجياً
+                        Body.setPosition(myActiveBlock, { 
+                            x: myActiveBlock.position.x, 
+                            y: myActiveBlock.position.y + 25 
+                        });
+                    }
+                }
+            }, 800); // يمكنك تعديل الرقم (800) لزيادة أو تقليل سرعة النزول التلقائي
         }
 
         function createTetromino(type, x, y, isStaticOption) {
@@ -506,7 +527,8 @@
 
         function spawnNewBlock() {
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            myActiveBlock = createTetromino(randType, myTowerX, 100, true);
+            // توليد المكعب عند أعلى نقطة بالبرج الخاص باللاعب
+            myActiveBlock = createTetromino(randType, myTowerX, 80, true);
             Composite.add(engine.world, myActiveBlock);
         }
 
