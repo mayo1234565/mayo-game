@@ -1,129 +1,365 @@
-import pygame
-import sys
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الدب الغاضب 🧸🔫</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e6f0ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
 
-# 1. تهيئة مكتبة Pygame
-pygame.init()
-pygame.font.init()
+        /* فقاعة الكلام */
+        .speech-bubble {
+            background: white;
+            border: 4px solid #141414;
+            border-radius: 20px;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 400px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            direction: rtl;
+        }
 
-# 2. إعدادات الشاشة والألوان
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 700
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("The Angry Teddy Bear Game 🧸")
+        .speech-bubble.angry {
+            background: #ffe6e6;
+            border-color: #dc143c;
+            color: #dc143c;
+            transform: scale(1.05);
+        }
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-BEAR_BROWN = (139, 69, 19)
-MUZZLE_CREAM = (245, 222, 179)
-KEFFIYEH_BLUE = (0, 100, 150)
-RED = (200, 0, 0)
+        /* مسرح اللعبة (الدب) */
+        .game-container {
+            position: relative;
+            width: 400px;
+            height: 450px;
+            cursor: pointer;
+        }
 
-# إعداد الخطوط للكتابة العربية/الإنجليزية (استخدم خط يدعم العربية في جهازك إذا لزم الأمر)
-try:
-    font = pygame.font.SysFont("Arial", 24)
-    dialogue_font = pygame.font.SysFont("Arial", 28, bold=True)
-except:
-    font = pygame.font.Font(None, 36)
-    dialogue_font = pygame.font.Font(None, 40)
+        /* جسم الدب الرئيسي */
+        .teddy {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
-# 3. حالات اللعبة (States)
-# "GREETING" -> يرحب بك
-# "ANGRY"    -> عصب وطلع المسدس
-current_state = "GREETING"
-text_bubble = "أهلاً بك! أنا أتكلم معك الآن 👋"
+        .body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 250px;
+            background: #82461e;
+            border-radius: 50% 50% 40% 40%;
+        }
 
-# 4. دالة رسم الدب بناءً على حالته
-def draw_bear(state):
-    # رسم الخلفية والملابس (الشماغ الأزرق)
-    screen.fill((230, 240, 255)) # خلفية الغرفة
-    
-    # الجسد
-    pygame.draw.ellipse(screen, BEAR_BROWN, (150, 400, 300, 300))
-    
-    # الأذنين
-    pygame.draw.circle(screen, BEAR_BROWN, (180, 220), 45)
-    pygame.draw.circle(screen, BEAR_BROWN, (420, 220), 45)
-    
-    # الرأس (موقع اللمس الأساسي)
-    bear_head_rect = pygame.Rect(160, 220, 280, 260)
-    pygame.draw.ellipse(screen, BEAR_BROWN, bear_head_rect)
-    
-    # الشماغ/الغطاء الأزرق فوق الرأس (نفس شكل الصورة)
-    pygame.draw.arc(screen, KEFFIYEH_BLUE, (155, 200, 290, 100), 0, 3.14, 25)
-    
-    # منطقة الفم والأنف (البيج)
-    pygame.draw.ellipse(screen, MUZZLE_CREAM, (230, 340, 140, 110))
-    
-    # الأنف البني
-    pygame.draw.ellipse(screen, (90, 45, 10), (275, 350, 50, 35))
-    
-    # العيون والتعابير حسب الحالة
-    if state == "GREETING":
-        # عيون عادية
-        pygame.draw.circle(screen, BLACK, (260, 300), 12)
-        pygame.draw.circle(screen, BLACK, (340, 300), 12)
-        # ابتسامة سعيدة
-        pygame.draw.arc(screen, BLACK, (260, 380, 80, 40), 3.14, 0, 3)
-    
-    elif state == "ANGRY":
-        # عيون غاضبة (مائلة)
-        pygame.draw.circle(screen, RED, (260, 300), 14)
-        pygame.draw.circle(screen, RED, (340, 300), 14)
-        # حواجب غاضبة
-        pygame.draw.line(screen, BLACK, (240, 270), (280, 290), 5)
-        pygame.draw.line(screen, BLACK, (360, 270), (320, 290), 5)
-        # فم حزين/معصب
-        pygame.draw.arc(screen, BLACK, (260, 400, 80, 40), 0, 3.14, 3)
+        /* الأذنين */
+        .ear {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #82461e;
+            border-radius: 50%;
+            top: 40px;
+        }
+        .ear.left { left: 40px; }
+        .ear.right { right: 40px; }
+        .ear::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #f2d4a9;
+            border-radius: 50%;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* الرأس والملمس */
+        .head {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 240px;
+            background: #82461e;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        /* الشماغ الأزرق التكتيكي */
+        .keffiyeh {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 285px;
+            height: 80px;
+            background: repeating-linear-gradient(45deg, #0f5282, #0f5282 10px, #052846 10px, #052846 20px);
+            border-radius: 140px 140px 20px 20px;
+            z-index: 3;
+        }
+
+        /* العيون */
+        .eye {
+            position: absolute;
+            top: 100px;
+            width: 24px;
+            height: 24px;
+            background: #141414;
+            border-radius: 50%;
+            z-index: 4;
+            transition: all 0.2s ease;
+        }
+        .eye.left { left: 65px; }
+        .eye.right { right: 65px; }
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+        }
+
+        /* الحواجب الغاضبة مخفية بالبداية */
+        .brow {
+            position: absolute;
+            top: 85px;
+            width: 40px;
+            height: 8px;
+            background: #141414;
+            z-index: 5;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .brow.left { left: 55px; transform: rotate(0deg); }
+        .brow.right { right: 55px; transform: rotate(0deg); }
+
+        /* منطقة الأنف والفم الكبيرة */
+        .muzzle {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 100px;
+            background: #f2d4a9;
+            border-radius: 50%;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nose {
+            width: 60px;
+            height: 38px;
+            background: #141414;
+            border-radius: 50%;
+            margin-top: -10px;
+        }
+
+        /* الفم */
+        .mouth {
+            width: 60px;
+            height: 25px;
+            border-bottom: 4px solid #141414;
+            border-radius: 0 0 30px 30px;
+            margin-top: 5px;
+            transition: all 0.2s ease;
+        }
+
+        /* اليد المرفوعة للسلام */
+        .hand-wave {
+            position: absolute;
+            right: 20px;
+            top: 220px;
+            width: 70px;
+            height: 70px;
+            background: #82461e;
+            border-radius: 50%;
+            z-index: 3;
+            transform-origin: bottom center;
+            animation: wave 1.5s infinite ease-in-out;
+            display: block;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(20deg); }
+        }
+
+        /* 🔫 المسدس المخفي */
+        .gun-hand {
+            position: absolute;
+            left: -20px;
+            bottom: 80px;
+            width: 80px;
+            height: 80px;
+            background: #82461e;
+            border-radius: 50%;
+            z-index: 6;
+            opacity: 0;
+            transform: scale(0) rotate(45deg);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* تصميم شكل المسدس */
+        .gun {
+            position: absolute;
+            top: -20px;
+            left: -30px;
+            width: 80px;
+            height: 25px;
+            background: #4a4a4a;
+            border-radius: 5px;
+            transform: rotate(-15deg);
+        }
+        .gun::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            width: 25px;
+            height: 45px;
+            background: #2b2b2b;
+            border-radius: 5px;
+        }
+
+        /* 😡 حالة الغضب العارم عند اللمس */
+        .game-container.is-angry .eye {
+            background: #dc143c;
+            transform: scaleY(0.7);
+        }
+        .game-container.is-angry .eye::after { display: none; }
         
-        # 🔫 رسم مسدس بسيط في يد الدب
-        # اليد (المخالب)
-        pygame.draw.circle(screen, BEAR_BROWN, (140, 480), 35)
-        # المسدس (مستطيلات رمادية)
-        pygame.draw.rect(screen, (80, 80, 80), (70, 440, 70, 25)) # السبطانة
-        pygame.draw.rect(screen, (50, 50, 50), (110, 440, 25, 50)) # المقبض
+        .game-container.is-angry .brow.left { opacity: 1; transform: rotate(25deg); top: 92px; }
+        .game-container.is-angry .brow.right { opacity: 1; transform: rotate(-25deg); top: 92px; }
 
-    return bear_head_rect
+        .game-container.is-angry .mouth {
+            border-bottom: none;
+            border-top: 4px solid #141414;
+            border-radius: 30px 30px 0 0;
+            margin-top: 15px;
+        }
 
-# 5. دالة رسم فقاعة الكلام
-def draw_speech_bubble(text, is_angry):
-    bubble_color = (255, 230, 230) if is_angry else WHITE
-    border_color = RED if is_angry else BLACK
-    
-    # صندوق الكلام
-    pygame.draw.rect(screen, bubble_color, (50, 50, 500, 80), border_radius=15)
-    pygame.draw.rect(screen, border_color, (50, 50, 500, 80), width=3, border_radius=15)
-    
-    # نص الكلام (ملاحظة: لإنياك النصوص العربية بشكل مثالي قد تحتاج مكتبة bidi، هنا وضعنا نص توضيحي)
-    text_surface = dialogue_font.render(text, True, BLACK)
-    text_rect = text_surface.get_rect(center=(300, 90))
-    screen.blit(text_surface, text_rect)
+        .game-container.is-angry .hand-wave {
+            display: none;
+        }
 
-# 6. حلقة اللعبة الرئيسية (Game Loop)
-running = True
-while running:
-    # الحصول على إحداثيات الماوس
-    mouse_pos = pygame.mouse.get_pos()
-    
-    # رسم الدب والحصول على منطقة الرأس الحساسة للمس
-    bear_rect = draw_bear(current_state)
-    draw_speech_bubble(text_bubble, current_state == "ANGRY")
-    
-    # إدارة الأحداث (Events)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
-            sys.exit()
+        .game-container.is-angry .gun-hand {
+            opacity: 1;
+            transform: scale(1.2) rotate(0deg);
+        }
+
+        /* نص توضيحي بالأسفل */
+        .hint {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="speech-bubble" id="quote">أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋</div>
+
+    <div class="game-container" id="teddy-game">
+        <div class="teddy">
+            <div class="ear left"></div>
+            <div class="ear right"></div>
             
-        # التحقق من لمس (الضغط بالماوس) على الدب
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if bear_rect.collidepoint(mouse_pos):
-                if current_state == "GREETING":
-                    current_state = "ANGRY"
-                    text_bubble = "لقد حذرتك! الآن ستواجه العواقب! 😡🔫"
-            else:
-                # إذا ضغطت في مكان آخر يرجع لحالته الطبيعية
-                current_state = "GREETING"
-                text_bubble = "أهلاً بك! أنا أتكلم معك الآن 👋"
+            <div class="body"></div>
+            
+            <div class="head">
+                <div class="keffiyeh"></div> <div class="brow left"></div>
+                <div class="brow right"></div>
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                
+                <div class="muzzle">
+                    <div class="nose"></div>
+                    <div class="mouth"></div>
+                </div>
+            </div>
 
-    pygame.display.flip()
+            <div class="hand-wave"></div>
+
+            <div class="gun-hand">
+                <div class="gun"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hint">انقر/المس الدب لترى ماذا سيحدث!</div>
+
+    <script>
+        const gameContainer = document.getElementById('teddy-game');
+        const quoteBox = document.getElementById('quote');
+
+        // مصفوفة من العبارات العشوائية عند التهديد
+        const angryQuotes = [
+            "لقد حذرتك! لا تلمسني! 😡🔫",
+            "ابتعد عني وإلا أطلقت النار! 🤬",
+            "ألم أقل لك لا تلمس وجهي الشريف؟! 💥",
+            "ستواجه العواقب الآن! خذ هذه! 💀"
+        ];
+
+        // عند الضغط على الدب (اللمس)
+        gameContainer.addEventListener('mousedown', () => {
+            gameContainer.classList.add('is-angry');
+            quoteBox.classList.add('angry');
+            
+            // اختيار عبارة غاضبة عشوائية
+            const randomQuote = angryQuotes[Math.floor(Math.random() * angryQuotes.length)];
+            quoteBox.innerText = randomQuote;
+        });
+
+        // عند رفع الإصبع أو الماوس (يرجع طبيعي)
+        window.addEventListener('mouseup', () => {
+            if(gameContainer.classList.contains('is-angry')) {
+                gameContainer.classList.remove('is-angry');
+                quoteBox.classList.remove('angry');
+                quoteBox.innerText = "أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋";
+            }
+        });
+
+        // لدعم شاشات الجوال باللمس الفعلي (Touch)
+        gameContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            gameContainer.classList.add('is-angry');
+            quoteBox.classList.add('angry');
+            const randomQuote = angryQuotes[Math.floor(Math.random() * angryQuotes.length)];
+            quoteBox.innerText = randomQuote;
+        });
+
+        window.addEventListener('touchend', () => {
+            if(gameContainer.classList.contains('is-angry')) {
+                gameContainer.classList.remove('is-angry');
+                quoteBox.classList.remove('angry');
+                quoteBox.innerText = "أهلاً بك يا صديقي! أنا الدب المتكلم، سعيد برؤيتك 👋";
+            }
+        });
+    </script>
+</body>
+</html>
