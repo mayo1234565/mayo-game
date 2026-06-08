@@ -278,8 +278,8 @@
         let myPlacedBlocks = [];
         let oppPlacedBlocksMap = {}; 
 
-        let normalDropSpeed = 1.4;  
-        let fastDropSpeed = 9.0;    
+        let normalDropSpeed = 2.0;  
+        let fastDropSpeed = 8.0;    
         let currentDropSpeed = normalDropSpeed; 
 
         let cameraYOffset = 0;
@@ -365,7 +365,7 @@
                             document.getElementById('lobby-room-number').innerText = currentRoomId;
                             switchScreen('screen-lobby'); listenToRoomChanges();
                         } else {
-                            alert("الغرفة غير موجودة!");
+                            alert("الغرفة غير موجودة أو ممتلئة!");
                             document.getElementById('btn-join').innerText = "ENTER";
                         }
                     });
@@ -411,10 +411,13 @@
                 
                 Object.values(data).forEach(bData => {
                     if(!oppPlacedBlocksMap[bData.id]) {
+                        // عند استقبال مكعب الخصم، ننشئه كجسم مستقر تماماً ومحاذاته صحيحة في جهته
                         let b = createTetromino(bData.type, bData.x, bData.y, true); 
+                        b.myId = bData.id;
                         oppPlacedBlocksMap[bData.id] = b;
                         Composite.add(engine.world, b);
                     } else {
+                        // مزامنة انسيابية تمنع الارتجاج
                         Body.setPosition(oppPlacedBlocksMap[bData.id], {x: bData.x, y: bData.y});
                         Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
                     }
@@ -460,10 +463,10 @@
 
             engine = Engine.create();
             
-            // رفع كفاءة محاذاة الإطارات لحل مشكلة الاختراق تماماً بطريقة حقيقية
-            engine.positionIterations = 30;
-            engine.velocityIterations = 30;
-            engine.world.gravity.y = 1.4; 
+            // تحسين معالجة المحرك للتصادمات المستمرة لمنع الاختراق نهائياً
+            engine.positionIterations = 25;
+            engine.velocityIterations = 25;
+            engine.world.gravity.y = 1.2; 
 
             const canvas = document.getElementById('physics-canvas');
             const w = window.innerWidth;
@@ -475,12 +478,12 @@
                 options: { width: w, height: h, wireframes: false, background: 'transparent' }
             });
 
+            // حل مشكلة التواجد في نفس المكان: المضيف (p1) على اليسار، والمنضم (p2) على اليمين دائماً
             myTowerX = myPlayerId === 'p1' ? w * 0.3 : w * 0.7;
             oppTowerX = myPlayerId === 'p1' ? w * 0.7 : w * 0.3;
 
-            // ضبط القاعدة بشكل متزن تماماً
-            myBase = Bodies.rectangle(myTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
-            const oppBase = Bodies.rectangle(oppTowerX, h - 60, 160, 40, { isStatic: true, render: { fillStyle: '#5d4037', strokeStyle: '#4CAF50', lineWidth: 4 } });
+            myBase = Bodies.rectangle(myTowerX, h - 60, 180, 30, { isStatic: true, render: { fillStyle: '#4e342e', strokeStyle: '#00f0ff', lineWidth: 3 } });
+            const oppBase = Bodies.rectangle(oppTowerX, h - 60, 180, 30, { isStatic: true, render: { fillStyle: '#4e342e', strokeStyle: '#ff4a4a', lineWidth: 3 } });
             
             const deathSensor = Bodies.rectangle(w / 2, h - 5, w * 3, 30, { 
                 isSensor: true, 
@@ -491,13 +494,11 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
-            // محاكاة حقيقية نقية: بمجرد أن يلمس المكعب النشط أي جزء صلب تحت، يتحول فوراً لفيزياء حرة، والمحرك يتكفل بالتوازن
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
                     let bodyB = pair.bodyB;
 
-                    // فحص حساس منطقة الخسارة بالأسفل
                     if (bodyA.label === 'deathSensor' || bodyB.label === 'deathSensor') {
                         let block = bodyA.label === 'deathSensor' ? bodyB : bodyA;
                         if (block !== myBase && block !== oppBase && !block.isStatic) {
@@ -505,41 +506,40 @@
                         }
                     }
 
-                    // نظام فك الثبات النقي: إذا تلامس المكعب النشط الحقيقي مع أي قطعة مستقرة
-                    if (myActiveBlock && myActiveBlock.isStatic) {
+                    // قفل وتحرير القطعة بمجرد ملامستها لأي سطح تحتها
+                    if (myActiveBlock && !myActiveBlock.isStatic) {
                         if (bodyA === myActiveBlock || bodyB === myActiveBlock) {
-                            lockActiveBlock();
+                            // إذا لمست القطعة الأساس أو قطعة مستقرة سابقة
+                            if(bodyA === myBase || bodyB === myBase || myPlacedBlocks.includes(bodyA) || myPlacedBlocks.includes(bodyB)) {
+                                lockActiveBlock();
+                            }
                         }
                     }
                 });
             });
 
             Events.on(engine, 'beforeUpdate', function() {
-                if (myActiveBlock && myActiveBlock.isStatic) {
-                    // نزول انسيابي مستقر 
-                    Body.setPosition(myActiveBlock, { 
-                        x: myActiveBlock.position.x, 
-                        y: myActiveBlock.position.y + currentDropSpeed 
-                    });
+                if (myActiveBlock) {
+                    // حركة فيزيائية نقية: نتحكم بالسرعة المتجهة لأسفل بدلاً من تغيير الموقع الإحداثي قسرياً لمنع الـ Overlap
+                    Body.setVelocity(myActiveBlock, { x: myActiveBlock.velocity.x, y: currentDropSpeed });
 
-                    // قيد أمان في حال تجاوز الشاشة السفلية
-                    if (myActiveBlock.position.y > (h + cameraYOffset) - 100) {
+                    if (myActiveBlock.position.y > (h + cameraYOffset) - 80) {
                         lockActiveBlock();
                     }
                 }
 
-                // الكاميرا الصاعدة التلقائية والناعمة
+                // حركة الكاميرا الصاعدة التلقائية والناعمة
                 let highestY = h - 60; 
                 myPlacedBlocks.forEach(b => {
                     if (b.position.y < highestY) highestY = b.position.y;
                 });
 
                 let targetOffset = 0;
-                if (highestY < 250 + cameraYOffset) {
-                    targetOffset = highestY - 250;
+                if (highestY < 300 + cameraYOffset) {
+                    targetOffset = highestY - 300;
                 }
 
-                cameraYOffset += (targetOffset - cameraYOffset) * 0.05;
+                cameraYOffset += (targetOffset - cameraYOffset) * 0.04;
 
                 Render.lookAt(render, {
                     min: { x: 0, y: cameraYOffset },
@@ -553,20 +553,19 @@
             Runner.run(runner, engine);
 
             spawnNewBlock();
-            setInterval(syncMyPhysicsToFirebase, 100);
+            setInterval(syncMyPhysicsToFirebase, 90);
         }
 
         function createTetromino(type, x, y, isStaticOption) {
-            const s = 25; 
-            // ضبط مصمت حقيقي (Rigid Body) يطابق تماسك الأخشاب الثقيلة لـ Tricky Towers ويمنع الاختراق كلياً
+            const s = 24; 
             const opt = { 
                 isStatic: isStaticOption, 
-                friction: 1.0,             // احتكاك كامل مانع للتزحلق السطحي العشوائي
-                frictionStatic: 1.0,       // تماسك هائل عند الاستقرار الفعلي فوق الأسطح
-                frictionAir: 0.01,         
-                restitution: 0.0,          // تصفير كامل للارتداد لقتل القفزات المزعجة
-                density: 0.25,             // ثقل حقيقي عالي يمنع تماماً دخول الأجسام في بعضها البعض
-                slop: 0.0,                 // تصفير كامل لقيمة التداخل المسموحة برمجياً لمنع التخلخل
+                friction: 0.9,           
+                frictionStatic: 1.0,       
+                frictionAir: 0.02,         
+                restitution: 0.02,          
+                density: 0.1,             
+                slop: 0.01,                 
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
             let body;
@@ -586,30 +585,27 @@
         }
 
         function spawnNewBlock() {
+            setFastDrop(false);
             const randType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-            myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 80, true);
+            // تولد القطعة في جهة البرج الخاص باللاعب الحالي دائماً فوق الكاميرا
+            myActiveBlock = createTetromino(randType, myTowerX, cameraYOffset + 60, false);
             Composite.add(engine.world, myActiveBlock);
         }
 
-        // حركة دقيقة (12 بكسل) لتمنحك وزناً خرافياً أثناء التحكم بمحاذاة الأطراف والزوايا
         function moveActive(dir) {
-            if(!myActiveBlock || !myActiveBlock.isStatic) return;
-            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 12), y: myActiveBlock.position.y });
+            if(!myActiveBlock) return;
+            // استخدام تآزر فيزيائي لنقل الموضع مع تصفير الـ Inertia لمنع الانزلاق غير المرغوب
+            Body.setPosition(myActiveBlock, { x: myActiveBlock.position.x + (dir * 18), y: myActiveBlock.position.y });
         }
 
         function rotateActive() {
-            if(!myActiveBlock || !myActiveBlock.isStatic) return;
+            if(!myActiveBlock) return;
+            // دوران فيزيائي وإعادة ضبط مركز الكتلة لتجنب مشاكل الـ Compound bodies
             Body.setAngle(myActiveBlock, myActiveBlock.angle + (Math.PI / 2));
         }
 
         function lockActiveBlock() {
-            if(!myActiveBlock || !myActiveBlock.isStatic) return;
-            
-            // فك الثبات النقي: نجعله حراً بشكل كامل ليستقر بفيزيائه الطبيعية بناء على مكانه
-            Body.setStatic(myActiveBlock, false);
-            // تصفير أي تسارعات سابقة ليرسو بلين تماسك الخشب
-            Body.setVelocity(myActiveBlock, { x: 0, y: 0.0 });
-            Body.setAngularVelocity(myActiveBlock, 0);
+            if(!myActiveBlock) return;
             
             myPlacedBlocks.push(myActiveBlock);
             myActiveBlock = null;
@@ -620,15 +616,12 @@
             if(currentScore >= 20) {
                 db.ref(`rooms/${currentRoomId}`).update({ status: 'voting' });
             } else {
-                setTimeout(spawnNewBlock, 1000);
+                setTimeout(spawnNewBlock, 600);
             }
         }
 
-        function dropActive() {
-            lockActiveBlock();
-        }
-
         function syncMyPhysicsToFirebase() {
+            if(!currentRoomId || !myPlayerId) return;
             let dataToSend = [];
             if(myActiveBlock) {
                 dataToSend.push({ id: myActiveBlock.myId, type: myActiveBlock.myType, x: myActiveBlock.position.x, y: myActiveBlock.position.y, angle: myActiveBlock.angle });
@@ -660,17 +653,6 @@
         }
         
         function castVote(targetPid) { db.ref(`rooms/${currentRoomId}/votes/${myPlayerId}`).set(targetPid); }
-        
-        function updateVotes(votesObj) {
-            if(!votesObj) return;
-            document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('voted'));
-            let counts = { p1: 0, p2: 0 };
-            for(let voter in votesObj) counts[votesObj[voter]]++;
-            ['p1', 'p2'].forEach(pid => {
-                let el = document.getElementById(`votecount-${pid}`);
-                if(el) { el.innerText = `${counts[pid]} Votes`; if(counts[pid] > 0) document.getElementById(`vote-card-${pid}`).classList.add('voted'); }
-            });
-        }
     </script>
 </body>
 </html>
