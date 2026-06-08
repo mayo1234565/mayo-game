@@ -400,8 +400,6 @@
                 }
             });
 
-            // --- تعديل حاسم وجذري هنا ---
-            // الكود الحين يستقبل بيانات الخصم ويحدث مكعبات الخصم فقط! مستحيل يمس مكعباتك أنت ويحركها برمجياً!
             const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
             db.ref(`rooms/${currentRoomId}/physics_${oppId}`).on('value', snap => {
                 if(!engine) return;
@@ -414,7 +412,6 @@
                         oppPlacedBlocksMap[bData.id] = b;
                         Composite.add(engine.world, b);
                     } else {
-                        // تحديث الخصم فقط
                         Body.setPosition(oppPlacedBlocksMap[bData.id], {x: bData.x, y: bData.y});
                         Body.setAngle(oppPlacedBlocksMap[bData.id], bData.angle);
                     }
@@ -426,7 +423,9 @@
             return `<div class="lobby-card"><span class="host-indicator">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar" style="background-image: url('${animeHeroes[data.hero].url}')"></div></div><div class="player-tag-name">${data.name}</div></div>`;
         }
 
+        // تم إصلاح الدالة لمنع الانهيار وتحديث العناوين بأمان
         function updateHeaders(players) {
+            if(!players || !document.getElementById('ingame-ui-header')) return;
             let html = '';
             ['p1', 'p2'].forEach(pid => {
                 if(players[pid]) html += `<div class="header-ui-card"><span class="name">${players[pid].name}</span><span class="score">${players[pid].score || 0}</span></div>`;
@@ -488,8 +487,9 @@
 
             Composite.add(engine.world, [myBase, oppBase, deathSensor]);
 
-            // --- فيزياء نقية ومستقرة تماماً ---
-            // بمجرد أن يلمس المكعب النشط أي قاعدة أو قطعة تحت، يتحول فوراً إلى حر الحركة محلياً، والجاذبية وحدها تحكمه
+            // عرض الأرقام والأسماء المبدئية عند التشغيل فوراً
+            updateHeaders(players);
+
             Events.on(engine, 'collisionStart', function(event) {
                 event.pairs.forEach((pair) => {
                     let bodyA = pair.bodyA;
@@ -553,10 +553,10 @@
             const s = 25; 
             const opt = { 
                 isStatic: isStaticOption, 
-                friction: 0.95,            // احتكاك ممتاز يمنع الانزلاق العشوائي
-                frictionStatic: 1.0,       // تماسك كامل عند الاستقرار
+                friction: 0.95,            
+                frictionStatic: 1.0,       
                 frictionAir: 0.01,         
-                restitution: 0.0,          // تصفير كامل للارتداد يمنع القفز والتخلخل
+                restitution: 0.0,          
                 density: 0.1,              
                 render: { fillStyle: blockColors[type], strokeStyle: '#ffffff', lineWidth: 2 } 
             };
@@ -595,7 +595,6 @@
         function lockActiveBlock() {
             if(!myActiveBlock || !myActiveBlock.isStatic) return;
             
-            // تحويل نقي ومباشر إلى حركة ديناميكية محلية
             Body.setStatic(myActiveBlock, false);
             Body.setVelocity(myActiveBlock, { x: 0, y: 0.1 });
             
@@ -616,7 +615,6 @@
             lockActiveBlock();
         }
 
-        // دالة إرسال البيانات (ترسل الإحداثيات المحلية الحالية لبرجك فقط إلى الـ Firebase)
         function syncMyPhysicsToFirebase() {
             let dataToSend = [];
             if(myActiveBlock) {
