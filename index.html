@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no">
     <title>Mayo Quiz - Ascension Tournament</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,9 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Cairo:wght@600;800&display=swap');
 
         * { 
-            box-sizing: border-box; margin: 0; padding: 0; user-select: none; 
-            -webkit-touch-callout: none; -webkit-user-select: none; 
-            touch-action: manipulation;
+            box-sizing: border-box; margin: 0; padding: 0;
         }
         
         body, html { 
@@ -23,6 +21,14 @@
             background-size: cover; background-position: center; background-repeat: no-repeat;
             font-family: 'Orbitron', 'Cairo', sans-serif; 
             color: #fff;
+            -webkit-user-select: none; user-select: none;
+        }
+
+        /* السماح بالكتابة والتفاعل الكامل لعناصر الإدخال على الجوال */
+        input.sony-input {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+            touch-action: auto !important;
         }
 
         .game-container { position: relative; width: 100%; min-height: 100%; background: rgba(3, 3, 5, 0.65); display: flex; flex-direction: column; }
@@ -32,7 +38,7 @@
 
         #screen-start { align-items: flex-end; justify-content: flex-end; padding-bottom: 8%; padding-right: 10%; }
 
-        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 8px 20px; }
+        .sony-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-family: 'Orbitron', 'Cinzel', sans-serif; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; position: relative; transition: all 0.3s ease; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); padding: 8px 20px; touch-action: manipulation; }
         .sony-btn::after { content: ''; width: 0; height: 3px; background-color: #00f0ff; position: absolute; bottom: -5px; right: 0; transition: width 0.3s ease; box-shadow: 0 0 10px #00f0ff; }
         .sony-btn:hover { color: #ffffff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 1); transform: translateX(-5px); }
         .sony-btn:hover::after { width: 100%; }
@@ -41,12 +47,12 @@
         .input-group { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
         .input-label { color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; text-align: center; }
         
-        .sony-input { background: rgba(0,0,0,0.6); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px; font-size: 1.3rem; font-family: 'Cairo', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px; transition: border-color 0.3s; }
-        .sony-input:focus { border-bottom-color: #00f0ff; }
+        .sony-input { background: rgba(0,0,0,0.8); border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 12px; font-size: 1.3rem; font-family: 'Cairo', sans-serif; text-align: center; outline: none; width: 100%; max-width: 350px; transition: border-color 0.3s; border-radius: 4px; }
+        .sony-input:focus { border-bottom-color: #00f0ff; background: rgba(0,0,0,0.9); }
 
         .free-customizer { display: flex; align-items: center; justify-content: center; gap: 60px; width: 90%; max-width: 1000px; }
         .controls-column { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 400px; }
-        .select-trigger-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
+        .select-trigger-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; padding: 14px 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; touch-action: manipulation; }
         .select-trigger-btn:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.1); }
         
         .pop-menu { display: none; flex-direction: column; gap: 8px; background: rgba(15, 15, 22, 0.98); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px; position: absolute; width: 100%; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -67,13 +73,13 @@
         #join-input-area { flex-direction: column; align-items: center; gap: 15px; }
 
         .central-lobby { display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; }
-        .central-player-grid { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; width: 90%; }
-        .lobby-card { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
+        .central-player-grid { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; width: 90%; }
+        .lobby-card { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; min-width: 120px; }
         .room-badge { color: #ffdf00; font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 223, 0, 0.6); text-align: center;}
-        .host-indicator { position: absolute; top: -22px; background: #ffdf00; color: #000; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 3px; box-shadow: 0 0 10px #ffdf00; z-index: 10; }
+        .host-indicator { position: absolute; top: -15px; background: #ffdf00; color: #000; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 3px; z-index: 10; }
         
         .back-mini-btn { font-size: 1.1rem; color: rgba(255, 255, 255, 0.4); }
-        .player-tag-name { color: #ffffff; font-size: 1.1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .player-tag-name { color: #ffffff; font-size: 1rem; font-weight: 800; background: rgba(0, 0, 0, 0.6); padding: 4px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         .quiz-card { background: rgba(10, 10, 18, 0.9); border: 2px solid #00f0ff; border-radius: 20px; padding: 30px; width: 100%; max-width: 700px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; }
         .quiz-header { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
@@ -81,14 +87,12 @@
         .question-img { width: 100%; max-width: 400px; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: #111; }
         .question-text { font-family: 'Cairo'; font-size: 1.5rem; font-weight: 800; color: #fff; margin: 10px 0; }
         .options-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .option-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 15px; color: #fff; font-family: 'Cairo'; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .option-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 15px; color: #fff; font-family: 'Cairo'; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; text-align: center; touch-action: manipulation; }
         .option-btn:hover { background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; transform: translateY(-2px); }
-        .option-btn.selected { background: #00f0ff !important; color: #000 !important; font-weight: bold; }
 
         .bracket-container { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; max-width: 1100px; overflow-x: auto; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .bracket-column { display: flex; flex-direction: column; justify-content: space-around; gap: 30px; height: 500px; min-width: 180px; }
         .match-box { display: flex; flex-direction: column; background: rgba(20,20,30,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 100%; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .match-box.active-match { border-color: #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
         .bracket-player { display: flex; justify-content: space-between; align-items: center; padding: 10px; font-size: 0.9rem; font-family: 'Cairo'; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
         .bracket-player:last-child { border-bottom: none; }
         .bracket-player.winner { color: #00ff88; font-weight: bold; background: rgba(0, 255, 136, 0.08); }
@@ -172,8 +176,10 @@
                     <div class="room-badge" id="lobby-room-number">ROOM-XXXX</div>
                 </div>
                 <div class="central-player-grid" id="player-mesh"></div>
+                
                 <div class="lobby-buttons" style="display:flex; flex-direction:column; align-items:center; gap:15px;">
-                    <button class="sony-btn" id="btn-launch-match" style="color: #00ff88; display:none;" onclick="triggerGameStart()">LAUNCH TOURNAMENT</button>
+                    <button class="sony-btn" style="color: #ffd700; font-size: 1.1rem;" onclick="addSimulatedBot()">+ إضافة بوت / ADD BOT</button>
+                    <button class="sony-btn" id="btn-launch-match" style="color: #00ff88; display: none;" onclick="triggerGameStart()">LAUNCH TOURNAMENT</button>
                     <button class="sony-btn back-mini-btn" onclick="location.reload()">LEAVE LOBBY</button>
                 </div>
             </div>
@@ -205,7 +211,7 @@
                 </div>
                 
                 <img id="quiz-image" class="question-img" src="" alt="Question Image">
-                <div id="quiz-text" class="question-text">جاري تحميل السؤال الحماسي...</div>
+                <div id="quiz-text" class="question-text">جاري تحميل السؤال...</div>
                 
                 <div class="options-grid" id="quiz-options-container"></div>
                 
@@ -260,14 +266,8 @@
         };
 
         const botNames = ["AlphaBot", "ZetaStriker", "FrostByte", "VoltMech", "BlazeCore", "ShadowX", "OmegaPro", "PixelHero"];
-        
-        // الأيقونات الجديدة بدلاً من الروابط المعطوبة
-        const heroIcons = {
-            'shadow': 'fa-user-ninja',
-            'blaze': 'fa-user-shield',
-            'frost': 'fa-wand-magic-sparkles',
-            'volt': 'fa-bolt'
-        };
+        const heroIcons = { 'shadow': 'fa-user-ninja', 'blaze': 'fa-user-shield', 'frost': 'fa-wand-magic-sparkles', 'volt': 'fa-bolt' };
+        const ornaments = ['diamond', 'galaxy', 'bronze', 'gold'];
 
         try {
             const firebaseConfig = {
@@ -307,16 +307,15 @@
             const inputName = document.getElementById('player-name').value.trim();
             if(!inputName) return alert("الرجاء إدخال اسمك أولاً!");
             pName = inputName;
-            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0, currentRoundScore: 0, eliminated: false };
+            const myData = { name: pName, hero: currentHero, ornament: currentOrnament, score: 0, currentRoundScore: 0, eliminated: false, isBot: false };
 
             if(actionType === 'create') {
                 currentRoomId = Math.random().toString(36).substring(2,7).toUpperCase();
                 myPlayerId = "p1";
                 db.ref('rooms/' + currentRoomId).set({ status: "waiting", players: { p1: myData } }).then(() => {
-                    document.getElementById('btn-launch-match').style.display = 'block';
                     document.getElementById('lobby-room-number').innerText = currentRoomId;
                     switchScreen('screen-lobby'); listenToRoomChanges();
-                }).catch(err => alert("حدث خطأ بقاعدة البيانات: " + err.message));
+                }).catch(err => alert("حدث خطأ: " + err.message));
             } else if(actionType === 'join') {
                 let code = document.getElementById('join-room-code').value.trim().toUpperCase();
                 if(!code) return;
@@ -332,13 +331,59 @@
             }
         }
 
+        // إضافة بوت محاكاة داخل الـ Firebase للتجربة الفردية السريعة وبدء اللنش
+        function addSimulatedBot() {
+            if(!currentRoomId) return;
+            db.ref(`rooms/${currentRoomId}/players`).once('value').then(snap => {
+                let players = snap.val() || {};
+                let currentCount = Object.keys(players).length;
+                if(currentCount >= 8) return alert("اللوبي ممتلئ بالفعل (8/8)!");
+
+                let botIndex = currentCount + 1;
+                let randomBotName = botNames[Math.floor(Math.random() * botNames.length)] + "_" + Math.floor(Math.random()*100);
+                let randomHero = Object.keys(heroIcons)[Math.floor(Math.random() * 4)];
+                let randomOrnament = ornaments[Math.floor(Math.random() * 4)];
+
+                let botData = {
+                    name: randomBotName,
+                    hero: randomHero,
+                    ornament: randomOrnament,
+                    score: 0,
+                    currentRoundScore: 0,
+                    eliminated: false,
+                    isBot: true
+                };
+
+                db.ref(`rooms/${currentRoomId}/players/p_bot_${botIndex}`).set(botData).then(() => {
+                    // إذا وصل العدد لـ 8 بعد إضافة البوتات، يتم السماح باللنش تلقائياً
+                    if(currentCount + 1 >= 8) {
+                        db.ref('rooms/' + currentRoomId).update({ status: "full" });
+                    }
+                });
+            });
+        }
+
         function listenToRoomChanges() {
             db.ref('rooms/' + currentRoomId).on('value', snap => {
                 const room = snap.val();
                 if(!room) return;
+                
+                // عرض جميع اللاعبين والبوتات داخل شبكة اللوبي
                 if(room.status === "waiting" || room.status === "full") {
-                    document.getElementById('player-mesh').innerHTML = (room.players.p1 ? generateLobbyCard("HOST", room.players.p1) : '') + (room.players.p2 ? generateLobbyCard("PARTY", room.players.p2) : '');
+                    let html = "";
+                    let keys = Object.keys(room.players);
+                    keys.forEach((key, idx) => {
+                        let label = idx === 0 ? "HOST" : (room.players[key].isBot ? "BOT" : "PLAYER");
+                        html += generateLobbyCard(label, room.players[key]);
+                    });
+                    document.getElementById('player-mesh').innerHTML = html;
+
+                    // إظهار زر الـ LAUNCH فقط للمستضيف (p1) وبشرط وجود لاعبين كافيين للتحدي
+                    if(myPlayerId === 'p1') {
+                        document.getElementById('btn-launch-match').style.display = 'block';
+                    }
                 }
+
                 if(room.status === "playing" && !isGameStartedLocally) {
                     isGameStartedLocally = true;
                     setupTournamentTree(room.players);
@@ -356,21 +401,23 @@
 
         function generateLobbyCard(label, data) { 
             const iconClass = heroIcons[data.hero] || 'fa-user';
-            return `<div class="lobby-card"><span class="host-indicator">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar"><i class="fa-solid ${iconClass}"></i></div></div><div class="player-tag-name">${data.name}</div></div>`; 
+            return `<div class="lobby-card"><span class="host-indicator" style="${label==='BOT'?'background:#ff4a4a;color:#fff;':''}">${label}</span><div class="avatar-frame-wrapper"><div class="ornament-border ornament-${data.ornament}"></div><div class="core-avatar"><i class="fa-solid ${iconClass}"></i></div></div><div class="player-tag-name">${data.name}</div></div>`; 
         }
+        
         function triggerGameStart() { if(myPlayerId !== 'p1') return; db.ref('rooms/' + currentRoomId).update({ status: "playing" }); }
 
         function setupTournamentTree(playersList) {
             if(myPlayerId !== 'p1') { switchScreen('screen-bracket'); return; }
 
             let pool = [];
-            if(playersList.p1) pool.push({ name: playersList.p1.name, id: "p1", score: 0, eliminated: false });
-            if(playersList.p2) pool.push({ name: playersList.p2.name, id: "p2", score: 0, eliminated: false });
+            Object.keys(playersList).forEach(key => {
+                pool.push({ name: playersList[key].name, id: key, score: 0, eliminated: false, isBot: playersList[key].isBot });
+            });
 
+            // تأكيد إكمال الشجرة لـ 8 كعنصر أمان احتياطي
             let shadowBots = [...botNames];
             while(pool.length < 8) {
-                let rIdx = Math.floor(Math.random() * shadowBots.length);
-                pool.push({ name: shadowBots.splice(rIdx, 1)[0], id: "bot_" + pool.length, score: 0, eliminated: false });
+                pool.push({ name: shadowBots.pop() || "Bot", id: "bot_auto_" + pool.length, score: 0, eliminated: false, isBot: true });
             }
 
             pool.sort(() => Math.random() - 0.5);
@@ -420,7 +467,7 @@
 
             let f = tournamentData.final[0];
             let fHtml = `<div class="match-box">
-                <div class="bracket-player ${f.winner?.id===f.p1.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p1.name}</span><strong>${f.f1?.score || 0}</strong></div>
+                <div class="bracket-player ${f.winner?.id===f.p1.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p1.name}</span><strong>${f.p1.score || 0}</strong></div>
                 <div class="bracket-player ${f.winner?.id===f.p2.id?'winner':(f.winner?'eliminated':'')}"><span>${f.p2.name}</span><strong>${f.p2.score || 0}</strong></div>
             </div>`;
             document.getElementById('col-final').innerHTML = fHtml;
@@ -445,16 +492,12 @@
         function startActualQuizRound() {
             if(myPlayerId !== 'p1') return;
             let currentQuestions = generateMixedQuiz();
-            db.ref('rooms/' + currentRoomId).update({
-                status: "quiz_round",
-                currentQuestions: currentQuestions
-            });
+            db.ref('rooms/' + currentRoomId).update({ status: "quiz_round", currentQuestions: currentQuestions });
         }
 
         function startQuizCountdown() {
             switchScreen('screen-gameplay');
-            currentQuestionIndex = 0;
-            myCorrectAnswersCount = 0;
+            currentQuestionIndex = 0; myCorrectAnswersCount = 0;
             document.getElementById('my-live-score').innerText = "0";
             showQuestion();
         }
@@ -504,8 +547,7 @@
             document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
 
             if(idx === qData.a) {
-                btnElement.style.background = "#00ff88";
-                btnElement.style.color = "#000";
+                btnElement.style.background = "#00ff88"; btnElement.style.color = "#000";
                 myCorrectAnswersCount++;
                 document.getElementById('my-live-score').innerText = myCorrectAnswersCount;
             } else {
@@ -514,16 +556,10 @@
                 document.querySelectorAll('.option-btn')[qData.a].style.color = "#000";
             }
 
-            setTimeout(() => {
-                currentQuestionIndex++;
-                showQuestion();
-            }, 1200);
+            setTimeout(() => { currentQuestionIndex++; showQuestion(); }, 1200);
         }
 
-        function skipQuestion() {
-            currentQuestionIndex++;
-            showQuestion();
-        }
+        function skipQuestion() { currentQuestionIndex++; showQuestion(); }
 
         function endQuizRoundLocally() {
             clearInterval(quizTimerInterval);
@@ -573,10 +609,7 @@
                         tournamentData.winner = m.winner;
                     }
 
-                    db.ref('rooms/' + currentRoomId).update({
-                        status: "playing",
-                        tournamentTree: tournamentData
-                    });
+                    db.ref('rooms/' + currentRoomId).update({ status: "playing", tournamentTree: tournamentData });
                 });
             } else {
                 db.ref(`rooms/${currentRoomId}/players/${myPlayerId}`).update({ currentRoundScore: myCorrectAnswersCount });
