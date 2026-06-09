@@ -3,219 +3,312 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game - TEST</title>
+  <title>The 7 Infiltrators</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     /* ========================================= */
-    /* الهوية البصرية حقت TEST (نيون غامق) */
+    /* الإعدادات الأساسية والثيم البنفسجي */
     /* ========================================= */
     :root {
-      --sky-purple: #340c6e;
-      --sky-blue: #141753;
-      --neon-pink: #ff2e63;
-      --neon-purple: #811cc2;
-      --border-start: #ff91b1;
-      --border-other: #b36ff0;
+      --bg-color: #170b2b;
+      --text-white: #ffffff;
+      --title-cyan: #66ccff;
+      --btn-red-bg: #6e0000;
+      --btn-red-border: #ff1c1c;
+      --box-border: #4a3b69;
+      --highlight-pink: #d966ff;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
 
     body {
-      width: 100vw; 
-      min-height: 100vh;
-      /* خلفية نفس تدريج السماء في الصورة */
-      background: linear-gradient(180deg, var(--sky-purple) 0%, var(--sky-blue) 100%);
-      font-family: 'Cairo', sans-serif; /* للعربي */
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: space-between; /* عشان نوزع العنوان فوق والأزرار بالنص والمربع تحت */
-      overflow: hidden;
-      position: relative;
-      padding: 60px 0;
-    }
-
-    /* تأثير خطوط التلفزيون القديم (Scanlines) اللي في الصورة */
-    body::before {
-      content: '';
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%);
-      background-size: 100% 4px;
-      z-index: 1; pointer-events: none;
-    }
-
-    /* محاكاة للشمس الفايديت في الخلفية */
-    .retro-sun {
-      position: absolute; bottom: 30%; left: 50%; transform: translateX(-50%);
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, var(--neon-pink) 0%, #ff814d 60%, transparent 100%);
-      border-radius: 50%;
-      filter: blur(20px); opacity: 0.7; z-index: 0;
-    }
-
-    /* ========================================= */
-    /* ترتيب العنوان (Header) */
-    /* ========================================= */
-    header { text-align: center; z-index: 2; }
-
-    h1.pixel-title {
-      font-size: 4rem; margin: 0;
-      /* تأثير التدرج الأبيض المائل للأزرق اللي في الصورة */
-      background: linear-gradient(180deg, #fff 0%, #a0a0ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-family: 'Cairo', sans-serif; font-weight: 700;
-      /* تأثير النيون القوي المتوهج للأزرق والبنفسجي */
-      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 20px rgba(129, 28, 194, 0.8));
-      text-transform: uppercase;
-    }
-
-    h2.pixel-subtitle {
-      font-family: 'Press Start 2P', cursive; /* خط بكسل للإنجليزي */
-      font-size: 1rem; color: #fff; margin-top: 5px;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-
-    /* ========================================= */
-    /* ترتيب وأشكال الأزرار (Main) */
-    /* ========================================= */
-    main {
-      display: flex; flex-direction: column; 
-      align-items: center; justify-content: center; 
-      gap: 20px; z-index: 2; width: 100%;
-    }
-
-    /* الحاوية حقت الأزرار عشان نعطيهم شكل الألماس (الماسي) بالبكسل */
-    .btn-wrapper {
-      background: none; border: none; cursor: pointer; position: relative;
-      width: 250px; height: 100px;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.1s; transform-style: preserve-3d;
-    }
-    .btn-wrapper:active { transform: scale(0.95); }
-
-    /* الطبقة الخارجية حقت النيون (توهج النيون) */
-    .btn-outer {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      /* شكل ماسي مقصوص الأطراف بالبكسل */
-      clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
-      z-index: 1;
-    }
-
-    /* الطبقة الداخلية حقت اللون الغامق */
-    .btn-inner {
-      position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px;
-      background: #121021;
-      clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
-      z-index: 2;
-    }
-
-    /* محاكاة لتوهج النيون الكبير حول الزر */
-    .btn-glow {
-      position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
-      clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
-      filter: blur(10px); opacity: 0.8; z-index: 0;
-    }
-
-    /* النص داخل الزر بنفس ترتيب الصورة */
-    .btn-text {
-      font-size: 2.2rem; font-weight: 700; color: #fff; z-index: 3;
-      font-family: 'Cairo', sans-serif; text-transform: uppercase;
-      transform: translateY(3px); /* تعديل بسيط لمكان النص */
-    }
-
-    /* تخصيص زر البداية (START) بنفس لون التوهج الوردي اللي في الصورة */
-    .btn-start .btn-outer { 
-      background: var(--border-start); 
-      box-shadow: 0 0 30px rgba(255, 46, 99, 0.9);
-    }
-    .btn-start .btn-glow { box-shadow: 0 0 30px rgba(255, 46, 99, 0.9); }
-
-    /* تخصيص زر خيارات وخروج بنفس لون التوهج البنفسجي */
-    .btn-options .btn-outer, .btn-exit .btn-outer { 
-      background: var(--border-other); 
-    }
-    .btn-options .btn-glow, .btn-exit .btn-glow { box-shadow: 0 0 30px rgba(129, 28, 194, 0.9); }
-
-    /* ========================================= */
-    /* ترتيب مربع الاسم في الأسفل (Footer) */
-    /* ========================================= */
-    footer {
-      width: 100%; display: flex; justify-content: center; z-index: 2;
-    }
-
-    .player-input-container {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 15px; 
-      background-color: rgba(18, 16, 33, 0.85); /* نفس لون المربع */
-      border: 2px solid var(--neon-purple); /* تدرج بنفسجي */
-      padding: 10px 20px; border-radius: 5px;
+      background-color: var(--bg-color);
+      /* 🔴 ضع صورة الخلفية (السفينة والقمر) هنا 🔴 */
+      background-image: url('background.png'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: var(--text-white);
       font-family: 'Cairo', sans-serif;
-      width: 60%; max-width: 600px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      padding: 40px 20px;
     }
 
-    .player-input-container label {
-      color: #dcdcdc; font-size: 1.2rem; font-weight: 700;
+    /* إطار الشاشة (الخطوط المحيطة باللعبة) */
+    .game-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
     }
 
-    .player-input-container input {
-      background: none; border: none;
-      color: #fff; font-family: 'Press Start 2P', cursive; /* خط بكسل للإنجليزي */
-      font-size: 1rem; outline: none; text-align: right;
-      width: 60%;
+    /* ========================================= */
+    /* العنوان (أساتذة الـ 7) */
+    /* ========================================= */
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      margin-top: 20px;
     }
 
-    /* التجاوب مع الجوال بنفس الترتيب في الصورة */
-    @media (max-width: 900px) {
-      h1.pixel-title { font-size: 2.5rem; }
-      .player-input-container { width: 90%; }
-      .btn-wrapper { width: 200px; height: 80px; }
-      .btn-text { font-size: 1.6rem; }
+    .main-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+    }
+
+    .main-title .number {
+      color: var(--title-cyan);
+      font-family: 'Press Start 2P', cursive;
+      font-size: 4rem;
+      text-shadow: 0 0 15px var(--title-cyan);
+    }
+
+    .sub-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-top: 5px;
+      color: #e0e0e0;
+    }
+
+    /* ========================================= */
+    /* الأزرار (ابدأ - خيارات - خروج) */
+    /* ========================================= */
+    .buttons-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    /* زر ابدأ (أحمر ومتوهج بحدود بكسل) */
+    .btn-start {
+      background-color: var(--btn-red-bg);
+      color: white;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      padding: 10px 80px;
+      cursor: pointer;
+      border: 3px solid var(--btn-red-border);
+      box-shadow: 
+        0 0 15px var(--btn-red-border),
+        inset 0 0 15px rgba(255, 0, 0, 0.8);
+      border-radius: 8px; /* تقويس خفيف لتمثيل البكسل */
+      transition: transform 0.1s, filter 0.2s;
+    }
+
+    .btn-start:hover { filter: brightness(1.2); }
+    .btn-start:active { transform: scale(0.95); }
+
+    .sub-buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    /* أزرار الخيارات والخروج */
+    .btn-small {
+      background-color: rgba(30, 20, 50, 0.8);
+      color: #ccc;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.2rem;
+      padding: 5px 30px;
+      border: 2px solid var(--box-border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-small:hover { border-color: #fff; color: #fff; }
+
+    /* ========================================= */
+    /* الخط الفاصل (Divider) */
+    /* ========================================= */
+    .pixel-divider {
+      width: 100%;
+      height: 2px;
+      background-color: var(--box-border);
+      position: relative;
+      margin: 30px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pixel-divider::before, .pixel-divider::after {
+      content: '';
+      width: 10px; height: 10px;
+      background-color: var(--highlight-pink);
+      transform: rotate(45deg);
+      box-shadow: 0 0 8px var(--highlight-pink);
+      position: absolute;
+    }
+    .pixel-divider::before { right: -5px; }
+    .pixel-divider::after { left: -5px; }
+
+    /* ========================================= */
+    /* إدخال الاسم (Enter Name) */
+    /* ========================================= */
+    .name-input-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .name-input-container label {
+      display: block;
+      color: #999;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      font-family: 'Press Start 2P', 'Cairo', sans-serif;
+    }
+
+    .name-input-box {
+      background-color: rgba(20, 10, 30, 0.6);
+      border: 2px solid var(--box-border);
+      border-radius: 6px;
+      padding: 10px 20px;
+      width: 300px;
+      color: white;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    .name-input-box:focus { border-color: var(--title-cyan); }
+
+    /* ========================================= */
+    /* الشخصيات (Character Roster) */
+    /* ========================================= */
+    .characters-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .char-box {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--box-border);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    /* تأثير الشخصية المحددة (المربع الأخير في الصورة) */
+    .char-box.selected {
+      border: 3px solid var(--highlight-pink);
+      box-shadow: 0 0 15px var(--highlight-pink);
+      transform: scale(1.1);
+    }
+
+    .char-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* يعطي طابع البكسل للصور */
+      image-rendering: pixelated; 
+    }
+
+    /* ========================================= */
+    /* الرتب (Rank Badges) */
+    /* ========================================= */
+    .badges-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .badge-box {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .badge-box img {
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    /* استجابة الشاشة للجوال */
+    @media (max-width: 768px) {
+      .main-title { font-size: 2.5rem; }
+      .main-title .number { font-size: 3rem; }
+      .sub-title { font-size: 10px; }
+      .btn-start { font-size: 2rem; padding: 10px 50px; }
+      .char-box { width: 60px; height: 60px; }
+      .badge-box { width: 70px; height: 70px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="retro-sun"></div>
+  <div class="game-container">
 
-  <header>
-    <h1 class="pixel-title">أساتذة الـ 7</h1>
-    <h2 class="pixel-subtitle">THE 7 INFILTRATORS</h2>
-  </header>
-
-  <main>
-    <button class="btn-wrapper btn-start">
-      <div class="btn-glow"></div>
-      <div class="btn-outer"></div>
-      <div class="btn-inner"></div>
-      <span class="btn-text">ابدأ</span>
-    </button>
-
-    <button class="btn-wrapper btn-options">
-      <div class="btn-glow"></div>
-      <div class="btn-outer"></div>
-      <div class="btn-inner"></div>
-      <span class="btn-text">خيارات</span>
-    </button>
-
-    <button class="btn-wrapper btn-exit">
-      <div class="btn-glow"></div>
-      <div class="btn-outer"></div>
-      <div class="btn-inner"></div>
-      <span class="btn-text">خروج</span>
-    </button>
-  </main>
-
-  <footer>
-    <div class="player-input-container">
-      <label for="playerName">أدخل الاسم</label>
-      <input type="text" id="playerName" value="TEST_PLAYER">
+    <div class="header-section">
+      <h1 class="main-title"><span class="number">7</span> أساتذة</h1>
+      <div class="sub-title">THE 7 INFILTRATORS</div>
     </div>
-  </footer>
+
+    <div class="buttons-section">
+      <button class="btn-start">ابدأ</button>
+      <div class="sub-buttons">
+        <button class="btn-small" style="font-family: 'Press Start 2P', cursive; font-size: 10px;">Options</button>
+        <button class="btn-small" style="font-family: 'Press Start 2P', cursive; font-size: 10px;">Quit</button>
+      </div>
+    </div>
+
+    <div class="pixel-divider"></div>
+
+    <div class="name-input-container">
+      <label>Enter Name</label>
+      <input type="text" class="name-input-box" placeholder="أدخل الاسم">
+    </div>
+
+    <div class="characters-row">
+      <div class="char-box"><img src="char1.png" alt="C1"></div>
+      <div class="char-box"><img src="char2.png" alt="C2"></div>
+      <div class="char-box"><img src="char3.png" alt="C3"></div>
+      <div class="char-box"><img src="char4.png" alt="C4"></div>
+      <div class="char-box"><img src="char5.png" alt="C5"></div>
+      <div class="char-box"><img src="char6.png" alt="C6"></div>
+      <div class="char-box selected"><img src="char7.png" alt="C7"></div>
+    </div>
+
+    <div class="pixel-divider"></div>
+
+    <div class="badges-row">
+      <div class="badge-box"><img src="badge_gold.png" alt="Gold"></div>
+      <div class="badge-box"><img src="badge_purple.png" alt="Purple"></div>
+      <div class="badge-box"><img src="badge_red.png" alt="Red"></div>
+      <div class="badge-box"><img src="badge_silver.png" alt="Silver"></div>
+      <div class="badge-box"><img src="badge_bronze.png" alt="Bronze"></div>
+    </div>
+
+  </div>
 
 </body>
 </html>
