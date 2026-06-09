@@ -3,300 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة 7 لاعبين - الواجهة الرئيسية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>The 7 Infiltrators</title>
     <style>
-        :root {
-            --bg-top: #100b29;
-            --bg-bottom: #2c1b54;
-            --ocean-top: #1a2b4c;
-            --ocean-bottom: #0a1128;
-            --neon-pink: #ff2a6d;
-            --neon-cyan: #05d9e8;
-            --text-main: #ffffff;
-        }
-
-        * {
-            box-sizing: border-box;
+        /* إعدادات الخطوط والأساسيات */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
+        
+        body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Cairo', sans-serif;
-            user-select: none;
+            width: 100%;
+            height: 100%;
+            font-family: 'Cairo', sans-serif; /* يفضل لاحقاً استخدام خط بكسل عربي إذا توفر */
+            color: white;
+            overflow: hidden; /* لمنع ظهور شريط التمرير */
         }
 
-        body {
-            background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
-            height: 100vh;
-            overflow: hidden;
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* ================= الخلفية المتحركة ================= */
+        /* 1. إعداد الخلفية المتحركة */
         .background-container {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* ضع رابط صورة الخلفية هنا (السماء والبحر) */
+            background-image: url('رابط_صورة_الخلفية_هنا.png'); 
+            background-size: cover;
+            background-repeat: repeat-x;
+            /* تشغيل الأنيميشن للخلفية */
+            animation: moveBackground 60s linear infinite;
+            z-index: -2;
+        }
+
+        /* 2. تحريك السفينة */
+        .ship {
+            position: absolute;
+            top: 40%; /* عدل الموقع حسب صورتك */
+            right: 10%;
+            width: 200px;
+            /* ضع رابط صورة السفينة المفرغة هنا */
+            background-image: url('رابط_صورة_السفينة_هنا.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            height: 100px;
+            animation: floatShip 3s ease-in-out infinite;
             z-index: -1;
         }
 
-        /* القمر */
-        .moon {
-            position: absolute;
-            top: 10%; right: 10%;
-            width: 80px; height: 80px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 50px #fff, inset -15px -15px 0 0 rgba(0,0,0,0.1);
-        }
-
-        /* النجوم */
-        .stars {
-            position: absolute;
-            width: 100%; height: 60%;
-            background: transparent;
-            background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px);
-            background-size: 150px 150px;
-            animation: twinkle 4s infinite alternate;
-        }
-
-        /* البحر والسفينة */
-        .ocean {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 40%;
-            background: linear-gradient(to bottom, var(--ocean-top), var(--ocean-bottom));
-            border-top: 2px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-
-        .ship {
-            position: absolute;
-            bottom: 60%; left: -100px;
-            width: 120px; height: 50px;
-            background: #111;
-            border-radius: 5px 5px 20px 20px;
-            animation: sail 25s linear infinite, bob 3s ease-in-out infinite alternate;
-        }
-        
-        .ship::after {
-            content: ''; position: absolute;
-            top: -30px; left: 20px;
-            width: 30px; height: 30px;
-            background: #222;
-            box-shadow: 40px 10px 0 #333;
-        }
-
-        /* ================= الشاشات ================= */
-        .screen {
+        /* حاوية المحتوى الأساسي */
+        .ui-container {
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 100%; max-width: 1000px;
-            transition: all 0.5s ease-in-out;
-            position: absolute;
+            justify-content: space-between;
+            height: 100vh;
+            padding: 20px 0;
+            box-sizing: border-box;
         }
 
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.9);
-        }
-
-        .active {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1);
-        }
-
-        /* ================= شاشة البداية ================= */
-        .title {
-            font-size: 3rem;
-            font-weight: 900;
-            text-shadow: 0 0 20px var(--neon-cyan);
-            margin-bottom: 50px;
-            text-align: center;
-        }
-
+        /* تصميم زر ابدأ المتوهج */
         .start-btn {
-            background: rgba(20, 10, 40, 0.8);
-            border: 2px solid var(--neon-pink);
-            color: #fff;
-            font-size: 2rem;
+            background-color: #5a0000;
+            color: white;
+            border: 2px solid #ff0000;
+            padding: 15px 50px;
+            font-size: 24px;
             font-weight: bold;
-            padding: 15px 60px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 0 15px var(--neon-pink), inset 0 0 15px var(--neon-pink);
+            box-shadow: 0 0 15px #ff0000, inset 0 0 10px #ff0000; /* تأثير التوهج */
+            text-shadow: 0 0 5px white;
             transition: 0.3s;
-            text-transform: uppercase;
         }
 
         .start-btn:hover {
-            background: var(--neon-pink);
-            box-shadow: 0 0 30px var(--neon-pink);
+            background-color: #8a0000;
+            box-shadow: 0 0 25px #ff0000, inset 0 0 15px #ff0000;
             transform: scale(1.05);
         }
 
-        /* ================= شاشة اختيار الشخصية ================= */
-        .input-name {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.3);
+        /* تصميم صندوق إدخال الاسم */
+        .name-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #6b4c9a;
             color: white;
-            padding: 15px;
-            font-size: 1.2rem;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 5px;
             text-align: center;
-            margin-bottom: 30px;
-            width: 300px;
+            width: 250px;
             outline: none;
-            transition: 0.3s;
         }
 
-        .input-name:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 10px var(--neon-cyan);
-        }
-
-        .section-title {
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+        .name-input::placeholder {
             color: #ccc;
         }
 
-        /* شبكة الأفاتارات والإطارات */
-        .grid-container {
+        /* حاوية الشخصيات */
+        .characters {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .avatar-card, .border-card {
-            width: 80px; height: 80px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid transparent;
-            border-radius: 10px;
+        .char-box {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #444;
+            border-radius: 5px;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            transition: 0.3s;
         }
 
-        /* تأثيرات التحديد (Hover & Active) */
-        .avatar-card:hover, .border-card:hover {
-            border-color: rgba(255,255,255,0.5);
-            transform: translateY(-5px);
+        /* تمييز الشخصية المختارة */
+        .char-box.selected {
+            border-color: #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
         }
 
-        .avatar-card.selected {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
-            background: rgba(5, 217, 232, 0.2);
+        /* --- الأنيميشن (الحركة) --- */
+        
+        /* حركة الخلفية المستمرة لليسار */
+        @keyframes moveBackground {
+            from { background-position: 0 0; }
+            to { background-position: -2000px 0; } /* الرقم يعتمد على عرض صورتك */
         }
 
-        .border-card.selected {
-            border-color: #ffd700;
-            box-shadow: 0 0 15px #ffd700;
-            background: rgba(255, 215, 0, 0.2);
-        }
-
-        /* ================= الأنيميشن (Animations) ================= */
-        @keyframes twinkle {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        @keyframes sail {
-            0% { left: -150px; }
-            100% { left: 110%; }
-        }
-        @keyframes bob {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(5px); }
-        }
-
-        /* استجابة الجوال */
-        @media (max-width: 768px) {
-            .avatar-card, .border-card {
-                width: 60px; height: 60px; font-size: 1.5rem;
-            }
-            .title { font-size: 2rem; }
-            .start-btn { font-size: 1.5rem; padding: 10px 40px; }
+        /* حركة طفو السفينة للأعلى والأسفل */
+        @keyframes floatShip {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
 <body>
 
-    <div class="background-container">
-        <div class="stars"></div>
-        <div class="moon"></div>
-        <div class="ocean">
-            <div class="ship"></div>
-        </div>
-    </div>
+    <div class="background-container"></div>
+    <div class="ship"></div>
 
-    <div id="startScreen" class="screen active">
-        <h1 class="title">المندس 7<br><span style="font-size: 1.2rem; color: #aaa;">THE 7 INFILTRATORS</span></h1>
-        <button class="start-btn" onclick="startGame()">ابدأ</button>
-    </div>
-
-    <div id="selectionScreen" class="screen hidden">
-        <input type="text" class="input-name" placeholder="أدخل اسمك هنا..." maxlength="12">
+    <div class="ui-container">
         
-        <div class="section-title">اختر شخصيتك (الأنمي)</div>
-        <div class="grid-container" id="avatarGrid">
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🥷</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🧛‍♂️</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🕵️‍♀️</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🧙‍♂️</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🦹‍♀️</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🧟‍♂️</div>
-            <div class="avatar-card" onclick="selectItem(this, 'avatar')">🧑‍🎤</div>
+        <div style="text-align: center;">
+            <h1 style="color: #b589d6; text-shadow: 0 0 10px #b589d6; margin-bottom: 0;">أساتميرامين 7</h1>
+            <h3 style="margin-top: 5px; letter-spacing: 2px;">THE 7 INFILTRATORS</h3>
         </div>
 
-        <div class="section-title">اختر إطار المستوى (Border)</div>
-        <div class="grid-container" id="borderGrid">
-            <div class="border-card" onclick="selectItem(this, 'border')">🥇</div>
-            <div class="border-card" onclick="selectItem(this, 'border')">🥈</div>
-            <div class="border-card" onclick="selectItem(this, 'border')">🥉</div>
-            <div class="border-card" onclick="selectItem(this, 'border')">💎</div>
-            <div class="border-card" onclick="selectItem(this, 'border')">🔥</div>
+        <div style="text-align: center;">
+            <button class="start-btn">ابدأ</button>
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid #666; padding: 5px 20px; border-radius: 5px;">Options</button>
+                <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid #666; padding: 5px 20px; border-radius: 5px;">Quit</button>
+            </div>
         </div>
-        
-        <button class="start-btn" style="font-size: 1.2rem; padding: 10px 30px; margin-top: 20px;">تأكيد الدخول</button>
+
+        <div style="text-align: center;">
+            <p style="margin-bottom: 5px; font-size: 14px;">Enter Name</p>
+            <input type="text" class="name-input" placeholder="أدخل الاسم">
+            
+            <div class="characters">
+                <div class="char-box"></div>
+                <div class="char-box"></div>
+                <div class="char-box"></div>
+                <div class="char-box"></div>
+                <div class="char-box"></div>
+                <div class="char-box"></div>
+                <div class="char-box selected"></div> </div>
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+             <div style="width: 50px; height: 50px; background: gold; border-radius: 50%;"></div>
+             <div style="width: 50px; height: 50px; background: purple; border-radius: 50%;"></div>
+             <div style="width: 50px; height: 50px; background: red; border-radius: 50%;"></div>
+             <div style="width: 50px; height: 50px; background: silver; border-radius: 50%;"></div>
+             <div style="width: 50px; height: 50px; background: #cd7f32; border-radius: 50%;"></div>
+        </div>
+
     </div>
 
-    <script>
-        // وظيفة الانتقال من شاشة البداية إلى شاشة الاختيار
-        function startGame() {
-            document.getElementById('startScreen').classList.remove('active');
-            document.getElementById('startScreen').classList.add('hidden');
-            
-            setTimeout(() => {
-                document.getElementById('selectionScreen').classList.remove('hidden');
-                document.getElementById('selectionScreen').classList.add('active');
-            }, 300); // تأخير بسيط لضمان سلاسة الانتقال
-        }
-
-        // وظيفة اختيار الأفاتار أو الإطار
-        function selectItem(element, type) {
-            // تحديد الـ Container بناءً على النوع (أفاتار أو إطار)
-            let containerId = type === 'avatar' ? 'avatarGrid' : 'borderGrid';
-            let container = document.getElementById(containerId);
-            
-            // إزالة كلاس "selected" من جميع العناصر داخل نفس المجموعة
-            let cards = container.getElementsByClassName(type + '-card');
-            for(let i = 0; i < cards.length; i++) {
-                cards[i].classList.remove('selected');
-            }
-            
-            // إضافة كلاس "selected" للعنصر الذي تم الضغط عليه
-            element.classList.add('selected');
-        }
-    </script>
 </body>
 </html>
