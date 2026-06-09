@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واجهة اللعبة القتالية</title>
+    <title>واجهة اختيار البطل</title>
     <style>
-        /* إعدادات الشاشة الأساسية والمظهر المظلم */
+        /* إعدادات الشاشة الأساسية لجوال ايفون وأندرويد */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
 
         body {
@@ -21,240 +22,246 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 1000px;
         }
 
-        /* 1. الخلفية الفضائية المتحركة (Space Warp) والكواكب */
-        .space-wrap-bg {
+        /* 1. فضاء أسود داكن مع كواكب ونجوم تتحرك فعلياً */
+        .space-bg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
-            background: 
-                radial-gradient(1px 1px at 20% 30%, #fff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 40% 70%, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 50% 50%, #fff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 80% 90%, #fff, rgba(0,0,0,0));
-            animation: spaceWarp 3s infinite linear;
-            opacity: 0.5;
+            background: radial-gradient(circle at center, #080810 0%, #000000 100%);
+            overflow: hidden;
         }
 
-        @keyframes spaceWarp {
-            0% { transform: scale(1) translate(0); }
-            50% { transform: scale(1.1) translate(1px, -1px); }
-            100% { transform: scale(1) translate(0); }
+        /* تأثير النجوم المتحركة ببطء */
+        .stars-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 250px, #aaa, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 300px 80px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            top: -50%;
+            left: -50%;
+            animation: spaceSlowScroll 35s infinite linear;
+            opacity: 0.4;
         }
 
-        .planet {
+        /* كواكب مظلمة تدور في مدارها خلف الواجهة */
+        .dark-planet {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #1a1a2e, #050510 70%);
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.9);
-            opacity: 0.7;
-            animation: spinOrbit 40s infinite linear;
+            background: radial-gradient(circle at 30% 30%, #101118, #000000 80%);
+            box-shadow: inset -15px -15px 30px rgba(0,0,0,0.9);
+            opacity: 0.6;
+            animation: planetOrbit 60s infinite linear;
         }
 
-        .planet-1 { width: 100px; height: 100px; top: 20%; left: -30px; animation-duration: 50s; }
-        .planet-2 { width: 150px; height: 150px; bottom: 15%; right: -50px; transform-origin: -200vw -50vh; animation-duration: 70s; }
+        .planet-top { width: 140px; height: 140px; top: 10%; left: -40px; }
+        .planet-bottom { width: 180px; height: 180px; bottom: 8%; right: -50px; animation-duration: 90s; }
 
-        @keyframes spinOrbit {
+        @keyframes spaceSlowScroll {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        /* حاوية اللعبة الأساسية (متجاوبة مع الجوال) */
-        .game-container {
+        @keyframes planetOrbit {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+
+        /* حاوية الجوال */
+        .game-wrapper {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             height: 100vh;
-            max-height: 850px;
+            max-height: 820px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
         }
 
-        /* 2. الـ "سكور بورد" العلوي (HUD) مستوحى من مبارايات الكرة */
-        .score-bug {
-            width: 100%;
-            height: 60px;
-            background: linear-gradient(180deg, rgba(26, 26, 46, 0.9) 0%, rgba(5, 5, 10, 0.95) 100%);
-            border-bottom: 2px solid #30364d;
-            border-radius: 0 0 10px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-        }
-
-        .team-info { display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .team-info span { color: #8c92a6; }
-        .match-score { font-size: 20px; color: #fff; font-family: monospace; }
-        .match-time { font-size: 14px; color: #5c627a; }
-
-        /* شاشات اللعبة */
         .screen {
             width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.5s ease-in-out;
-            margin-top: 60px; /* مكان السكور بورد */
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .hidden { display: none !important; opacity: 0; transform: scale(0.9); }
+        .hidden { display: none !important; opacity: 0; transform: scale(0.95); }
 
-        /* تصميم زر ابدأ القتالي */
+        /* زر ابدأ الفخم والغامق */
         .btn-start {
-            background: linear-gradient(135deg, #2a2a40 0%, #0a0a14 100%);
-            color: #e0e0e0;
-            border: 2px solid #5c627a;
-            padding: 18px 60px;
-            font-size: 24px;
+            background: linear-gradient(135deg, #14151b 0%, #07080a 100%);
+            color: #c5c9d6;
+            border: 2px solid #2c2f3d;
+            padding: 16px 55px;
+            font-size: 22px;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transition: all 0.3s;
         }
 
         .btn-start:hover {
-            border-color: #9a1c1c;
+            border-color: #801a1a;
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(154, 28, 28, 0.4);
+            box-shadow: 0 0 20px rgba(128, 26, 26, 0.4);
         }
 
-        /* 3. نظام الأفتار والإطارات المتداخلة (Carousel) */
-        .setup-box { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-
-        .avatar-carousel-container {
-            position: relative;
+        /* صندوق الإعدادات واختيار الشخصية */
+        .setup-container {
             width: 100%;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 30px;
             align-items: center;
-            gap: 15px;
         }
 
-        /* حاوية الأفتار الرئيسية لتطبيق الإطار الحقيقي */
-        .avatar-frame-area {
+        .ui-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ui-group label {
+            font-size: 15px;
+            color: #798094;
+            letter-spacing: 1px;
+        }
+
+        /* خانة إدخال الاسم المظلمة */
+        .dark-input {
+            width: 85%;
+            padding: 14px;
+            background-color: rgba(5, 6, 10, 0.85);
+            border: 1px solid #1c1e26;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        .dark-input:focus { border-color: #611818; }
+
+        /* منطقة الأفتار المتداخل مع الإطار الأصلي */
+        .avatar-display-zone {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 240px;
+            height: 240px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 5px; /* حواف الإطار العام */
-            transition: all 0.4s ease;
-            box-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
 
-        /* تطبيق أنماط الإطارات المختلفة بناءً على الصورة المرسلة */
-        .frame-bronze { border: 4px solid #b16c4c; background-color: rgba(177, 108, 76, 0.1); }
-        .frame-silver { border: 4px solid #a8b0c2; background-color: rgba(168, 176, 194, 0.1); }
-        .frame-gold { border: 4px solid #f6cf66; background-color: rgba(246, 207, 102, 0.1); box-shadow: 0 0 15px rgba(246, 207, 102, 0.3); }
-        .frame-platinum { border: 4px solid #a4c9eb; border-top-color: #f6cf66; background-color: rgba(164, 201, 235, 0.1); }
-        .frame-diamond { border: 4px solid #d8e5f2; border-left-color: #f6cf66; border-right-color: #f6cf66; background-color: rgba(216, 229, 242, 0.1); }
-        .frame-ruby { border: 4px solid #e04a5e; border-color: #e04a5e #f6cf66 #e04a5e #e04a5e; background-color: rgba(224, 74, 94, 0.1); box-shadow: 0 0 15px rgba(224, 74, 94, 0.3); }
-        .frame-solar { border: 4px solid #ff9500; background-color: rgba(255, 149, 0, 0.1); box-shadow: 0 0 20px rgba(255, 149, 0, 0.4); }
-
-        /* صورة الأنمي القتالية */
-        .user-avatar-img {
-            width: 140px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            background-color: #111;
+        /* صورة الأنمي بالأسفل */
+        .anime-avatar-holder {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            z-index: 2;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.9);
+            transition: background-image 0.3s ease;
         }
 
-        /* أزرار التنقل بين الأفتارات */
-        .arrow-btn {
-            background: #111216;
-            border: 1px solid #2d313d;
-            color: white;
-            width: 40px;
-            height: 40px;
+        /* الإطار الحقيقي المأخوذ مباشرة من صورتك */
+        .exact-rank-frame {
+            position: absolute;
+            width: 240px;
+            height: 90px; /* الارتفاع المتناسق مع أبعاد الصورة الاصلية */
+            z-index: 3;
+            background-image: url('give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.webp');
+            background-repeat: no-repeat;
+            pointer-events: none;
+            transform: scale(2.2); /* تكبير الإطار ليتناسب مع الصورة */
+            transition: background-position 0.1s ease;
+        }
+
+        /* أزرار التحكم في تغيير الصور والإطارات */
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 85%;
+            margin-top: 5px;
+        }
+
+        .nav-btn {
+            background: #090a0e;
+            border: 1px solid #1c1e24;
+            color: #a0a5b5;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
-        .arrow-btn:hover { border-color: #5c627a; }
+        .nav-btn:hover { border-color: #444; color: #fff; }
 
-        /* باقي واجهة التخصيص */
-        .input-group { width: 90%; display: flex; flex-direction: column; gap: 8px; }
-        .input-group label { font-size: 16px; color: #a0a5b5; }
-        .input-group input {
-            width: 100%;
-            padding: 14px;
-            background-color: rgba(10, 11, 15, 0.9);
-            border: 1px solid #2a2d38;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            text-align: center;
-            transition: border 0.3s;
+        .status-text {
+            font-size: 14px;
+            color: #8e95a8;
+            font-weight: 500;
         }
-        .input-group input:focus { border-color: #5a1818; }
-
-        .frame-label { font-size: 14px; color: #8c92a6; margin-top: 10px; }
-
     </style>
 </head>
 <body>
 
-    <div class="space-wrap-bg"></div>
-    <div class="planet planet-1"></div>
-    <div class="planet planet-2"></div>
+    <div class="space-bg">
+        <div class="stars-layer"></div>
+        <div class="dark-planet planet-top"></div>
+        <div class="dark-planet planet-bottom"></div>
+    </div>
 
-    <div class="game-container">
+    <div class="game-wrapper">
         
-        <div class="score-bug">
-            <div class="team-info"><span>الأحمر:</span> 0</div>
-            <div class="match-score">0 - 0</div>
-            <div class="team-info">0 <span>:الأزرق</span></div>
-            <div class="match-time">1:15</div>
-        </div>
-
         <div id="startScreen" class="screen">
-            <button class="btn-start" onclick="goToSetup()">ابدأ</button>
+            <button class="btn-start" onclick="enterSetup()">ابدأ</button>
         </div>
 
         <div id="setupScreen" class="screen hidden">
-            <div class="setup-box">
+            <div class="setup-container">
                 
-                <div class="input-group">
-                    <label>اختر اسمك</label>
-                    <input type="text" id="username" placeholder="اكتب اسم البطل هنا...">
+                <div class="ui-group">
+                    <label>اسـم الـبـطـل</label>
+                    <input type="text" id="heroName" class="dark-input" placeholder="أدخل اسمك الحركي..." maxlength="12">
                 </div>
 
-                <div class="input-group" style="align-items: center;">
-                    <label>مظهر الشخصية ورتبتك</label>
-                    <div class="avatar-carousel-container">
-                        <button class="arrow-btn" onclick="prevAvatarFrame()">&gt;</button>
-                        
-                        <div class="avatar-frame-area" id="frameArea">
-                            <img src="" id="userAvatar" class="user-avatar-img">
-                        </div>
-                        
-                        <button class="arrow-btn" onclick="nextAvatarFrame()">&lt;</button>
+                <div class="ui-group">
+                    <label>تخصيص الهوية والرتبة</label>
+                    <div class="avatar-display-zone">
+                        <div id="animeAvatar" class="anime-avatar-holder"></div>
+                        <div id="rankFrame" class="exact-rank-frame"></div>
                     </div>
-                    <span class="frame-label" id="frameNameDisplay">الرتبة: Bronze</span>
+                </div>
+
+                <div class="control-row">
+                    <button class="nav-btn" onclick="changeCharacter(-1)">&gt;</button>
+                    <span id="rankLabel" class="status-text">الرتبة: Bronze</span>
+                    <button class="nav-btn" onclick="changeCharacter(1)">&lt;</button>
                 </div>
 
             </div>
@@ -263,54 +270,49 @@
     </div>
 
     <script>
-        // مصفوفة تحتوي على بيانات الأفتارات القتالية المختلفة والإطارات المناسبة لها
-        // ملاحظة: ستحتاج لوضع صور الأنمي المختلفة في نفس المجلد
-        const characterOptions = [
-            { id: 1, img: "dark-anime-1.png", frameClass: "frame-bronze", frameName: "Bronze" },
-            { id: 2, img: "dark-anime-2.png", frameClass: "frame-silver", frameName: "Silver" },
-            { id: 3, img: "dark-anime-3.png", frameClass: "frame-gold", frameName: "Gold" },
-            { id: 4, img: "dark-anime-4.png", frameClass: "frame-platinum", frameName: "Platinum / Gold" },
-            { id: 5, img: "dark-anime-5.png", frameClass: "frame-diamond", frameName: "Diamond / Gold" },
-            { id: 6, img: "dark-anime-6.png", frameClass: "frame-ruby", frameName: "Ruby / Gold" },
-            { id: 7, img: "dark-anime-7.png", frameClass: "frame-solar", frameName: "Solar" }
+        // إعدادات الصور والإطارات المأخوذة من ملفاتك مباشرة
+        // الإحداثيات (bgPosition) تقص الإطار المطلوب من صورتك بدقة دون الحاجة لقصها يدوياً بالفوتوشوب!
+        const itemsConfig = [
+            { name: "Bronze", bgPosition: "0px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Silver", bgPosition: "-142px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Gold", bgPosition: "-285px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Platinum / Gold", bgPosition: "-427px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Diamond / Gold", bgPosition: "-570px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Ruby / Gold", bgPosition: "-712px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" },
+            { name: "Solar", bgPosition: "-855px 0px", img: "dark-anime-pictures-iwmu3b0sun9r6789.webp" }
         ];
 
-        let currentIndex = 0; // نبدأ من أول أفتار ورتبة
+        let currentIndex = 0;
 
-        // الانتقال من شاشة ابدأ
-        function goToSetup() {
+        function enterSetup() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('setupScreen').classList.remove('hidden');
-            updateCharacterUI();
+            renderSelection();
         }
 
-        // تحديث واجهة الأفتار والإطار
-        function updateCharacterUI() {
-            const currentOption = characterOptions[currentIndex];
+        function renderSelection() {
+            const current = itemsConfig[currentIndex];
             
-            // 1. تحديث صورة الأنمي (تأكد من وجود الصور بالأسماء الصحيحة)
-            document.getElementById('userAvatar').src = currentOption.img;
+            // تحديث الإطار الأصلي عبر تحريك الـ Sprite Sheet بناءً على الرتبة المحددة
+            const frameElement = document.getElementById('rankFrame');
+            frameElement.style.backgroundPosition = current.bgPosition;
             
-            // 2. تحديث كلاس الإطار على الحاوية لتغيير المظهر بالـ CSS
-            const frameArea = document.getElementById('frameArea');
-            frameArea.className = `avatar-frame-area ${currentOption.frameClass}`;
+            // تحديث صورة الأنمي (هنا تستخدم الصورة التي أرسلتها، ويمكنك إضافة روابط صور أخرى في مصفوفة img)
+            document.getElementById('animeAvatar').style.backgroundImage = `url('${current.img}')`;
             
-            // 3. تحديث اسم الرتبة
-            document.getElementById('frameNameDisplay').innerText = `الرتبة: ${currentOption.frameName}`;
+            // تحديث اسم الرتبة في الأسفل
+            document.getElementById('rankLabel').innerText = `الرتبة: ${current.name}`;
         }
 
-        function nextAvatarFrame() {
-            currentIndex = (currentIndex + 1) % characterOptions.length;
-            updateCharacterUI();
+        function changeCharacter(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = itemsConfig.length - 1;
+            if (currentIndex >= itemsConfig.length) currentIndex = 0;
+            renderSelection();
         }
 
-        function prevAvatarFrame() {
-            currentIndex = (currentIndex - 1 + characterOptions.length) % characterOptions.length;
-            updateCharacterUI();
-        }
-
-        // لضمان عمل الواجهة عند الفتح مباشرة
-        window.onload = updateCharacterUI;
+        // تشغيل التهيئة التلقائية للصور عند تحميل الصفحة
+        window.onload = renderSelection;
     </script>
 </body>
 </html>
