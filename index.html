@@ -27,8 +27,8 @@
 
     body {
       background-color: var(--bg-color);
-      /* 🔴 ضع صورة الخلفية (السفينة والقمر) هنا 🔴 */
-      background-image: url('background.png'); 
+      /* تم تغيير مسار الخلفية إلى FOFO.PNG حسب طلبك */
+      background-image: url('FOFO.PNG'); 
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -110,7 +110,7 @@
       box-shadow: 
         0 0 15px var(--btn-red-border),
         inset 0 0 15px rgba(255, 0, 0, 0.8);
-      border-radius: 8px; /* تقويس خفيف لتمثيل البكسل */
+      border-radius: 8px;
       transition: transform 0.1s, filter 0.2s;
     }
 
@@ -214,7 +214,6 @@
       transition: all 0.2s;
     }
 
-    /* تأثير الشخصية المحددة (المربع الأخير في الصورة) */
     .char-box.selected {
       border: 3px solid var(--highlight-pink);
       box-shadow: 0 0 15px var(--highlight-pink);
@@ -225,7 +224,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      /* يعطي طابع البكسل للصور */
       image-rendering: pixelated; 
     }
 
