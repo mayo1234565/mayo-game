@@ -5,178 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The 7 Infiltrators</title>
     <style>
-        /* إعدادات الخطوط والأساسيات */
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
-        
+        /* للحصول على نفس الخط، يجب تحميل خط عربي بنمط البكسل 
+           (مثل خط 'LanaPixel' أو أي خط بكسل تجده مناسباً)
+        */
+        @font-face {
+            font-family: 'PixelArabic';
+            src: url('مسار_ملف_خط_البكسل_الخاص_بك.ttf'); 
+        }
+
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            font-family: 'Cairo', sans-serif; /* يفضل لاحقاً استخدام خط بكسل عربي إذا توفر */
+            font-family: 'PixelArabic', sans-serif; /* استخدام خط البكسل */
             color: white;
-            overflow: hidden; /* لمنع ظهور شريط التمرير */
+            overflow: hidden;
         }
 
-        /* 1. إعداد الخلفية المتحركة */
+        /* ---------------------------------- */
+        /* السر هنا: منع ضبابية صور البكسل عند التكبير */
+        /* ---------------------------------- */
+        img, .pixel-bg {
+            image-rendering: pixelated;
+        }
+
         .background-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* ضع رابط صورة الخلفية هنا (السماء والبحر) */
-            background-image: url('رابط_صورة_الخلفية_هنا.png'); 
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('صورة_السماء_والبحر.png'); 
             background-size: cover;
             background-repeat: repeat-x;
-            /* تشغيل الأنيميشن للخلفية */
             animation: moveBackground 60s linear infinite;
             z-index: -2;
         }
 
-        /* 2. تحريك السفينة */
-        .ship {
-            position: absolute;
-            top: 40%; /* عدل الموقع حسب صورتك */
-            right: 10%;
-            width: 200px;
-            /* ضع رابط صورة السفينة المفرغة هنا */
-            background-image: url('رابط_صورة_السفينة_هنا.png'); 
-            background-size: contain;
-            background-repeat: no-repeat;
-            height: 100px;
-            animation: floatShip 3s ease-in-out infinite;
-            z-index: -1;
-        }
-
-        /* حاوية المحتوى الأساسي */
         .ui-container {
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: space-around;
             height: 100vh;
-            padding: 20px 0;
-            box-sizing: border-box;
         }
 
-        /* تصميم زر ابدأ المتوهج */
+        /* ---------------------------------- */
+        /* تصميم الزر باستخدام صورتك المقصوصة */
+        /* ---------------------------------- */
         .start-btn {
-            background-color: #5a0000;
+            /* ضع رابط صورة زر "ابدأ" الأحمر المقصوص هنا */
+            background-image: url('صورة_الزر_الأحمر.png');
+            background-size: 100% 100%; /* لملء المساحة بالصورة */
+            background-color: transparent; /* إخفاء لون الخلفية الافتراضي */
+            border: none; /* إزالة إطار المتصفح الافتراضي */
+            width: 250px;
+            height: 80px;
             color: white;
-            border: 2px solid #ff0000;
-            padding: 15px 50px;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 8px;
+            font-size: 32px;
+            font-family: 'PixelArabic', sans-serif;
+            text-shadow: 2px 2px 0px #000; /* ظل للنص ليبرز */
             cursor: pointer;
-            box-shadow: 0 0 15px #ff0000, inset 0 0 10px #ff0000; /* تأثير التوهج */
-            text-shadow: 0 0 5px white;
-            transition: 0.3s;
+            transition: transform 0.2s;
+            image-rendering: pixelated; /* مهم جداً للـ Pixel Art */
         }
 
         .start-btn:hover {
-            background-color: #8a0000;
-            box-shadow: 0 0 25px #ff0000, inset 0 0 15px #ff0000;
-            transform: scale(1.05);
+            transform: scale(1.05); /* تكبير الزر قليلاً عند مرور الماوس */
+            /* يمكنك هنا إضافة صورة لزر أحمر أفتح إذا أردت تأثيراً أقوى */
+            /* background-image: url('صورة_الزر_الأحمر_المضيء.png'); */
         }
 
-        /* تصميم صندوق إدخال الاسم */
+        .small-btn {
+            background-image: url('صورة_الزر_الرصاصي.png');
+            background-size: 100% 100%;
+            background-color: transparent;
+            border: none;
+            width: 120px;
+            height: 40px;
+            color: #d1d1d1;
+            font-family: 'PixelArabic', sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            image-rendering: pixelated;
+        }
+
+        .small-btn:hover { color: white; }
+
+        /* تصميم صندوق إدخال الاسم المعتمد على الصورة */
         .name-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #6b4c9a;
+            background-image: url('صورة_إطار_إدخال_الاسم.png');
+            background-size: 100% 100%;
+            background-color: transparent;
+            border: none;
             color: white;
             padding: 10px;
-            border-radius: 5px;
             text-align: center;
-            width: 250px;
+            width: 280px;
+            height: 40px;
+            font-family: 'PixelArabic', sans-serif;
             outline: none;
         }
 
-        .name-input::placeholder {
-            color: #ccc;
-        }
-
-        /* حاوية الشخصيات */
-        .characters {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .char-box {
-            width: 60px;
-            height: 60px;
-            border: 2px solid #444;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* تمييز الشخصية المختارة */
-        .char-box.selected {
-            border-color: #ff00ff;
-            box-shadow: 0 0 10px #ff00ff;
-        }
-
-        /* --- الأنيميشن (الحركة) --- */
-        
-        /* حركة الخلفية المستمرة لليسار */
         @keyframes moveBackground {
             from { background-position: 0 0; }
-            to { background-position: -2000px 0; } /* الرقم يعتمد على عرض صورتك */
-        }
-
-        /* حركة طفو السفينة للأعلى والأسفل */
-        @keyframes floatShip {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            to { background-position: -2000px 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="background-container"></div>
-    <div class="ship"></div>
+    <div class="background-container pixel-bg"></div>
 
     <div class="ui-container">
         
-        <div style="text-align: center;">
-            <h1 style="color: #b589d6; text-shadow: 0 0 10px #b589d6; margin-bottom: 0;">أساتميرامين 7</h1>
-            <h3 style="margin-top: 5px; letter-spacing: 2px;">THE 7 INFILTRATORS</h3>
-        </div>
+        <img src="صورة_الشعار.png" alt="أساتميرامين 7" style="max-width: 400px;">
 
         <div style="text-align: center;">
             <button class="start-btn">ابدأ</button>
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
-                <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid #666; padding: 5px 20px; border-radius: 5px;">Options</button>
-                <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid #666; padding: 5px 20px; border-radius: 5px;">Quit</button>
+                <button class="small-btn">Options</button>
+                <button class="small-btn">Quit</button>
             </div>
         </div>
 
         <div style="text-align: center;">
-            <p style="margin-bottom: 5px; font-size: 14px;">Enter Name</p>
             <input type="text" class="name-input" placeholder="أدخل الاسم">
-            
-            <div class="characters">
-                <div class="char-box"></div>
-                <div class="char-box"></div>
-                <div class="char-box"></div>
-                <div class="char-box"></div>
-                <div class="char-box"></div>
-                <div class="char-box"></div>
-                <div class="char-box selected"></div> </div>
-        </div>
-
-        <div style="display: flex; gap: 20px;">
-             <div style="width: 50px; height: 50px; background: gold; border-radius: 50%;"></div>
-             <div style="width: 50px; height: 50px; background: purple; border-radius: 50%;"></div>
-             <div style="width: 50px; height: 50px; background: red; border-radius: 50%;"></div>
-             <div style="width: 50px; height: 50px; background: silver; border-radius: 50%;"></div>
-             <div style="width: 50px; height: 50px; background: #cd7f32; border-radius: 50%;"></div>
-        </div>
+            </div>
 
     </div>
 
