@@ -3,238 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أساتميرامين 7 - The 7 Infiltrators</title>
+    <title>واجهة اللعبة</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap');
-
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background-color: #0f0c29;
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-            font-family: 'Tajawal', sans-serif;
-            color: white;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* إعدادات الشاشة الأساسية - جو مظلم وسوداوي */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* --- خلفية النجوم المتحركة --- */
+        body {
+            background-color: #020205;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* الفضاء والنجوم والكواكب الخلفية */
+        .space-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: radial-gradient(circle at center, #050510 0%, #000000 100%);
+            overflow: hidden;
+        }
+
+        /* النجوم المتلألئة */
         .stars {
             position: absolute;
-            top: 0; left: 0; width: 200%; height: 100%;
-            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
-            animation: moveStars 50s linear infinite;
-            z-index: 0;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 
+                10vw 20vh 1px #fff, 50vw 40vh 1px #fff, 80vw 15vh 1px #wrap,
+                25vw 70vh 1px #fff, 65vw 85vh 1px #fff, 90vw 60vh 1px #fff,
+                15vw 45vh 2px #fff, 75vw 30vh 1px #wrap, 35vw 90vh 2px #fff;
             opacity: 0.5;
+            animation: twinkle 4s infinite ease-in-out;
         }
 
-        @keyframes moveStars {
-            from { background-position: 0 0; }
-            to { background-position: -1000px 1000px; }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
         }
 
-        /* --- حاوية الواجهة --- */
-        .ui-container {
+        /* كواكب داكنة تدور ببطء وبدون وهج منور */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #151520, #030308 70%);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8);
+            opacity: 0.6;
+            animation: spinOrbit 40s infinite linear;
+        }
+
+        .planet-1 {
+            width: 120px;
+            height: 120px;
+            top: 15%;
+            left: -50px;
+            transform-origin: 200vw 50vh;
+        }
+
+        .planet-2 {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            right: -30px;
+            transform-origin: -100vw -30vh;
+            animation-duration: 60s;
+        }
+
+        @keyframes spinOrbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* حاوية اللعبة المخصصة لأبعاد الجوال والايفون */
+        .game-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 850px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* شاشات اللعبة */
+        .screen {
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-evenly;
-            height: 100%;
-            width: 100%;
-            max-width: 800px;
+            justify-content: center;
+            transition: all 0.5s ease-in-out;
         }
 
-        /* --- العنوان --- */
-        .title-box { text-align: center; }
-        .main-title {
-            font-size: 50px;
-            margin: 0;
-            color: #d1b3ff;
-            text-shadow: 0 0 15px #b589d6, 0 0 30px #b589d6;
-        }
-        .sub-title {
-            font-size: 20px;
-            letter-spacing: 5px;
-            margin-top: 5px;
-            color: #a3a3a3;
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            transform: scale(0.9);
         }
 
-        /* --- الأزرار --- */
-        .start-btn {
-            background: linear-gradient(180deg, #8a0000, #5a0000);
-            color: white;
-            border: 2px solid #ff4d4d;
+        /* تصميم زر ابدأ الفخم والمظلم */
+        .btn-start {
+            background: linear-gradient(135deg, #1a1c23 0%, #0d0e12 100%);
+            color: #e0e0e0;
+            border: 2px solid #3a3f50;
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
             border-radius: 12px;
-            padding: 15px 80px;
-            font-size: 30px;
-            font-weight: 800;
-            font-family: inherit;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), inset 0 0 10px rgba(255, 100, 100, 0.5);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
             transition: all 0.3s ease;
         }
-        .start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.9), inset 0 0 15px rgba(255, 100, 100, 0.8);
-            background: linear-gradient(180deg, #a30000, #6e0000);
-        }
-        .small-btns {
-            display: flex; gap: 15px; margin-top: 20px; justify-content: center;
-        }
-        .small-btn {
-            background: rgba(255,255,255,0.1);
-            color: #ddd;
-            border: 1px solid #777;
-            padding: 8px 30px;
-            border-radius: 8px;
-            font-family: inherit; font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .small-btn:hover { background: rgba(255,255,255,0.2); color: white; border-color: white; }
 
-        /* --- منطقة إدخال الاسم والشخصيات --- */
-        .player-setup {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #444;
+        .btn-start:hover {
+            border-color: #7a1c1c; /* تلميح أحمر خافت متناسق مع عين الأنمي */
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(122, 28, 28, 0.3);
         }
-        .name-input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #6b4c9a;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            width: 250px;
+
+        /* نموذج إدخال البيانات والتخصيص */
+        .setup-box {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .input-group {
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
             font-size: 16px;
-            font-family: inherit;
+            color: #a0a5b5;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            background-color: rgba(10, 11, 15, 0.8);
+            border: 1px solid #2a2d38;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
             outline: none;
-            margin-bottom: 20px;
+            text-align: center;
             transition: border 0.3s;
         }
-        .name-input:focus { border-color: #d1b3ff; box-shadow: 0 0 10px #d1b3ff; }
 
-        .characters {
-            display: flex; gap: 12px; justify-content: center;
+        .input-group input:focus {
+            border-color: #5a1818;
         }
-        .char-box {
-            width: 65px; height: 65px;
-            background-color: #222;
-            border: 2px solid #555;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 35px;
-            transition: all 0.2s;
+
+        /* نظام استعراض الصورة داخل الإطار المتداخل */
+        .avatar-preview-area {
             position: relative;
-        }
-        .char-box:hover { border-color: #aaa; transform: translateY(-3px); }
-        .char-box.selected {
-            border-color: #00ffff;
-            box-shadow: 0 0 15px #00ffff, inset 0 0 10px #00ffff;
-            background-color: #113333;
-            transform: scale(1.1);
+            width: 220px;
+            height: 220px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- الرتب --- */
-        .ranks { display: flex; gap: 20px; justify-content: center; margin-top: 10px; }
-        .rank {
-            width: 50px; height: 50px;
+        /* صورة الأنمي المظلمة */
+        .user-avatar {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            z-index: 2;
+            border-radius: 10px;
+            /* استبدل الرابط أدناه بصورتك إذا أردت أو اتركها ترفع محلياً */
+            background-image: url('dark-anime-pictures-iwmu3b0sun9r6789 (1).webp');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* إطار المرتبة والترتيب */
+        .rank-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none; /* عشان ما يغطي على اللمس */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: background 0.3s ease;
+        }
+
+        /* أزرار التنقل والاختيار السفلي */
+        .selection-carousel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 90%;
+            justify-content: space-between;
+        }
+
+        .arrow-btn {
+            background: #111216;
+            border: 1px solid #2d313d;
+            color: white;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 25px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .selection-label {
+            font-size: 14px;
+            color: #8c92a6;
         }
     </style>
 </head>
 <body>
 
-    <div class="stars"></div>
+    <div class="space-background">
+        <div class="stars"></div>
+        <div class="planet planet-1"></div>
+        <div class="planet planet-2"></div>
+    </div>
 
-    <div class="ui-container">
+    <div class="game-container">
         
-        <div class="title-box">
-            <h1 class="main-title">أساتميرامين 7</h1>
-            <div class="sub-title">THE 7 INFILTRATORS</div>
+        <div id="startScreen" class="screen">
+            <button class="btn-start" onclick="goToSetup()">ابدأ</button>
         </div>
 
-        <div style="text-align: center;">
-            <button class="start-btn" id="startGameBtn">ابدأ</button>
-            <div class="small-btns">
-                <button class="small-btn">Options</button>
-                <button class="small-btn">Quit</button>
+        <div id="setupScreen" class="screen hidden">
+            <div class="setup-box">
+                
+                <div class="input-group">
+                    <label>اختر اسمك</label>
+                    <input type="text" id="username" placeholder="اكتب اسم البطل هنا..." maxlength="15">
+                </div>
+
+                <div class="input-group" style="align-items: center;">
+                    <label>مظهر الشخصية</label>
+                    <div class="avatar-preview-area">
+                        <div class="user-avatar" id="avatarImage"></div>
+                        <div class="rank-frame" id="currentFrame"></div>
+                    </div>
+                </div>
+
+                <div class="selection-carousel">
+                    <button class="arrow-btn" onclick="prevFrame()">&gt;</button>
+                    <span class="selection-label" id="frameName">إطار: Ruby / Gold</span>
+                    <button class="arrow-btn" onclick="nextFrame()">&lt;</button>
+                </div>
+
             </div>
-        </div>
-
-        <div class="player-setup">
-            <input type="text" id="playerName" class="name-input" placeholder="أدخل الاسم هنا">
-            
-            <div class="characters" id="characterList">
-                <div class="char-box" data-char="1">🥷</div>
-                <div class="char-box" data-char="2">🧛‍♂️</div>
-                <div class="char-box" data-char="3">🧙‍♀️</div>
-                <div class="char-box" data-char="4">🕵️‍♂️</div>
-                <div class="char-box" data-char="5">🧝‍♀️</div>
-                <div class="char-box" data-char="6">🧟‍♀️</div>
-                <div class="char-box" data-char="7">🤖</div>
-            </div>
-        </div>
-
-        <div class="ranks">
-            <div class="rank" style="background: linear-gradient(45deg, #ffd700, #b8860b);">⭐</div>
-            <div class="rank" style="background: linear-gradient(45deg, #9370db, #4b0082);">🌌</div>
-            <div class="rank" style="background: linear-gradient(45deg, #ff4500, #8b0000);">🔥</div>
-            <div class="rank" style="background: linear-gradient(45deg, #c0c0c0, #778899);">🌙</div>
-            <div class="rank" style="background: linear-gradient(45deg, #cd7f32, #8b4513);">🛡️</div>
         </div>
 
     </div>
 
     <script>
-        const charBoxes = document.querySelectorAll('.char-box');
-        const startBtn = document.getElementById('startGameBtn');
-        const nameInput = document.getElementById('playerName');
-        let selectedCharacterId = null;
+        // مصفوفة تحتوي على أسماء ملفات الإطارات التي أرسلتها ليتم التبديل بينها
+        // ملاحظة: تأكد من تسمية ملفات صور الإطارات المقصوصة في مجلد مشروعك لتطابق هذه الأسماء
+        const frames = [
+            { name: "Bronze", file: "bronze.png" },
+            { name: "Silver", file: "silver.png" },
+            { name: "Gold", file: "gold.png" },
+            { name: "Platinum / Gold", file: "platinum.png" },
+            { name: "Diamond / Gold", file: "diamond.png" },
+            { name: "Ruby / Gold", file: "ruby.png" },
+            { name: "Solar", file: "solar.png" }
+        ];
 
-        // نظام اختيار الشخصية
-        charBoxes.forEach(box => {
-            box.addEventListener('click', function() {
-                // إزالة التحديد من كل الشخصيات
-                charBoxes.forEach(b => b.classList.remove('selected'));
-                // إضافة التحديد للشخصية المضروبة
-                this.classList.add('selected');
-                selectedCharacterId = this.getAttribute('data-char');
-            });
-        });
+        // نبدأ من الإطار المفضل (مثلاً Ruby/Gold)
+        let currentFrameIndex = 5; 
 
-        // زر البدء
-        startBtn.addEventListener('click', function() {
-            const playerName = nameInput.value.trim();
+        // دالة الانتقال من زر ابدأ إلى شاشة التخصيص
+        function goToSetup() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('setupScreen').classList.remove('hidden');
+            updateFrameUI();
+        }
 
-            if (playerName === '') {
-                alert('عذراً، يجب عليك إدخال اسمك أولاً!');
-                return;
-            }
-
-            if (selectedCharacterId === null) {
-                alert('عذراً، يجب عليك اختيار شخصيتك من القائمة!');
-                return;
-            }
-
-            // إذا كان كل شيء صحيح
-            alert('أهلاً بك يا ' + playerName + '! لقد تم اختيار الشخصية رقم ' + selectedCharacterId + '.\n\nجاري تحميل اللعبة...');
+        // تحديث واجهة الإطار المعروض
+        function updateFrameUI() {
+            const frame = frames[currentFrameIndex];
+            document.getElementById('frameName').innerText = `إطار: ${frame.name}`;
             
-            // هنا يمكنك وضع الكود الذي ينقل اللاعب لصفحة اللعبة الفعلية
-            // window.location.href = "game.html";
-        });
-    </script>
+            // هنا يتم تحديث مسار صورة الإطار فوق صورة الأنمي
+            // تأكد من وضع ملفات الصور الفردية للإطارات في نفس المجلد بجانب هذا الملف
+            document.getElementById('currentFrame').style.backgroundImage = `url('${frame.file}')`;
+        }
 
+        function nextFrame() {
+            currentFrameIndex = (currentFrameIndex + 1) % frames.length;
+            updateFrameUI();
+        }
+
+        function prevFrame() {
+            currentFrameIndex = (currentFrameIndex - 1 + frames.length) % frames.length;
+            updateFrameUI();
+        }
+    </script>
 </body>
 </html>
