@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واجهة اللعبة الاحترافية</title>
+    <title>واجهة اللعبة الأسطورية | Overwatch Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Cairo:wght@600;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* إعدادات الشاشة الأساسية - أبعاد الجوال والايفون */
+        /* الإعدادات الأساسية للواجهة */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
             user-select: none;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            background-color: #000000;
+            background-color: #120422; /* لون أساسي احتياطي */
             color: #ffffff;
             overflow: hidden;
             height: 100vh;
@@ -24,88 +26,59 @@
             align-items: center;
         }
 
-        /* 🌌 نظام الخلفية الفضائية المتقدم */
-        .space-container {
+        /* 🌌 الخلفية البنفسجية الفخمة والمتحركة */
+        .epic-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
-            overflow: hidden;
-            background: black;
+            background: linear-gradient(45deg, #1a0b2e, #4b1d52, #290a42, #11051d);
+            background-size: 400% 400%;
+            animation: gradientMovement 12s ease infinite;
         }
 
-        /* النجوم المتحركة ببطء في الخلفية دائماً */
-        .stars-bg {
+        @keyframes gradientMovement {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* طبقة النجوم والجزيئات الواضحة */
+        .particles-layer {
             position: absolute;
             width: 200%;
             height: 200%;
-            background-image: 
-                radial-gradient(1px 1px at 40px 80px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 200px 300px, #fff, rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 100px 500px, #aaa, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 350px 150px, #fff, rgba(0,0,0,0));
-            background-repeat: repeat;
             top: -50%;
             left: -50%;
-            animation: starsRotate 50s infinite linear;
-            opacity: 0.5;
-        }
-
-        /* الكواكب البعيدة (تظهر فقط في شاشة ابدأ) */
-        .planets-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-            z-index: 2;
-        }
-
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #161722, #000000 80%);
-            box-shadow: inset -10px -10px 25px rgba(0,0,0,0.9);
+            background-image: 
+                radial-gradient(2px 2px at 40px 80px, #e2b3ff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 200px 300px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 400px 150px, #ff9eff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 100px 500px, #b3d4ff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            animation: spaceDrift 40s linear infinite;
             opacity: 0.6;
-            animation: floatingPlanet 10s infinite ease-in-out;
         }
 
-        .planet-1 { width: 80px; height: 80px; top: 15%; left: 10%; animation-delay: 0s; }
-        .planet-2 { width: 110px; height: 110px; bottom: 20%; right: 5%; animation-delay: 2s; }
-
-        @keyframes starsRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes spaceDrift {
+            from { transform: rotate(0deg) translateY(0); }
+            to { transform: rotate(360deg) translateY(-50px); }
         }
 
-        @keyframes floatingPlanet {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(5deg); }
-        }
-
-        /* عند الانتقال للشاشة التالية، تختفي الكواكب وتنسحب ببطء */
-        .planets-layer.fade-out {
-            opacity: 0;
-            transform: scale(0.9);
-            pointer-events: none;
-        }
-
-        /* 📱 حاوية الجوال والقوائم */
-        .ui-wrapper {
+        /* 📱 حاوية اللعبة */
+        .game-ui {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 390px; /* مقاس الايفون المثالي */
+            max-width: 420px;
             height: 100vh;
-            max-height: 844px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 25px;
+            padding: 20px;
         }
 
         .screen {
@@ -113,223 +86,213 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .hidden { display: none !important; opacity: 0; }
+        .hidden {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+            position: absolute;
+        }
 
-        /* 🛑 قائمة شاشة ابدأ */
+        /* 🔴 زر ابدأ الأسطوري مع الهالة الحمراء (Overwatch Style) */
         .btn-start {
-            background: linear-gradient(135deg, #12131a 0%, #050507 100%);
-            color: #d1d5db;
-            border: 2px solid #232533;
-            padding: 16px 60px;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 12px;
+            background: linear-gradient(90deg, #ff3b3b, #cc0000);
+            color: #ffffff;
+            font-family: 'Teko', sans-serif;
+            font-size: 45px;
+            text-transform: uppercase;
+            padding: 10px 70px;
+            border: none;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            transition: all 0.3s ease;
+            position: relative;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); /* قصة الأطراف المائلة */
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: redAuraPulse 2s infinite;
         }
 
         .btn-start:hover {
-            border-color: #8c1d1d;
-            color: #ffffff;
-            box-shadow: 0 0 25px rgba(140, 29, 29, 0.4);
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #ff5e5e, #e60000);
+            box-shadow: 0 0 40px rgba(255, 50, 50, 1);
         }
 
-        /* ⚙️ قائمة التخصيص واختيار الهوية */
-        .menu-container {
+        @keyframes redAuraPulse {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 0, 1); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+        }
+
+        /* 🃏 بطاقة اللاعب (Player Card) مثل الصورة المرجعية */
+        .player-card {
+            background: rgba(10, 15, 30, 0.8);
+            border: 2px solid #00f3ff;
+            border-radius: 12px;
+            padding: 30px 20px;
             width: 100%;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 25px;
-        }
-
-        /* تصميم خانة الاسم الحركي */
-        .input-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .input-section label {
-            font-size: 14px;
-            color: #646b7c;
-            font-weight: 600;
-            padding-right: 5px;
-        }
-
-        .input-hero {
-            width: 100%;
-            padding: 15px;
-            background: rgba(8, 9, 13, 0.9);
-            border: 1px solid #1a1c24;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 16px;
-            text-align: center;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .input-hero:focus { border-color: #731515; }
-
-        /* 🕹️ نظام القوائم التفاعلية الجديد (Sliders) */
-        .slider-control {
-            display: flex;
             align-items: center;
-            justify-content: space-between;
+            backdrop-filter: blur(5px);
+            margin-bottom: 25px;
+        }
+
+        /* منطقة دمج الأفتار مع الإطار (الاحترافية) */
+        .portrait-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* الصورة تكون في الخلف ومقصوصة بشكل يناسب الإطار */
+        .avatar-layer {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-color: #222;
+            background-size: cover;
+            background-position: center top;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* قص سداسي */
+            z-index: 1;
+            transition: background-image 0.3s ease;
+        }
+
+        /* الإطار يكون في الأمام تماماً وشفاف من المنتصف */
+        .frame-layer {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            z-index: 2;
+            background-image: url('ranks.webp'); /* اسم صورة الإطارات المجمعة */
+            background-size: 700% 100%; /* لأن لديك 7 إطارات في الصورة */
+            background-position: 0% 0%; /* يتغير برمجياً */
+            pointer-events: none;
+            transition: background-position 0.3s ease;
+        }
+
+        /* اسم اللاعب واللقب تحت الصورة */
+        .player-name-input {
+            background: transparent;
+            border: none;
+            color: #00f3ff;
+            font-family: 'Teko', sans-serif;
+            font-size: 38px;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
+            width: 90%;
+            margin-top: 10px;
+        }
+        .player-name-input::placeholder { color: rgba(0, 243, 255, 0.3); }
+
+        .player-title {
+            color: #ffffff;
+            font-family: 'Teko', sans-serif;
+            font-size: 24px;
+            letter-spacing: 4px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* 🎛️ واجهة التحكم الأنيقة (بدون إزعاج) */
+        .controls-section {
             width: 100%;
-            background: rgba(8, 9, 13, 0.7);
-            border: 1px solid #161820;
-            padding: 10px 15px;
-            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            border-left: 4px solid #cc00ff; /* لمسة بليزارد */
+            padding: 5px 10px;
+        }
+
+        .control-label {
+            font-size: 15px;
+            color: #d8c2ea;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: right;
+            padding-right: 15px;
         }
 
         .arrow-btn {
-            background: #000;
-            border: 1px solid #222533;
+            background: transparent;
+            border: none;
             color: #ffffff;
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
+            font-size: 24px;
             cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .arrow-btn:hover { background: #12131a; border-color: #444; }
-
-        /* زر الاختيار الأوسط الثابت */
-        .action-select-btn {
-            background: linear-gradient(180deg, #1a1c26 0%, #0d0e15 100%);
-            border: 1px solid #2b2e3d;
-            color: #e2e8f0;
-            padding: 10px 30px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            min-width: 160px;
-            text-align: center;
+            padding: 5px 15px;
+            transition: color 0.2s, transform 0.2s;
         }
 
-        /* 🖼️ منطقة المعاينة الحية الفخمة في الأسفل */
-        .preview-box {
-            width: 100%;
-            background: radial-gradient(circle, #0c0d14 0%, #040407 100%);
-            border: 1px solid #161820;
-            border-radius: 14px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
+        .arrow-btn:hover {
+            color: #00f3ff;
+            transform: scale(1.2);
         }
 
-        .preview-title {
-            font-size: 13px;
-            color: #4b5263;
-            text-transform: uppercase;
+        .control-value {
+            font-family: 'Teko', sans-serif;
+            font-size: 22px;
             letter-spacing: 1px;
+            min-width: 80px;
+            text-align: center;
+            color: #fff;
         }
 
-        /* تركيب الصورة والاطار برمجياً فوق بعض */
-        .avatar-composition {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* طبقة الصورة الخلفية */
-        .img-layer {
-            position: absolute;
-            width: 95px;
-            height: 95px;
-            border-radius: 10px;
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-            background-color: #0d0d11;
-            transition: background-image 0.2s ease;
-        }
-
-        /* طبقة الإطار الأمامية */
-        .frame-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .item-name-indicator {
-            font-size: 14px;
-            color: #a0a6b7;
-            font-weight: 500;
-        }
     </style>
 </head>
 <body>
 
-    <div class="space-container">
-        <div class="stars-bg"></div>
-        <div id="planetsLayer" class="planets-layer">
-            <div class="planet planet-1"></div>
-            <div class="planet planet-2"></div>
-        </div>
-    </div>
+    <div class="epic-background"></div>
+    <div class="particles-layer"></div>
 
-    <div class="ui-wrapper">
-        
+    <div class="game-ui">
+
         <div id="startScreen" class="screen">
-            <button class="btn-start" onclick="onStartClicked()">ابدأ</button>
+            <button class="btn-start" onclick="enterGame()">ابدأ</button>
         </div>
 
         <div id="setupScreen" class="screen hidden">
-            <div class="menu-container">
+            
+            <div class="player-card">
+                <div class="portrait-container">
+                    <div id="avatarLayer" class="avatar-layer"></div>
+                    <div id="frameLayer" class="frame-layer"></div>
+                </div>
                 
-                <div class="input-section">
-                    <label>اسـم الـلاعـب</label>
-                    <input type="text" id="playerName" class="input-hero" placeholder="اكتب اسمك هنا..." maxlength="14">
+                <input type="text" class="player-name-input" placeholder="أدخل اسمك..." maxlength="12">
+                <div class="player-title">CHALLENGER</div>
+            </div>
+
+            <div class="controls-section">
+                
+                <div class="control-row">
+                    <button class="arrow-btn" onclick="changeAvatar(1)">&#9654;</button>
+                    <div class="control-value" id="avatarText">صورة 1</div>
+                    <button class="arrow-btn" onclick="changeAvatar(-1)">&#9664;</button>
+                    <div class="control-label">الـصـورة</div>
                 </div>
 
-                <div class="input-section">
-                    <label>تغيير الصورة الشخصية</label>
-                    <div class="slider-control">
-                        <button class="arrow-btn" onclick="rotateImages(-1)">&gt;</button>
-                        <button class="action-select-btn" id="imgBtn">اضغط صوره</button>
-                        <button class="arrow-btn" onclick="rotateImages(1)">&lt;</button>
-                    </div>
-                </div>
-
-                <div class="input-section">
-                    <label>تغيير إطار المرتبة</label>
-                    <div class="slider-control">
-                        <button class="arrow-btn" onclick="rotateFrames(-1)">&gt;</button>
-                        <button class="action-select-btn" id="frameBtn">اضغط الايطار</button>
-                        <button class="arrow-btn" onclick="rotateFrames(1)">&lt;</button>
-                    </div>
-                </div>
-
-                <div class="preview-box">
-                    <div class="preview-title">مظهر الهوية الحالي</div>
-                    <div class="avatar-composition">
-                        <div id="liveImage" class="img-layer"></div>
-                        <div id="liveFrame" class="frame-layer"></div>
-                    </div>
-                    <div id="statusIndicator" class="item-name-indicator">إطار: Bronze</div>
+                <div class="control-row" style="border-left-color: #00f3ff;">
+                    <button class="arrow-btn" onclick="changeFrame(1)">&#9654;</button>
+                    <div class="control-value" id="frameText">BRONZE</div>
+                    <button class="arrow-btn" onclick="changeFrame(-1)">&#9664;</button>
+                    <div class="control-label">الـرتـبـة</div>
                 </div>
 
             </div>
@@ -338,71 +301,61 @@
     </div>
 
     <script>
-        // 🔗 مصفوفة روابط الصور (يمكنك استبدال الروابط الوهمية بروابط صور الأنمي الحقيقية لاحقاً)
-        const imagesList = [
-            "https://placehold.co/150/0d0d11/ffffff?text=Anime+1", // هنا تضع رابط صورة الأنمي 1
-            "https://placehold.co/150/0d0d11/ffffff?text=Anime+2", // هنا تضع رابط صورة الأنمي 2
-            "https://placehold.co/150/0d0d11/ffffff?text=Anime+3"  // هنا تضع رابط صورة الأنمي 3
+        // 🖼️ قائمة الصور (ضع روابط صور الأنمي هنا)
+        const avatars = [
+            "https://i.pinimg.com/736x/8f/c3/86/8fc3864197dc2b37bd358d10b7ee8719.jpg", // صورة أنمي 1
+            "https://i.pinimg.com/736x/2b/43/b8/2b43b8110901e6ef67e2a9c375681729.jpg", // صورة أنمي 2
+            "https://i.pinimg.com/736x/c8/10/a4/c810a42df6495db7b494dff9c2ff1b06.jpg"  // صورة أنمي 3
         ];
 
-        // 🔗 مصفوفة روابط الإطارات المقصوصة (تضع روابط الإطارات الفردية الشفافة هنا)
-        const framesList = [
-            { name: "Bronze", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Bronze]" },
-            { name: "Silver", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Silver]" },
-            { name: "Gold", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Gold]" },
-            { name: "Platinum / Gold", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Platinum]" },
-            { name: "Diamond / Gold", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Diamond]" },
-            { name: "Ruby / Gold", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Ruby]" },
-            { name: "Solar", url: "https://placehold.co/200/rgba(0,0,0,0)/ffffff?text=[Solar]" }
+        // 🛡️ إعدادات الإطارات
+        // الكود هنا يعتمد على صورة الإطارات المجمعة (ranks.webp) ويحركها بالنسبة المئوية 
+        // 0% = برونز | 16.6% = فضي | 33.3% = ذهبي ... وهكذا
+        const frames = [
+            { name: "BRONZE", bgPos: "0%" },
+            { name: "SILVER", bgPos: "16.66%" },
+            { name: "GOLD", bgPos: "33.33%" },
+            { name: "PLATINUM", bgPos: "50%" },
+            { name: "DIAMOND", bgPos: "66.66%" },
+            { name: "RUBY", bgPos: "83.33%" },
+            { name: "SOLAR", bgPos: "100%" }
         ];
 
-        let currentImageIndex = 0;
-        let currentFrameIndex = 0;
+        let avatarIndex = 0;
+        let frameIndex = 0;
 
-        // دالة الضغط على زر ابدأ
-        function onStartClicked() {
-            // 1. إخفاء الكواكب بسلاسة من الخلفية وإبقاء النجوم فقط
-            document.getElementById('planetsLayer').classList.add('fade-out');
-
-            // 2. الانتقال إلى شاشة القوائم واختيار الهوية
+        function enterGame() {
             document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('setupScreen').classList.remove('hidden');
-            
-            // تحديث العرض الأول
-            renderUI();
+            setTimeout(() => {
+                document.getElementById('setupScreen').classList.remove('hidden');
+            }, 300);
+            updateUI();
         }
 
-        // دالة تدوير واختيار الصور
-        function rotateImages(direction) {
-            currentImageIndex += direction;
-            if (currentImageIndex < 0) currentImageIndex = imagesList.length - 1;
-            if (currentImageIndex >= imagesList.length) currentImageIndex = 0;
-            renderUI();
+        function changeAvatar(dir) {
+            avatarIndex += dir;
+            if (avatarIndex >= avatars.length) avatarIndex = 0;
+            if (avatarIndex < 0) avatarIndex = avatars.length - 1;
+            updateUI();
         }
 
-        // دالة تدوير واختيار الإطارات
-        function rotateFrames(direction) {
-            currentFrameIndex += direction;
-            if (currentFrameIndex < 0) currentFrameIndex = framesList.length - 1;
-            if (currentFrameIndex >= framesList.length) currentFrameIndex = 0;
-            renderUI();
+        function changeFrame(dir) {
+            frameIndex += dir;
+            if (frameIndex >= frames.length) frameIndex = 0;
+            if (frameIndex < 0) frameIndex = frames.length - 1;
+            updateUI();
         }
 
-        // تحديث القوائم والمعاينة الحية فوراً
-        function renderUI() {
-            // تحديث الصورة الحالية في طبقة المعاينة
-            document.getElementById('liveImage').style.backgroundImage = `url('${imagesList[currentImageIndex]}')`;
+        function updateUI() {
+            // تحديث الصورة الخلفية
+            document.getElementById('avatarLayer').style.backgroundImage = `url('${avatars[avatarIndex]}')`;
+            document.getElementById('avatarText').innerText = `صورة ${avatarIndex + 1}`;
 
-            // تحديث الإطار الحالي في طبقة المعاينة
-            const currentFrame = framesList[currentFrameIndex];
-            document.getElementById('liveFrame').style.backgroundImage = `url('${currentFrame.url}')`;
-
-            // تحديث مؤشر الاسم في الأسفل
-            document.getElementById('statusIndicator').innerText = `الإطار الحالي: ${currentFrame.name}`;
+            // تحديث الإطار الأمامي عبر تحريك (Sprite)
+            const currentFrame = frames[frameIndex];
+            document.getElementById('frameLayer').style.backgroundPosition = `${currentFrame.bgPos} 0%`;
+            document.getElementById('frameText').innerText = currentFrame.name;
         }
-
-        // تشغيل مبدئي عند تحميل الصفحة للتأكد من جاهزية الطبقات
-        window.onload = renderUI;
     </script>
 </body>
 </html>
