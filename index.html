@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinematic AAA Game Menu - With Custom Frames</title>
+    <title>Cinematic AAA Game Menu - Vector Frames</title>
     <style>
         /* --- GLOBAL STYLES --- */
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
@@ -32,7 +32,6 @@
             pointer-events: none;
         }
 
-        /* Animated Stars */
         .stars {
             position: absolute;
             width: 2px; height: 2px;
@@ -42,23 +41,12 @@
                         200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff;
             animation: twinkle 4s infinite alternate;
         }
-        .stars::after {
-            content: " "; position: absolute; top: 2000px; left: 0;
-            width: 2px; height: 2px; background: transparent;
-            box-shadow: inherit;
-        }
 
         @keyframes twinkle {
             0% { opacity: 0.3; transform: scale(0.8); }
             100% { opacity: 1; transform: scale(1.2); box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff, 0 0 10px #fff; }
         }
 
-        /* Moving Planets */
-        #planets {
-            position: absolute;
-            width: 100%; height: 100%;
-            transition: opacity 2s ease-in-out;
-        }
         .planet {
             position: absolute;
             border-radius: 50%;
@@ -69,12 +57,6 @@
             background: radial-gradient(circle at 30% 30%, #2a2a35, #000);
             top: 10%; left: -100px;
             animation: float 20s infinite ease-in-out alternate;
-        }
-        .planet-2 {
-            width: 150px; height: 150px;
-            background: radial-gradient(circle at 70% 30%, #4a1515, #000);
-            bottom: 20%; right: -50px;
-            animation: float 25s infinite ease-in-out alternate-reverse;
         }
 
         @keyframes float {
@@ -100,9 +82,8 @@
             transform: scale(1.05);
         }
 
-        /* --- PHASE 1: START SCREEN --- */
+        /* --- START SCREEN --- */
         #start-btn {
-            position: relative;
             background: transparent;
             border: none;
             color: #fff;
@@ -115,7 +96,6 @@
             text-shadow: 0 0 10px rgba(255,255,255,0.3);
             transition: text-shadow 0.3s ease, transform 0.3s ease;
         }
-
         #start-btn:hover {
             text-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c;
             transform: scale(1.05);
@@ -135,124 +115,16 @@
             100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
         }
 
-        /* --- PHASE 2: LOBBY SCREEN --- */
+        /* --- LOBBY SCREEN --- */
         .lobby-ui {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
             width: 100%;
             max-width: 800px;
         }
 
-        /* Rank Hexagon Styling - WITH CUSTOM FRAMES */
-        .hex-outer {
-            /* تعديل الأبعاد لتتناسب مع حجم الإطارات الجديدة */
-            width: 220px;
-            height: 250px;
-            
-            /* إزالة clip-path القديم */
-            /* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.5s ease, filter 0.5s ease;
-            position: relative;
-
-            /* إعدادات الخلفية العامة للإطارات */
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        
-        .hex-inner {
-            /* تعديل الأبعاد والموضع ليتناسب مع مركز الإطار السداسي في الصورة الجديدة */
-            width: 130px; 
-            height: 150px;
-            
-            /* إزالة clip-path القديم */
-            /* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
-            
-            /* جعل الصورة سداسية بسيطة بدون حدود */
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            background-color: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            
-            /* تموضع دقيق داخل hex-outer */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .hex-inner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: filter 0.3s ease;
-        }
-
-        /* Rank Text Label below the frame */
-        .rank-name-label {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 5px;
-            margin-top: 10px;
-            text-transform: uppercase;
-            text-align: center;
-            transition: color 0.5s ease, text-shadow 0.5s ease;
-        }
-
-        /* --- RANK SPECIFIC STYLES (IMAGES & GLOWS) --- */
-        /* استبدل هذه المسارات بمسارات ملفات الصور الحقيقية التي قمت بإنشائها */
-
-        .rank-bronze { 
-            background-image: url('images/frames/bronze_frame.png'); 
-            filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5));
-        }
-        .rank-bronze + .rank-name-label { color: #cd7f32; text-shadow: 0 0 5px rgba(205, 127, 50, 0.5); }
-
-        .rank-silver { 
-            background-image: url('images/frames/silver_frame.png'); 
-            filter: drop-shadow(0 0 10px rgba(229, 228, 226, 0.5));
-        }
-        .rank-silver + .rank-name-label { color: #e5e4e2; text-shadow: 0 0 5px rgba(229, 228, 226, 0.5); }
-
-        .rank-gold { 
-            background-image: url('images/frames/gold_frame.png'); 
-            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7));
-        }
-        .rank-gold + .rank-name-label { color: #ffe600; text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
-
-        .rank-platinum { 
-            background-image: url('images/frames/platinum_frame.png'); 
-            filter: drop-shadow(0 0 15px rgba(180, 200, 200, 0.8));
-        }
-        .rank-platinum + .rank-name-label { color: #e5e4e2; text-shadow: 0 0 10px rgba(180, 200, 200, 0.8); }
-
-        .rank-diamond { 
-            background-image: url('images/frames/diamond_frame.png'); 
-            filter: drop-shadow(0 0 20px rgba(185, 242, 255, 0.8));
-        }
-        .rank-diamond + .rank-name-label { color: #b9f2ff; text-shadow: 0 0 15px rgba(185, 242, 255, 0.8); }
-
-        .rank-ruby { 
-            background-image: url('images/frames/ruby_frame.png'); 
-            filter: drop-shadow(0 0 25px rgba(255, 26, 74, 0.9));
-        }
-        .rank-ruby + .rank-name-label { color: #ff1a4a; text-shadow: 0 0 15px rgba(255, 26, 74, 0.9); }
-
-        .rank-solar { 
-            background-image: url('images/frames/solar_frame.png'); 
-            filter: drop-shadow(0 0 30px rgba(255, 165, 0, 1));
-        }
-        .rank-solar + .rank-name-label { color: #ff4500; text-shadow: 0 0 20px rgba(255, 165, 0, 1); }
-
-        /* Form Controls */
         .controls {
             display: flex;
             flex-direction: column;
@@ -260,6 +132,82 @@
             gap: 15px;
         }
 
+        /* --- DECORATIVE SVG FRAME SYSTEM --- */
+        .frame-wrapper {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rank-svg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        /* Avatar Container mapped inside the SVG Hexagon space */
+        .avatar-container {
+            position: absolute;
+            width: 106px;
+            height: 122px;
+            top: 59px;
+            left: 77px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: #111116;
+            z-index: 1;
+        }
+
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Dynamic Rank Colors & Glows via classes */
+        .rank-bronze .accent-fill { fill: url(#bronze-grad); }
+        .rank-bronze .accent-stroke { stroke: url(#bronze-grad); }
+        .rank-bronze .glow-effect { filter: drop-shadow(0 0 8px rgba(167,105,71,0.6)); }
+
+        .rank-silver .accent-fill { fill: url(#silver-grad); }
+        .rank-silver .accent-stroke { stroke: url(#silver-grad); }
+        .rank-silver .glow-effect { filter: drop-shadow(0 0 8px rgba(200,200,210,0.6)); }
+
+        .rank-gold .accent-fill { fill: url(#gold-grad); }
+        .rank-gold .accent-stroke { stroke: url(#gold-grad); }
+        .rank-gold .glow-effect { filter: drop-shadow(0 0 12px rgba(250,190,40,0.7)); }
+
+        .rank-platinum .accent-fill { fill: url(#plat-grad); }
+        .rank-platinum .accent-stroke { stroke: url(#plat-grad); }
+        .rank-platinum .glow-effect { filter: drop-shadow(0 0 12px rgba(180,210,200,0.7)); }
+
+        .rank-diamond .accent-fill { fill: url(#diamond-grad); }
+        .rank-diamond .accent-stroke { stroke: url(#diamond-grad); }
+        .rank-diamond .glow-effect { filter: drop-shadow(0 0 15px rgba(100,180,255,0.8)); }
+
+        .rank-ruby .accent-fill { fill: url(#ruby-grad); }
+        .rank-ruby .accent-stroke { stroke: url(#ruby-grad); }
+        .rank-ruby .glow-effect { filter: drop-shadow(0 0 15px rgba(240,50,80,0.8)); }
+
+        .rank-solar .accent-fill { fill: url(#solar-grad); }
+        .rank-solar .accent-stroke { stroke: url(#solar-grad); }
+        .rank-solar .glow-effect { filter: drop-shadow(0 0 20px rgba(250,130,20,0.9)); }
+
+        .rank-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: -10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* Form Controls */
         .glow-text {
             background: transparent;
             border: none;
@@ -269,7 +217,6 @@
             letter-spacing: 2px;
             outline: none;
             text-align: center;
-            text-shadow: 0 0 5px rgba(255,255,255,0.3);
         }
 
         input[type="text"] {
@@ -278,15 +225,11 @@
             width: 300px;
             transition: border-color 0.3s, text-shadow 0.3s;
         }
-
         input[type="text"]:focus {
             border-bottom: 1px solid #fff;
             text-shadow: 0 0 10px #fff;
         }
-
-        input[type="text"]::placeholder {
-            color: rgba(255,255,255,0.3);
-        }
+        input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
 
         select {
             appearance: none;
@@ -294,29 +237,17 @@
             padding: 5px 20px;
             cursor: pointer;
         }
-        select option {
-            background: #050505;
-            color: #fff;
-        }
+        select option { background: #050505; color: #fff; }
 
         .upload-lbl {
             font-size: 0.9rem;
             color: rgba(255,255,255,0.5);
             cursor: pointer;
-            transition: color 0.3s, text-shadow 0.3s;
+            transition: color 0.3s;
         }
-        .upload-lbl:hover {
-            color: #fff;
-            text-shadow: 0 0 5px #fff;
-        }
+        .upload-lbl:hover { color: #fff; text-shadow: 0 0 5px #fff; }
 
-        /* Multiplayer Buttons */
-        .multiplayer-btns {
-            display: flex;
-            gap: 40px;
-            margin-top: 20px;
-        }
-
+        .multiplayer-btns { display: flex; gap: 40px; margin-top: 10px; }
         .action-btn {
             background: transparent;
             border: none;
@@ -329,48 +260,15 @@
             position: relative;
             transition: color 0.3s, transform 0.3s;
         }
-
-        .action-btn::after {
-            content: '';
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            background: #fff;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: width 0.3s ease, background 0.3s;
-            box-shadow: 0 0 10px #fff;
-        }
-
-        .action-btn:hover {
-            color: #fff;
-            transform: translateY(-2px);
-            text-shadow: 0 0 15px #fff;
-        }
-
-        .action-btn:hover::after {
-            width: 100%;
-        }
-
-        .action-btn.red-glow:hover {
-            color: #ff003c;
-            text-shadow: 0 0 15px #ff003c;
-        }
-        .action-btn.red-glow:hover::after {
-            background: #ff003c;
-            box-shadow: 0 0 10px #ff003c;
-        }
+        .action-btn:hover { color: #fff; transform: translateY(-2px); text-shadow: 0 0 15px #fff; }
+        .action-btn.red-glow:hover { color: #ff003c; text-shadow: 0 0 15px #ff003c; }
     </style>
 </head>
 <body>
 
     <div id="environment">
         <div class="stars"></div>
-        <div id="planets">
-            <div class="planet planet-1"></div>
-            <div class="planet planet-2"></div>
-        </div>
+        <div class="planet planet-1"></div>
     </div>
 
     <div id="phase1" class="screen">
@@ -381,13 +279,80 @@
         <div class="lobby-ui">
             
             <div class="controls">
-                <div id="hex-border" class="hex-outer rank-bronze">
-                    <div class="hex-inner">
-                        <img id="profile-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Profile">
+                <div id="frame-container" class="frame-wrapper rank-bronze">
+                    
+                    <div class="avatar-container">
+                        <img id="profile-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Avatar">
                     </div>
+
+                    <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="bronze-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#b87333"/>
+                                <stop offset="50%" stop-color="#ffd7b5"/>
+                                <stop offset="100%" stop-color="#5c341a"/>
+                            </linearGradient>
+                            <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#9ca3af"/>
+                                <stop offset="50%" stop-color="#f3f4f6"/>
+                                <stop offset="100%" stop-color="#374151"/>
+                            </linearGradient>
+                            <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#d97706"/>
+                                <stop offset="50%" stop-color="#fef08a"/>
+                                <stop offset="100%" stop-color="#78350f"/>
+                            </linearGradient>
+                            <linearGradient id="plat-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#475569"/>
+                                <stop offset="30%" stop-color="#cbd5e1"/>
+                                <stop offset="70%" stop-color="#fef08a"/>
+                                <stop offset="100%" stop-color="#1e293b"/>
+                            </linearGradient>
+                            <linearGradient id="diamond-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#2563eb"/>
+                                <stop offset="40%" stop-color="#93c5fd"/>
+                                <stop offset="70%" stop-color="#fdf2e9"/>
+                                <stop offset="100%" stop-color="#1d4ed8"/>
+                            </linearGradient>
+                            <linearGradient id="ruby-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#991b1b"/>
+                                <stop offset="40%" stop-color="#f87171"/>
+                                <stop offset="70%" stop-color="#ffe4e6"/>
+                                <stop offset="100%" stop-color="#450a0a"/>
+                            </linearGradient>
+                            <linearGradient id="solar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ea580c"/>
+                                <stop offset="50%" stop-color="#facc15"/>
+                                <stop offset="100%" stop-color="#7c2d12"/>
+                            </linearGradient>
+                        </defs>
+
+                        <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="4" stroke-opacity="0.8"/>
+                        <polygon points="130,48 192,80 192,160 130,192 68,160 68,80" class="accent-stroke" stroke-width="1" stroke-opacity="0.4"/>
+
+                        <path d="M52,70 Q25,90 35,140 Q45,165 62,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M42,85 C20,100 25,120 40,135" class="accent-stroke" stroke-width="3"/>
+                        <path d="M48,60 L35,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M36,105 L20,112" class="accent-stroke" stroke-width="3"/>
+                        <path d="M38,130 L24,140" class="accent-stroke" stroke-width="3"/>
+
+                        <path d="M208,70 Q235,90 225,140 Q215,165 198,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M218,85 C240,100 235,120 220,135" class="accent-stroke" stroke-width="3"/>
+                        <path d="M212,60 L225,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M224,105 L240,112" class="accent-stroke" stroke-width="3"/>
+                        <path d="M222,130 L236,140" class="accent-stroke" stroke-width="3"/>
+                        
+                        <path d="M110,32 L130,18 L150,32 L130,26 Z" class="accent-fill"/>
+
+                        <polygon points="50,198 52,203 57,203 53,206 55,211 50,208 45,211 47,206 43,203 48,203" class="accent-fill"/>
+                        <polygon points="85,213 87,219 93,219 88,222 90,228 85,224 80,228 82,222 77,219 83,219" class="accent-fill"/>
+                        <polygon points="130,218 134,226 143,226 136,231 139,240 130,234 121,240 124,231 117,226 126,226" class="accent-fill"/>
+                        <polygon points="175,213 177,219 183,219 178,222 180,228 175,224 170,228 172,222 167,219 173,219" class="accent-fill"/>
+                        <polygon points="210,198 212,203 217,203 213,206 215,211 210,208 205,211 207,206 203,203 208,203" class="accent-fill"/>
+                    </svg>
                 </div>
                 
-                <span id="rank-label" class="rank-name-label">BRONZE</span>
+                <div id="rank-title-text" class="rank-title" style="color: #cd7f32;">Bronze</div>
 
                 <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
                 <input type="file" id="upload-pic" accept="image/*" hidden>
@@ -414,107 +379,82 @@
     </div>
 
     <script>
-        // DOM Elements
         const startBtn = document.getElementById('start-btn');
         const phase1 = document.getElementById('phase1');
         const phase2 = document.getElementById('phase2');
-        const planets = document.getElementById('planets');
-        const hexBorder = document.getElementById('hex-border');
+        const frameContainer = document.getElementById('frame-container');
         const rankSelect = document.getElementById('rank-select');
-        const rankLabel = document.getElementById('rank-label'); // New element
+        const rankTitleText = document.getElementById('rank-title-text');
         const uploadPic = document.getElementById('upload-pic');
         const profileImg = document.getElementById('profile-img');
 
-        // Particle System for Start Button
         let particleInterval;
 
         function createParticles(e, burstCount = 1) {
             const rect = startBtn.getBoundingClientRect();
             const btnCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-
             for (let i = 0; i < burstCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
-                // Random size
                 const size = Math.random() * 4 + 2;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-
-                // Starting position (scattered around button center)
                 const startX = btnCenter.x + (Math.random() - 0.5) * rect.width;
                 const startY = btnCenter.y + (Math.random() - 0.5) * rect.height;
                 particle.style.left = `${startX}px`;
                 particle.style.top = `${startY}px`;
-
-                // Calculate random trajectory
                 const angle = Math.random() * Math.PI * 2;
                 const velocity = Math.random() * 100 + 50;
-                const dx = Math.cos(angle) * velocity;
-                const dy = Math.sin(angle) * velocity;
-
-                // Pass variables to CSS animation
-                particle.style.setProperty('--dx', `${dx}px`);
-                particle.style.setProperty('--dy', `${dy}px`);
-
+                particle.style.setProperty('--dx', `${Math.cos(angle) * velocity}px`);
+                particle.style.setProperty('--dy', `${Math.sin(angle) * velocity}px`);
                 document.body.appendChild(particle);
-
-                // Cleanup particle after animation
-                setTimeout(() => {
-                    particle.remove();
-                }, 1000);
+                setTimeout(() => particle.remove(), 1000);
             }
         }
 
-        // Particle Hover Events
         startBtn.addEventListener('mouseenter', (e) => {
-            createParticles(e, 5); // Initial burst
-            particleInterval = setInterval(() => createParticles(e, 2), 100); // Continuous flow
+            createParticles(e, 5);
+            particleInterval = setInterval(() => createParticles(e, 2), 100);
         });
+        startBtn.addEventListener('mouseleave', () => clearInterval(particleInterval));
 
-        startBtn.addEventListener('mouseleave', () => {
-            clearInterval(particleInterval);
-        });
-
-        // Phase Transition Logic
         startBtn.addEventListener('click', (e) => {
             clearInterval(particleInterval);
-            createParticles(e, 30); // Massive burst on click
-
+            createParticles(e, 30);
             setTimeout(() => {
                 phase1.classList.add('hidden');
-                planets.style.opacity = '0'; // Fade out planets
-
-                setTimeout(() => {
-                    phase2.classList.remove('hidden');
-                }, 800); // Wait for phase 1 to fade before showing phase 2
+                setTimeout(() => phase2.classList.remove('hidden'), 600);
             }, 300);
         });
 
-        // Lobby Logic: Profile Picture Upload
         uploadPic.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    profileImg.src = event.target.result;
-                }
+                reader.onload = (event) => profileImg.src = event.target.result;
                 reader.readAsDataURL(file);
             }
         });
 
-        // Lobby Logic: Rank Frame and Label Selection
-        rankSelect.addEventListener('change', (e) => {
-            const selectedRank = e.target.value;
-            
-            // 1. Update the Frame image (via CSS class)
-            hexBorder.className = 'hex-outer'; // Reset to base classes
-            hexBorder.classList.add(`rank-${selectedRank}`);
-            
-            // 2. Update the Text label
-            rankLabel.textContent = selectedRank.toUpperCase();
-        });
+        // Color mapping for the rank text matching the image glows
+        const rankColors = {
+            bronze: '#cd7f32',
+            silver: '#e5e4e2',
+            gold: '#ffe600',
+            platinum: '#a3e635',
+            diamond: '#60a5fa',
+            ruby: '#f43f5e',
+            solar: '#f97316'
+        };
 
+        rankSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            // Clear current rank class and apply new one to update SVG styles
+            frameContainer.className = `frame-wrapper rank-${val}`;
+            // Update Text and color
+            rankTitleText.textContent = val.charAt(0).toUpperCase() + val.slice(1);
+            rankTitleText.style.color = rankColors[val];
+        });
     </script>
 </body>
 </html>
