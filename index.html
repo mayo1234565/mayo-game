@@ -1,319 +1,445 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واجهة اللعبة الصافية</title>
+    <title>Cinematic AAA Game Menu</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap');
-        
-        body, html {
+        /* --- GLOBAL STYLES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            user-select: none;
+        }
+
+        body, html {
             width: 100%;
             height: 100%;
-            background-color: #020202; /* خلفية سوداء داكنة */
-            color: white;
-            font-family: 'Changa', sans-serif;
+            background-color: #030305;
+            font-family: 'Rajdhani', sans-serif;
             overflow: hidden;
+            color: #fff;
         }
 
-        /* خلفية النجوم الهادئة جداً */
-        .stars-bg {
+        /* --- BACKGROUND ENVIRONMENT --- */
+        #environment {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            animation: moveStars 200s linear infinite; 
+            pointer-events: none;
         }
 
-        @keyframes moveStars {
-            from { background-position: 0 0; }
-            to { background-position: -2000px 1000px; }
+        /* Animated Stars */
+        .stars {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: transparent;
+            box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 
+                        1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 
+                        200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff;
+            animation: twinkle 4s infinite alternate;
+        }
+        .stars::after {
+            content: " "; position: absolute; top: 2000px; left: 0;
+            width: 2px; height: 2px; background: transparent;
+            box-shadow: inherit;
         }
 
-        /* الكوكب يدور ببطء في الزاوية */
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff, 0 0 10px #fff; }
+        }
+
+        /* Moving Planets */
+        #planets {
+            position: absolute;
+            width: 100%; height: 100%;
+            transition: opacity 2s ease-in-out;
+        }
         .planet {
             position: absolute;
-            top: 15%;
-            left: 10%;
-            width: 130px;
-            height: 130px;
-            background: radial-gradient(circle at 30% 30%, #252535, #000000);
             border-radius: 50%;
-            box-shadow: 0 0 30px rgba(40, 40, 60, 0.4);
-            z-index: 1;
-            animation: rotatePlanet 120s linear infinite;
+            filter: blur(2px);
+        }
+        .planet-1 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle at 30% 30%, #2a2a35, #000);
+            top: 10%; left: -100px;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .planet-2 {
+            width: 150px; height: 150px;
+            background: radial-gradient(circle at 70% 30%, #4a1515, #000);
+            bottom: 20%; right: -50px;
+            animation: float 25s infinite ease-in-out alternate-reverse;
         }
 
-        @keyframes rotatePlanet {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(40px) rotate(10deg); }
         }
 
-        /* الشاشات */
+        /* --- SCREENS --- */
         .screen {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
-            transition: opacity 0.6s ease;
+            transition: opacity 1.5s ease, transform 1.5s ease;
         }
 
-        #setup-screen {
-            display: none;
+        .hidden {
             opacity: 0;
-            flex-direction: column;
-        }
-
-        /* زر البداية بستايل بكسل فن الكسل */
-        .start-btn {
-            background-color: transparent;
-            color: #fff;
-            border: 4px solid #fff;
-            padding: 15px 60px;
-            font-size: 2.8rem;
-            font-family: monospace;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 5px 5px 0px #e60039;
-            text-shadow: 2px 2px 0px #e60039;
-            transition: all 0.2s;
-            z-index: 2;
-        }
-
-        .start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 7px 7px 0px #e60039;
-        }
-
-        /* ❌ تم حذف المربع المستطيل المزعج بالكامل ❌ */
-        /* الواجهة الآن عبارة عن عناصر عائمة مباشرة فوق الفضاء */
-        .clean-ui-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 600px;
-            z-index: 5;
-        }
-
-        /* حاوية الأفاتار والإطار بنظام أوفرواتش */
-        .avatar-container {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        /* صورة أنمي العيون الحمراء اللي أرسلتها لي */
-        .anime-avatar {
-            width: 115px;
-            height: 115px;
-            border-radius: 8px;
-            object-fit: cover;
-            z-index: 1;
-        }
-
-        /* الإطار العلوي الذي يتغير مكانه حسب اختيارك */
-        .overwatch-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 240px;
-            height: 240px;
-            background-image: url('https://preview.redd.it/give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.png?width=1080&crop=smart&auto=webp&s=87204f0525d8869b2d07519ba2a3286377777d13');
-            background-size: 730% auto; /* تكبير دقيق للاقتصاص */
-            background-position: 81.3% center; /* الافتراضي: ياقوتي Ruby */
-            mix-blend-mode: screen; /* مسح الخلفية السوداء للإطار ليصبح شفافاً */
-            z-index: 2;
             pointer-events: none;
-            transition: background-position 0.2s ease;
+            transform: scale(1.05);
         }
 
-        /* حقل الاسم الصافي (خط ناعم فقط بالهواء) */
-        .name-input {
-            width: 60%;
-            padding: 10px;
-            margin: 20px 0 30px 0;
+        /* --- PHASE 1: START SCREEN --- */
+        #start-btn {
+            position: relative;
             background: transparent;
             border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            font-family: 'Changa', sans-serif;
-            font-size: 1.8rem;
-            text-align: center;
+            color: #fff;
+            font-size: 3rem;
+            font-family: inherit;
+            font-weight: 700;
+            letter-spacing: 15px;
+            cursor: pointer;
             outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            transition: text-shadow 0.3s ease, transform 0.3s ease;
         }
 
-        .name-input:focus {
-            border-bottom: 2px solid #e60039;
-            text-shadow: 0 0 10px rgba(230, 0, 57, 0.5);
+        #start-btn:hover {
+            text-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c;
+            transform: scale(1.05);
         }
 
-        /* شريط اختيار الإطارات السفلي (الألبوم المفتوح) */
-        .frames-gallery {
+        .particle {
+            position: absolute;
+            background-color: #ff003c;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff003c, 0 0 15px #ff003c;
+            pointer-events: none;
+            animation: particle-fade 1s ease-out forwards;
+        }
+
+        @keyframes particle-fade {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+        }
+
+        /* --- PHASE 2: LOBBY SCREEN --- */
+        .lobby-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Rank Hexagon Styling */
+        .hex-outer {
+            width: 160px;
+            height: 180px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 40px;
+            align-items: center;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+            position: relative;
+        }
+        
+        .hex-inner {
+            width: 144px;
+            height: 164px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hex-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+
+        /* Rank Colors */
+        .rank-bronze { background: linear-gradient(to bottom, #cd7f32, #8b5a2b); filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
+        .rank-silver { background: linear-gradient(to bottom, #e5e4e2, #999); filter: drop-shadow(0 0 10px rgba(229, 228, 226, 0.5)); }
+        .rank-gold { background: linear-gradient(to bottom, #ffe600, #b8860b); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7)); }
+        .rank-platinum { background: linear-gradient(to bottom, #e5e4e2, #556b2f); filter: drop-shadow(0 0 15px rgba(180, 200, 200, 0.8)); }
+        .rank-diamond { background: linear-gradient(to bottom, #b9f2ff, #4da6ff); filter: drop-shadow(0 0 20px rgba(185, 242, 255, 0.8)); }
+        .rank-ruby { background: linear-gradient(to bottom, #ff1a4a, #8a0303); filter: drop-shadow(0 0 25px rgba(255, 26, 74, 0.9)); }
+        .rank-solar { background: linear-gradient(to bottom, #ff4500, #ffcc00); filter: drop-shadow(0 0 30px rgba(255, 165, 0, 1)); }
+
+        /* Form Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .glow-text {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            outline: none;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        input[type="text"] {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 10px;
+            width: 300px;
+            transition: border-color 0.3s, text-shadow 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-bottom: 1px solid #fff;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        select {
+            appearance: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 20px;
+            cursor: pointer;
+        }
+        select option {
+            background: #050505;
+            color: #fff;
+        }
+
+        .upload-lbl {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        .upload-lbl:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        /* Multiplayer Buttons */
+        .multiplayer-btns {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: #fff;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease, background 0.3s;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        .action-btn:hover {
+            color: #fff;
+            transform: translateY(-2px);
+            text-shadow: 0 0 15px #fff;
+        }
+
+        .action-btn:hover::after {
             width: 100%;
         }
 
-        .gallery-item {
-            width: 65px;
-            height: 65px;
-            background-image: url('https://preview.redd.it/give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.png?width=1080&crop=smart&auto=webp&s=87204f0525d8869b2d07519ba2a3286377777d13');
-            background-size: 730% auto;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .action-btn.red-glow:hover {
+            color: #ff003c;
+            text-shadow: 0 0 15px #ff003c;
         }
-
-        .gallery-item:hover {
-            border-color: #e60039;
-            transform: scale(1.1);
-            box-shadow: 0 0 10px #e60039;
-        }
-
-        /* إحداثيات قص كل إطار من الصورة الأصلية */
-        .g-bronze { background-position: 2.5% center; }
-        .g-silver { background-position: 18.3% center; }
-        .g-gold { background-position: 34.2% center; }
-        .g-platinum { background-position: 49.9% center; }
-        .g-diamond { background-position: 65.6% center; }
-        .g-ruby { background-position: 81.3% center; }
-        .g-solar { background-position: 97.1% center; }
-
-        /* أزرار الغرف السفلية */
-        .room-buttons {
-            display: flex;
-            gap: 20px;
-            width: 80%;
-            max-width: 400px;
-        }
-
-        .btn-game {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 14px 20px;
-            font-size: 1.2rem;
-            font-family: 'Changa', sans-serif;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-        }
-
-        .btn-game:hover {
-            background: #e60039;
-            border-color: #e60039;
-            box-shadow: 0 0 20px rgba(230, 0, 57, 0.6);
-            transform: translateY(-2px);
-        }
-
-        /* نافذة كود الغرفة (تظهر بالمنتصف عند الإنشاء) */
-        .room-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(10, 10, 15, 0.95);
-            border: 2px solid #e60039;
-            padding: 30px;
-            border-radius: 16px;
-            text-align: center;
-            z-index: 100;
-            box-shadow: 0 0 35px rgba(230, 0, 57, 0.5);
+        .action-btn.red-glow:hover::after {
+            background: #ff003c;
+            box-shadow: 0 0 10px #ff003c;
         }
     </style>
 </head>
 <body>
 
-    <div class="stars-bg"></div>
-
-    <div id="start-screen" class="screen">
-        <div class="planet"></div>
-        <button class="start-btn" onclick="goToSetup()">ابــــدأ</button>
+    <div id="environment">
+        <div class="stars"></div>
+        <div id="planets">
+            <div class="planet planet-1"></div>
+            <div class="planet planet-2"></div>
+        </div>
     </div>
 
-    <div id="setup-screen" class="screen">
-        <div class="clean-ui-container">
+    <div id="phase1" class="screen">
+        <button id="start-btn">START</button>
+    </div>
+
+    <div id="phase2" class="screen hidden">
+        <div class="lobby-ui">
             
-            <div class="avatar-container">
-                <img src="https://preview.redd.it/dark-anime-pictures-iwmu3b0sun9r6789.png?width=1080&crop=smart&auto=webp&s=ef92080f5898835080072049e6f212f45ec7d498" alt="Anime Avatar" class="anime-avatar">
-                <div id="mainFrame" class="overwatch-frame"></div>
+            <div class="controls">
+                <div id="hex-border" class="hex-outer rank-bronze">
+                    <div class="hex-inner">
+                        <img id="profile-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Profile">
+                    </div>
+                </div>
+
+                <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
+                <input type="file" id="upload-pic" accept="image/*" hidden>
+
+                <select id="rank-select" class="glow-text">
+                    <option value="bronze">RANK: BRONZE</option>
+                    <option value="silver">RANK: SILVER</option>
+                    <option value="gold">RANK: GOLD</option>
+                    <option value="platinum">RANK: PLATINUM</option>
+                    <option value="diamond">RANK: DIAMOND</option>
+                    <option value="ruby">RANK: RUBY</option>
+                    <option value="solar">RANK: SOLAR</option>
+                </select>
+
+                <input type="text" id="player-name" class="glow-text" placeholder="ENTER PLAYER NAME" autocomplete="off">
             </div>
 
-            <input type="text" class="name-input" placeholder="اسمك...">
-
-            <div class="frames-gallery">
-                <div class="gallery-item g-bronze" title="برونزي" onclick="updateFrame('2.5%')"></div>
-                <div class="gallery-item g-silver" title="فضي" onclick="updateFrame('18.3%')"></div>
-                <div class="gallery-item g-gold" title="ذهبي" onclick="updateFrame('34.2%')"></div>
-                <div class="gallery-item g-platinum" title="بلاتينيوم" onclick="updateFrame('49.9%')"></div>
-                <div class="gallery-item g-diamond" title="دايموند" onclick="updateFrame('65.6%')"></div>
-                <div class="gallery-item g-ruby" title="ياقوتي" onclick="updateFrame('81.3%')"></div>
-                <div class="gallery-item g-solar" title="سولار" onclick="updateFrame('97.1%')"></div>
-            </div>
-
-            <div class="room-buttons">
-                <button class="btn-game" onclick="generateRoom()">إنشاء غرفة</button>
-                <button class="btn-game" onclick="alert('جاري البحث عن غرف...')">انضمام لغرفة</button>
+            <div class="multiplayer-btns">
+                <button class="action-btn">JOIN ROOM</button>
+                <button class="action-btn red-glow">CREATE ROOM</button>
             </div>
 
         </div>
     </div>
 
-    <div id="popup" class="room-popup">
-        <h3 style="margin-top:0;">🔥 تم تجهيز الغرفة!</h3>
-        <p style="font-size: 1.8rem; color: #e60039; font-weight: bold; margin: 10px 0;">CODE: <span id="codeDisplay">000000</span></p>
-        <p style="color: #aaa; font-size: 0.9rem;">أعطِ هذا الكود لأخوياك ليدخلوا معك فوراً</p>
-        <button class="btn-game" style="padding: 5px 15px; font-size: 1rem;" onclick="closePopup()">إغلاق</button>
-    </div>
-
     <script>
-        // تنقل سلس بين الشاشات
-        function goToSetup() {
-            document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('start-screen').style.display = 'none';
-                document.getElementById('setup-screen').style.display = 'flex';
+        // DOM Elements
+        const startBtn = document.getElementById('start-btn');
+        const phase1 = document.getElementById('phase1');
+        const phase2 = document.getElementById('phase2');
+        const planets = document.getElementById('planets');
+        const hexBorder = document.getElementById('hex-border');
+        const rankSelect = document.getElementById('rank-select');
+        const uploadPic = document.getElementById('upload-pic');
+        const profileImg = document.getElementById('profile-img');
+
+        // Particle System for Start Button
+        let particleInterval;
+
+        function createParticles(e, burstCount = 1) {
+            const rect = startBtn.getBoundingClientRect();
+            const btnCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+
+            for (let i = 0; i < burstCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Starting position (scattered around button center)
+                const startX = btnCenter.x + (Math.random() - 0.5) * rect.width;
+                const startY = btnCenter.y + (Math.random() - 0.5) * rect.height;
+                particle.style.left = `${startX}px`;
+                particle.style.top = `${startY}px`;
+
+                // Calculate random trajectory
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const dx = Math.cos(angle) * velocity;
+                const dy = Math.sin(angle) * velocity;
+
+                // Pass variables to CSS animation
+                particle.style.setProperty('--dx', `${dx}px`);
+                particle.style.setProperty('--dy', `${dy}px`);
+
+                document.body.appendChild(particle);
+
+                // Cleanup particle after animation
                 setTimeout(() => {
-                    document.getElementById('setup-screen').style.opacity = '1';
-                }, 50);
-            }, 600);
+                    particle.remove();
+                }, 1000);
+            }
         }
 
-        // دالة تغيير الإطار فورياً عند الضغط على الألبوم بالأسفل
-        function updateFrame(positionPercent) {
-            document.getElementById('mainFrame').style.backgroundPosition = positionPercent + " center";
-        }
+        // Particle Hover Events
+        startBtn.addEventListener('mouseenter', (e) => {
+            createParticles(e, 5); // Initial burst
+            particleInterval = setInterval(() => createParticles(e, 2), 100); // Continuous flow
+        });
 
-        // إنشاء الغرفة وإظهار الكود العشوائي
-        function generateRoom() {
-            const randomCode = Math.floor(100000 + Math.random() * 900000);
-            document.getElementById('codeDisplay').innerText = randomCode;
-            document.getElementById('popup').style.display = 'block';
-        }
+        startBtn.addEventListener('mouseleave', () => {
+            clearInterval(particleInterval);
+        });
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
+        // Phase Transition Logic
+        startBtn.addEventListener('click', (e) => {
+            clearInterval(particleInterval);
+            createParticles(e, 30); // Massive burst on click
+
+            setTimeout(() => {
+                phase1.classList.add('hidden');
+                planets.style.opacity = '0'; // Fade out planets
+
+                setTimeout(() => {
+                    phase2.classList.remove('hidden');
+                }, 800); // Wait for phase 1 to fade before showing phase 2
+            }, 300);
+        });
+
+        // Lobby Logic: Profile Picture Upload
+        uploadPic.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    profileImg.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Lobby Logic: Rank Border Selection
+        rankSelect.addEventListener('change', (e) => {
+            // Remove existing rank classes
+            hexBorder.className = 'hex-outer';
+            // Add new rank class based on selection
+            hexBorder.classList.add(`rank-${e.target.value}`);
+        });
+
     </script>
-
 </body>
 </html>
