@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مين المختلف | النسخة الليلية</title>
+    <title>مين المختلف | Firebase Edition</title>
+    
+    <!-- مكتبات Firebase (الإصدار 8 المتوافق مع المتصفحات المباشرة) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --ow-orange: #f99e1a;
+            --dark-bg: #0f172a;
         }
         body {
             font-family: 'Cairo', sans-serif;
-            /* خلفية بكسل آرت ليلية ومريحة للعين */
-            background: url('https://i.pinimg.com/originals/82/8e/3c/828e3cc588a4422e11816bc8d62dc05a.gif') no-repeat center center fixed;
-            background-size: cover;
+            /* خلفية احترافية ونظيفة جداً (تدرج لوني عميق بدون صور خارجية) */
+            background: radial-gradient(circle at center, #1e293b 0%, #000000 100%);
             color: white;
             overflow: hidden;
             user-select: none;
@@ -22,17 +29,9 @@
             padding: 0;
         }
 
-        /* تظليل خفيف لزيادة التركيز على القوائم */
-        .vignette {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.85) 100%);
-            z-index: -1;
-        }
-
         .ow-font { font-family: 'Oswald', sans-serif; }
 
-        /* أزرار القائمة الرئيسية (تم تصغير الخط) */
+        /* أزرار القائمة الرئيسية */
         .ow-menu-btn {
             font-size: 2.2rem;
             font-weight: 900;
@@ -53,71 +52,70 @@
             transform: translateX(-15px);
         }
 
-        /* النصوص المظللة */
         .floating-text {
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.6);
         }
 
-        /* إطارات اللفل */
-        .portrait-border {
-            border: 3px solid #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.8);
-        }
-        .level-badge {
-            background-color: var(--ow-orange);
-            border: 2px solid #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.8);
-        }
-
         .hidden-screen { display: none !important; }
         
-        /* تأثير اختيار الصورة (صور الحيوانات) */
+        /* إطارات الأفاتار للحيوانات (مبنية بالـ CSS لمنع أي خراب بالصور) */
         .avatar-select {
-            transition: transform 0.2s;
-            background: rgba(30, 41, 59, 0.7); /* خلفية داكنة خفيفة للحيوانات */
-            padding: 5px;
+            font-size: 2.5rem;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
         .avatar-select:hover {
             transform: scale(1.1);
+            background: rgba(249, 158, 26, 0.2);
         }
         .avatar-selected {
             border-color: var(--ow-orange) !important;
             transform: scale(1.1);
-            background: rgba(249, 158, 26, 0.3);
+            background: rgba(249, 158, 26, 0.4);
+            box-shadow: 0 0 15px var(--ow-orange);
+        }
+
+        .player-avatar-small {
+            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 50%;
+            border: 2px solid white;
         }
     </style>
 </head>
 <body class="h-screen w-screen relative">
-    <div class="vignette"></div> 
 
-    <div id="player-profile-hud" class="hidden-screen absolute top-4 right-6 flex items-center gap-3 z-50">
-        <div class="text-right">
-            <div id="hud-name" class="text-2xl font-black text-white floating-text tracking-wider">الاسم</div>
-            <div class="text-xs font-bold text-orange-400 floating-text">XP: <span id="hud-xp" class="ow-font text-base">0</span>/100</div>
-        </div>
-        <div class="relative">
-            <img id="hud-avatar" src="" class="w-16 h-16 rounded-full portrait-border object-cover bg-gray-800">
-            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 level-badge text-white font-black px-2 rounded text-sm ow-font">
-                <span id="hud-level">1</span>
-            </div>
-        </div>
-    </div>
-
+    <!-- 1. شاشة إنشاء الحساب -->
     <div id="screen-setup" class="h-full flex flex-col items-center justify-center relative z-10">
         <h1 class="text-4xl font-black text-white italic mb-8 floating-text">عرّف عن نفسك</h1>
         
         <div class="w-full max-w-xl flex flex-col items-center gap-8">
             <input type="text" id="input-name" class="w-1/2 p-3 bg-black bg-opacity-40 text-white text-xl font-bold text-center border-b-2 border-orange-400 outline-none floating-text rounded-t transition focus:bg-opacity-60" placeholder="اكتب اسمك هنا...">
 
+            <!-- الأفاتار (حيوانات بـ Emojis مستحيل تخرب) -->
             <div class="text-center w-full">
                 <h3 class="text-xl font-bold text-gray-300 mb-4 floating-text">اختر حيوانك المفضل:</h3>
                 <div class="flex flex-wrap justify-center gap-4" id="avatar-container">
-                    <img src="https://img.icons8.com/color/256/wolf.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
-                    <img src="https://img.icons8.com/color/256/fox.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
-                    <img src="https://img.icons8.com/color/256/monkey.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
-                    <img src="https://img.icons8.com/color/256/cat.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
-                    <img src="https://img.icons8.com/color/256/bear.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
-                    <img src="https://img.icons8.com/color/256/dog.png" class="avatar-select w-16 h-16 rounded-full border-2 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <div class="avatar-select" onclick="selectAvatar(this, '🐺')">🐺</div>
+                    <div class="avatar-select" onclick="selectAvatar(this, '🦊')">🦊</div>
+                    <div class="avatar-select" onclick="selectAvatar(this, '🐵')">🐵</div>
+                    <div class="avatar-select" onclick="selectAvatar(this, '🐱')">🐱</div>
+                    <div class="avatar-select" onclick="selectAvatar(this, '🐻')">🐻</div>
+                    <div class="avatar-select" onclick="selectAvatar(this, '🐶')">🐶</div>
                 </div>
             </div>
 
@@ -127,172 +125,227 @@
         </div>
     </div>
 
+    <!-- 2. القائمة الرئيسية -->
     <div id="screen-menu" class="hidden-screen h-full flex flex-col justify-center items-start pl-16 pr-16 z-10 relative">
         <h1 class="ow-font text-6xl italic font-black text-orange-400 mb-10 floating-text">مين المختلف؟</h1>
-        <div class="flex flex-col gap-1 items-start">
-            <button onclick="showScreen('screen-lobby')" class="ow-menu-btn">إنشاء غرفة</button>
-            <button class="ow-menu-btn">الانضمام لغرفة</button>
-            <button class="ow-menu-btn">الإعدادات</button>
-            <button class="ow-menu-btn" style="color: #ef4444;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ef4444'">خروج</button>
+        <div class="flex flex-col gap-2 items-start">
+            <button onclick="createRoom()" class="ow-menu-btn">إنشاء غرفة</button>
+            <button onclick="joinRoomPrompt()" class="ow-menu-btn">الانضمام لغرفة</button>
         </div>
     </div>
 
+    <!-- 3. غرفة الانتظار (Lobby) -->
     <div id="screen-lobby" class="hidden-screen h-full flex flex-col items-center justify-center relative z-10">
         <h2 class="text-4xl font-black italic text-white floating-text mb-2">غرفة الانتظار</h2>
-        <h3 class="text-xl font-bold text-orange-400 floating-text mb-10">كود الغرفة: #9X2A</h3>
+        <h3 class="text-xl font-bold text-orange-400 floating-text mb-10">كود الغرفة: <span id="display-room-code" class="ow-font text-2xl text-white">----</span></h3>
         
-        <div class="flex flex-col gap-4 w-full max-w-sm">
-            <div class="flex items-center gap-4">
-                <img id="lobby-my-avatar" src="" class="w-12 h-12 rounded-full border border-white bg-gray-800 shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                <span id="lobby-my-name" class="font-black text-2xl floating-text text-white">الاسم</span>
-                <span class="mr-auto font-bold text-orange-400 floating-text text-lg">مضيف</span>
-            </div>
-            
-            <div class="flex items-center gap-4 opacity-80">
-                <img src="https://img.icons8.com/color/256/wolf.png" class="w-12 h-12 rounded-full border border-gray-400 bg-gray-800 p-1">
-                <span class="font-black text-2xl floating-text text-gray-300">أحمد</span>
-                <span class="mr-auto font-bold text-green-400 floating-text text-lg">مستعد</span>
-            </div>
-
-            <div class="flex items-center gap-4 opacity-80">
-                <img src="https://img.icons8.com/color/256/cat.png" class="w-12 h-12 rounded-full border border-gray-400 bg-gray-800 p-1">
-                <span class="font-black text-2xl floating-text text-gray-300">سارة</span>
-                <span class="mr-auto font-bold text-green-400 floating-text text-lg">مستعد</span>
-            </div>
+        <!-- قائمة اللاعبين اللحظية من Firebase -->
+        <div id="players-list" class="flex flex-col gap-4 w-full max-w-sm min-h-[200px] bg-black bg-opacity-30 p-6 rounded-xl border border-gray-700">
+            <!-- سيتم إضافة اللاعبين هنا عن طريق الجافاسكربت -->
         </div>
 
-        <button onclick="startGame()" class="mt-12 text-3xl font-black italic text-orange-400 hover:text-white transition floating-text uppercase">
+        <button id="btn-start-game" onclick="startGame()" class="hidden mt-12 text-3xl font-black italic text-orange-400 hover:text-white transition floating-text uppercase">
             بدء اللعبة ⮜
         </button>
+        <p id="wait-host-msg" class="mt-12 text-gray-400 text-lg font-bold">في انتظار الهوست لبدء اللعبة...</p>
     </div>
 
-    <div id="screen-game" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-70 absolute top-0 w-full z-40 backdrop-blur-sm">
+    <!-- 4. شاشة اللعب -->
+    <div id="screen-game" class="hidden-screen h-full flex flex-col items-center justify-center relative z-40">
         <div class="absolute top-10 flex flex-col items-center floating-text">
             <span class="text-xl font-bold text-orange-400 mb-1">الوقت المتبقي</span>
             <span id="timer" class="ow-font text-6xl text-white font-black">60</span>
         </div>
 
         <div class="text-center mt-6">
-            <h3 class="text-2xl font-bold text-gray-300 mb-4 floating-text">أنت لست المختلف! الكلمة المشتركة هي:</h3>
-            <h1 class="text-6xl font-black text-orange-400 floating-text italic">سيارة</h1>
+            <h3 class="text-2xl font-bold text-gray-300 mb-4 floating-text" id="game-role-text">جاري توزيع الكلمات...</h3>
+            <h1 class="text-6xl font-black text-orange-400 floating-text italic" id="game-word-text">--</h1>
             <p class="mt-6 text-xl font-bold text-gray-400 floating-text">تناقشوا الآن لمعرفة من يمتلك كلمة مختلفة!</p>
         </div>
-
-        <button onclick="endTimerAndVote()" class="absolute bottom-10 text-2xl font-black italic text-red-500 hover:text-white transition floating-text">
-            تخطي الوقت للتصويت ⮜
-        </button>
     </div>
 
-    <div id="screen-vote" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-80 absolute top-0 w-full z-50 backdrop-blur-md">
-        <h2 id="vote-title" class="text-4xl font-black italic mb-10 text-orange-400 floating-text">صوّت للمختلف!</h2>
-        
-        <div id="players-to-vote" class="flex gap-10 mb-8">
-            <div onclick="votePlayer('أحمد')" class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition duration-300">
-                <img src="https://img.icons8.com/color/256/wolf.png" class="w-24 h-24 rounded-full border-2 border-gray-400 hover:border-orange-400 bg-gray-800 p-2 mb-3 shadow-lg">
-                <h3 class="text-2xl font-black floating-text text-white">أحمد</h3>
-            </div>
-            <div onclick="votePlayer('سارة')" class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition duration-300">
-                <img src="https://img.icons8.com/color/256/cat.png" class="w-24 h-24 rounded-full border-2 border-gray-400 hover:border-orange-400 bg-gray-800 p-2 mb-3 shadow-lg">
-                <h3 class="text-2xl font-black floating-text text-white">سارة</h3>
-            </div>
-        </div>
-
-        <div id="imposter-guess" class="hidden flex-col items-center w-full max-w-2xl">
-            <h3 class="text-2xl text-white mb-6 font-black floating-text text-center">حاول سرقة الفوز! وش هي الكلمة المشتركة؟</h3>
-            <div class="grid grid-cols-2 gap-6 w-full">
-                <button onclick="winXP()" class="text-2xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">طيارة</button>
-                <button onclick="winXP()" class="text-2xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">سيارة</button>
-                <button onclick="winXP()" class="text-2xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">قطار</button>
-                <button onclick="winXP()" class="text-2xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">دراجة</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- السكريبت -->
     <script>
-        let player = { name: '', avatar: '', level: 1, xp: 0 };
-        let timerInterval;
+        // ==========================================
+        // 1. إعدادات Firebase (يجب تغييرها ببياناتك)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "ضع_الـ_API_KEY_هنا",
+            authDomain: "ضع_رابط_الدومين_هنا",
+            databaseURL: "ضع_رابط_قاعدة_البيانات_هنا", // أهم شيء هذا الرابط
+            projectId: "ضع_الـ_Project_ID_هنا",
+            storageBucket: "ضع_الـ_Bucket_هنا",
+            messagingSenderId: "ضع_الـ_Sender_ID_هنا",
+            appId: "ضع_الـ_APP_ID_هنا"
+        };
 
-        function selectAvatar(imgElement) {
-            player.avatar = imgElement.src;
-            document.querySelectorAll('.avatar-select').forEach(img => {
-                img.classList.remove('avatar-selected');
-            });
-            imgElement.classList.add('avatar-selected');
+        // تهيئة Firebase (ستعمل إذا قمت بوضع بياناتك بالأعلى)
+        try {
+            firebase.initializeApp(firebaseConfig);
+            var database = firebase.database();
+            console.log("تم الاتصال بالفايربيس بنجاح!");
+        } catch (error) {
+            console.error("لم يتم إعداد Firebase بعد. اللعبة لن تعمل أونلاين حتى تضع بياناتك.", error);
+        }
+
+        // ==========================================
+        // 2. متغيرات اللاعب واللعبة
+        // ==========================================
+        let player = { 
+            id: 'player_' + Math.random().toString(36).substr(2, 9), // ID عشوائي فريد
+            name: '', 
+            avatar: '', 
+            isHost: false 
+        };
+        let currentRoomCode = null;
+        let roomRef = null;
+
+        // ==========================================
+        // 3. الواجهة واختيار الأفاتار
+        // ==========================================
+        function selectAvatar(element, emoji) {
+            player.avatar = emoji;
+            document.querySelectorAll('.avatar-select').forEach(el => el.classList.remove('avatar-selected'));
+            element.classList.add('avatar-selected');
         }
 
         function saveProfile() {
             const nameInput = document.getElementById('input-name').value;
             if(!nameInput || !player.avatar) return alert('يا بطل، اكتب اسمك واختار حيوانك المفضل!');
-            
             player.name = nameInput;
-            updateHUD();
-            
-            document.getElementById('player-profile-hud').classList.remove('hidden-screen');
             showScreen('screen-menu');
         }
 
-        function updateHUD() {
-            document.getElementById('hud-name').innerText = player.name;
-            document.getElementById('hud-level').innerText = player.level;
-            document.getElementById('hud-xp').innerText = player.xp;
-            
-            const avatarImg = document.getElementById('hud-avatar');
-            avatarImg.src = player.avatar;
-            avatarImg.style.borderColor = player.level < 10 ? '#cd7f32' : (player.level < 50 ? '#c0c0c0' : '#ffd700');
-
-            document.getElementById('lobby-my-name').innerText = player.name;
-            document.getElementById('lobby-my-avatar').src = player.avatar;
-        }
-
         function showScreen(screenId) {
-            const screens = ['screen-setup', 'screen-menu', 'screen-lobby', 'screen-game', 'screen-vote'];
+            const screens = ['screen-setup', 'screen-menu', 'screen-lobby', 'screen-game'];
             screens.forEach(s => document.getElementById(s).classList.add('hidden-screen'));
             document.getElementById(screenId).classList.remove('hidden-screen');
         }
 
+        // ==========================================
+        // 4. إنشاء غرفة والانضمام (Firebase Logic)
+        // ==========================================
+        function createRoom() {
+            if (!database) return alert("الرجاء إعداد Firebase أولاً في الكود!");
+            
+            // توليد كود من 4 أحرف/أرقام
+            currentRoomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+            player.isHost = true;
+            
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            
+            // إنشاء الغرفة في السيرفر
+            roomRef.set({
+                status: 'waiting',
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                // إضافة المضيف (أنت) للغرفة
+                joinPlayerToFirebase();
+                setupLobbyListener();
+                
+                document.getElementById('display-room-code').innerText = currentRoomCode;
+                document.getElementById('btn-start-game').classList.remove('hidden');
+                document.getElementById('wait-host-msg').classList.add('hidden');
+                showScreen('screen-lobby');
+            });
+        }
+
+        function joinRoomPrompt() {
+            if (!database) return alert("الرجاء إعداد Firebase أولاً في الكود!");
+
+            const code = prompt("أدخل كود الغرفة (4 أحرف/أرقام):");
+            if (!code) return;
+            
+            currentRoomCode = code.toUpperCase();
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            
+            // التحقق من وجود الغرفة
+            roomRef.once('value').then((snapshot) => {
+                if (snapshot.exists() && snapshot.val().status === 'waiting') {
+                    player.isHost = false;
+                    joinPlayerToFirebase();
+                    setupLobbyListener();
+                    
+                    document.getElementById('display-room-code').innerText = currentRoomCode;
+                    document.getElementById('btn-start-game').classList.add('hidden');
+                    document.getElementById('wait-host-msg').classList.remove('hidden');
+                    showScreen('screen-lobby');
+                } else {
+                    alert("الغرفة غير موجودة أو اللعبة بدأت بالفعل!");
+                }
+            });
+        }
+
+        function joinPlayerToFirebase() {
+            database.ref(`rooms/${currentRoomCode}/players/${player.id}`).set({
+                name: player.name,
+                avatar: player.avatar,
+                isHost: player.isHost
+            });
+
+            // حذف اللاعب تلقائياً إذا خرج من المتصفح
+            database.ref(`rooms/${currentRoomCode}/players/${player.id}`).onDisconnect().remove();
+        }
+
+        // ==========================================
+        // 5. التحديث اللحظي للوبي والمزامنة
+        // ==========================================
+        function setupLobbyListener() {
+            // تحديث قائمة اللاعبين
+            database.ref(`rooms/${currentRoomCode}/players`).on('value', (snapshot) => {
+                const playersListDiv = document.getElementById('players-list');
+                playersListDiv.innerHTML = ''; // مسح القائمة الحالية
+                
+                if (snapshot.exists()) {
+                    const playersData = snapshot.val();
+                    Object.values(playersData).forEach(p => {
+                        const isMe = p.name === player.name ? '(أنت)' : '';
+                        const hostTag = p.isHost ? '<span class="mr-auto font-bold text-orange-400 text-sm">مضيف</span>' : '<span class="mr-auto font-bold text-green-400 text-sm">مستعد</span>';
+                        
+                        playersListDiv.innerHTML += `
+                            <div class="flex items-center gap-4">
+                                <div class="player-avatar-small">${p.avatar}</div>
+                                <span class="font-black text-2xl floating-text text-white">${p.name} <span class="text-sm text-gray-400">${isMe}</span></span>
+                                ${hostTag}
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            // الاستماع لبدء اللعبة
+            database.ref(`rooms/${currentRoomCode}/status`).on('value', (snapshot) => {
+                if (snapshot.exists() && snapshot.val() === 'playing') {
+                    showScreen('screen-game');
+                    startTimer();
+                    // في الحقيقة هنا نحتاج دالة توزع الكلمات، للمحاكاة سنعرض كلمة ثابتة الآن
+                    document.getElementById('game-word-text').innerText = "سيارة";
+                }
+            });
+        }
+
+        // ==========================================
+        // 6. بدء اللعبة (للمضيف فقط)
+        // ==========================================
         function startGame() {
-            showScreen('screen-game');
+            if (player.isHost && roomRef) {
+                // تغيير حالة الغرفة في السيرفر ليتم نقل جميع اللاعبين شاشة اللعب
+                roomRef.update({ status: 'playing' });
+            }
+        }
+
+        let timerInterval;
+        function startTimer() {
             let timeLeft = 60;
             document.getElementById('timer').innerText = timeLeft;
-            
             timerInterval = setInterval(() => {
                 timeLeft--;
                 document.getElementById('timer').innerText = timeLeft;
-                if(timeLeft <= 0) endTimerAndVote();
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("انتهى الوقت! انتقل للتصويت.");
+                }
             }, 1000);
-        }
-
-        function endTimerAndVote() {
-            clearInterval(timerInterval);
-            showScreen('screen-vote');
-        }
-
-        function votePlayer(votedName) {
-            document.getElementById('players-to-vote').classList.add('hidden');
-            document.getElementById('vote-title').innerText = "لقد تم كشفك! أنت المختلف!";
-            document.getElementById('vote-title').classList.replace('text-orange-400', 'text-red-500');
-            
-            document.getElementById('imposter-guess').classList.remove('hidden');
-            document.getElementById('imposter-guess').classList.add('flex');
-        }
-
-        function winXP() {
-            alert('إجابة صحيحة! حصلت على 50 XP 🚀');
-            player.xp += 50;
-            if(player.xp >= 100) {
-                player.level++;
-                player.xp = player.xp - 100;
-                alert(`مبروك! وصلت للفل ${player.level} 🎉`);
-            }
-            updateHUD();
-            
-            document.getElementById('imposter-guess').classList.add('hidden');
-            document.getElementById('imposter-guess').classList.remove('flex');
-            document.getElementById('players-to-vote').classList.remove('hidden');
-            document.getElementById('vote-title').innerText = "صوّت للمختلف!";
-            document.getElementById('vote-title').classList.replace('text-red-500', 'text-orange-400');
-            
-            showScreen('screen-menu');
         }
     </script>
 </body>
