@@ -3,580 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Arena AAA - Full Game 0 to 100</title>
+    <title>Neon Clash - AAA Card Game</title>
     <style>
-        /* --- التصميم العام والخطوط السينمائية --- */
+        /* --- التصميم العام والخطوط --- */
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body, html {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background-color: #020204;
             font-family: 'Rajdhani', sans-serif;
-            overflow: hidden;
-            color: #fff;
+            overflow: hidden; color: #fff;
         }
 
-        /* --- خلفية الفضاء المتحركة --- */
+        /* --- خلفية الفضاء --- */
         #environment {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
         }
-
         .stars {
-            position: absolute;
-            width: 2px; height: 2px;
-            background: transparent;
-            box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 
-                        1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 
-                        200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff;
+            position: absolute; width: 2px; height: 2px; background: transparent;
+            box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff;
             animation: twinkle 4s infinite alternate;
         }
+        @keyframes twinkle { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
-        @keyframes twinkle {
-            0% { opacity: 0.3; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* --- الشاشات --- */
+        /* --- الشاشات الأساسية --- */
         .screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; transition: opacity 0.6s ease, transform 0.6s ease;
         }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(1.02) translateY(-10px); }
 
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.02) translateY(-10px);
-        }
-
-        /* --- الشاشة 1: ابدأ اللعب --- */
-        #start-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: 20px;
-            cursor: pointer;
-            outline: none;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-        }
-        #start-btn:hover {
-            text-shadow: 0 0 25px #ff003c, 0 0 50px #ff003c;
-            transform: scale(1.05);
-        }
-
-        /* --- الشاشة 2: إعداد الملف الشخصي الشفاف تماماً --- */
-        .clean-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            background: transparent;
-        }
-
-        .glow-text {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            outline: none;
-            text-align: center;
-        }
-
-        input[type="text"] {
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 10px;
-            width: 260px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-        input[type="text"]:focus {
-            border-bottom: 1px solid #ff003c;
-            text-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
-        }
-
-        select {
-            appearance: none;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            cursor: pointer;
-            text-align-last: center;
-        }
+        /* --- الأزرار والنصوص --- */
+        .title-text { font-size: 4rem; font-weight: 700; letter-spacing: 15px; text-shadow: 0 0 20px rgba(255,255,255,0.3); margin-bottom: 30px;}
+        .glow-text { background: transparent; border: none; color: #fff; font-family: inherit; font-size: 1.3rem; letter-spacing: 2px; outline: none; text-align: center; }
+        
+        input[type="text"] { border-bottom: 1px solid rgba(255,255,255,0.2); padding: 10px; width: 260px; text-transform: uppercase; transition: all 0.3s; margin-bottom: 15px;}
+        input[type="text"]:focus { border-bottom: 1px solid #ff003c; text-shadow: 0 0 10px rgba(255, 0, 60, 0.5); }
+        select { appearance: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 5px 15px; cursor: pointer; text-align-last: center; margin-bottom: 20px;}
         select option { background: #0c0c12; color: #fff; }
 
         .action-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 30px;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
+            background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 30px;
+            color: #fff; font-family: inherit; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px;
+            cursor: pointer; border-radius: 4px; transition: all 0.3s; margin: 10px;
         }
-        .action-btn:hover { 
-            border-color: #fff;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
+        .action-btn:hover { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-2px); }
         .action-btn.red-glow { border-color: #ff003c; color: #ff003c; }
         .action-btn.red-glow:hover { background: #ff003c; color: #fff; box-shadow: 0 0 25px #ff003c; }
 
-        /* --- الشاشة 3: اللوبي لـ 7 لاعبين جنباً إلى جنب (بدون مربعات خلفية) --- */
-        .lobby-header h1 { font-size: 2.5rem; letter-spacing: 10px; text-transform: uppercase; text-align: center;}
-        .room-tag { color: #ff003c; font-size: 1.3rem; text-align: center; letter-spacing: 3px; margin-top: 5px;}
-
-        .players-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px; /* مسافة متناسقة لتكفي 7 لاعبين عرضياً */
-            width: 95%;
-            max-width: 1600px;
-            margin: 40px 0;
-        }
-
-        .player-slot {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 160px;
-            background: transparent;
-            animation: card-entry 0.5s ease-out forwards;
-        }
-
-        @keyframes card-entry {
-            0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-
-        .player-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-top: 5px;
-            text-align: center;
-            text-shadow: 0 0 8px rgba(255,255,255,0.3);
-        }
-
-        /* --- نظام الإطارات المرن --- */
-        .frame-box {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .rank-svg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2; }
-        .avatar-box {
-            position: absolute;
-            width: 62px; height: 72px;
-            top: 34px; left: 44px;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            background: #101015;
-            z-index: 1;
-        }
+        /* --- اللوبي (ترتيب أفقي) --- */
+        .players-row { display: flex; justify-content: center; align-items: center; gap: 20px; width: 95%; margin: 40px 0; }
+        .player-slot { display: flex; flex-direction: column; align-items: center; width: 140px; animation: card-entry 0.5s ease forwards; }
+        @keyframes card-entry { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        
+        /* إطارات اللوبي مبسطة (بدون مربعات خلفية) */
+        .frame-box { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
+        .avatar-box { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; overflow: hidden; z-index: 1; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .player-name { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; margin-top: 10px; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
 
-        /* ألوان وهالات الرتب */
-        .rank-bronze .accent-stroke { stroke: #b87333; } .rank-bronze .glow-effect { filter: drop-shadow(0 0 5px #b87333); }
-        .rank-silver .accent-stroke { stroke: #9ca3af; } .rank-silver .glow-effect { filter: drop-shadow(0 0 5px #9ca3af); }
-        .rank-gold .accent-stroke { stroke: #d97706; } .rank-gold .glow-effect { filter: drop-shadow(0 0 8px #d97706); }
-        .rank-diamond .accent-stroke { stroke: #2563eb; } .rank-diamond .glow-effect { filter: drop-shadow(0 0 10px #2563eb); }
-        .rank-solar .accent-stroke { stroke: #ea580c; } .rank-solar .glow-effect { filter: drop-shadow(0 0 12px #ea580c); }
+        /* --- ساحة اللعبة (Card Arena) --- */
+        #game-arena {
+            width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            background: radial-gradient(circle at center, rgba(20,20,35,0.8) 0%, rgba(2,2,4,1) 100%);
+        }
+        
+        /* طاولات اللاعبين */
+        .opponents-table { display: flex; justify-content: center; align-items: center; gap: 30px; padding-top: 30px; }
+        .center-table { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        .my-table { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 30px; }
 
-        /* --- الشاشة 4: ساحة اللعبة الحقيقية (Gameplay Arena) --- */
-        #game-canvas {
-            background: radial-gradient(circle, #090914 0%, #020205 100%);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        /* --- تصميم البطاقة المذهل (3D Card) --- */
+        .card-container { width: 100px; height: 140px; perspective: 1000px; margin: 0 10px; }
+        .card { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+        .card.flipped { transform: rotateY(180deg); }
+        .card.played { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.2); z-index: 50; }
+        .card.played.flipped { transform: translate(-50%, -50%) scale(1.2) rotateY(180deg); }
+        
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        .game-ui {
-            position: absolute;
-            top: 20px; left: 20px;
-            font-family: inherit;
-            letter-spacing: 2px;
-            z-index: 100;
-            pointer-events: none;
+        /* ظهر الورقة */
+        .card-back { background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px); border-color: #555; }
+        .card-back::after { content: 'NEON'; font-size: 1.5rem; font-weight: bold; color: rgba(255,255,255,0.2); letter-spacing: 5px; transform: rotate(-45deg); }
+        
+        /* وجه الورقة */
+        .card-front { background: #0c0c14; transform: rotateY(180deg); position: relative; overflow: hidden; }
+        .card-power { font-size: 3.5rem; font-weight: 700; z-index: 2; text-shadow: 0 0 15px currentColor; }
+        .card-owner { position: absolute; bottom: 10px; font-size: 0.8rem; letter-spacing: 1px; color: #fff; z-index: 2; }
+        
+        /* تأثيرات الإشعاع للبطاقة حسب الرتبة */
+        .card-front::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, currentColor, transparent 30%);
+            animation: spin 3s linear infinite; z-index: 0; opacity: 0.3;
         }
-        .game-ui h2 { color: #ff003c; text-shadow: 0 0 10px #ff003c; }
+        .card-front::after { content: ''; position: absolute; inset: 4px; background: #0c0c14; border-radius: 6px; z-index: 1; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* لافتة الفوز */
-        .victory-screen {
-            position: absolute;
-            font-size: 4rem;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 30px #ff003c;
-            letter-spacing: 10px;
-            display: none;
-            z-index: 105;
-        }
+        /* منطقة تسجيل النقاط */
+        .score-board { font-size: 1.5rem; color: #a3e635; letter-spacing: 3px; text-shadow: 0 0 10px #a3e635; margin-bottom: 15px;}
+        .hud-text { font-size: 1.2rem; color: rgba(255,255,255,0.6); letter-spacing: 2px; }
+
+        /* الفائز بالجولة */
+        .card.winner { transform: translate(-50%, -50%) scale(1.5) rotateY(180deg) !important; z-index: 100; filter: drop-shadow(0 0 30px currentColor); }
+        #round-status { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); font-size: 3rem; font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 20px #fff; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none;}
     </style>
 </head>
 <body>
 
     <div id="environment"><div class="stars"></div></div>
 
+    <!-- Phase 1: Start -->
     <div id="phase1" class="screen">
-        <button id="start-btn">COSMIC ARENA</button>
+        <div class="title-text" style="color: #fff;">NEON <span style="color: #ff003c;">CLASH</span></div>
+        <button id="start-btn" class="action-btn red-glow">ENTER CASINO</button>
     </div>
 
+    <!-- Phase 2: Setup -->
     <div id="phase2" class="screen hidden">
-        <div class="clean-container">
-            <div class="player-slot" style="width:200px;">
-                <div id="preview-frame" class="frame-box rank-bronze">
-                    <div class="avatar-box">
-                        <img id="preview-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
-                    </div>
-                    <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none">
-                        <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="5"/>
-                        <path d="M52,70 Q25,90 35,140" class="accent-stroke" stroke-width="4"/>
-                        <path d="M208,70 Q235,90 225,140" class="accent-stroke" stroke-width="4"/>
-                    </svg>
-                </div>
-                <div id="preview-rank-text" class="player-name" style="color:#b87333; font-size:1rem;">BRONZE</div>
-            </div>
-
-            <select id="rank-select" class="glow-text">
-                <option value="bronze">RANK: BRONZE</option>
-                <option value="silver">RANK: SILVER</option>
-                <option value="gold">RANK: GOLD</option>
-                <option value="diamond">RANK: DIAMOND</option>
-                <option value="solar">RANK: SOLAR</option>
-            </select>
-
-            <input type="text" id="player-name" class="glow-text" value="PILOT_01" autocomplete="off" maxlength="12">
-            
-            <div class="multiplayer-btns">
-                <button id="create-room-btn" class="action-btn red-glow">CREATE ARENA</button>
-            </div>
+        <h2 style="font-size: 2rem; letter-spacing: 5px; margin-bottom: 30px;">CREATE PROFILE</h2>
+        <div class="frame-box" style="margin-bottom: 20px;">
+            <div class="avatar-box"><img id="preview-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="></div>
         </div>
+        <select id="rank-select" class="glow-text">
+            <option value="bronze">RANK: BRONZE</option>
+            <option value="silver">RANK: SILVER</option>
+            <option value="gold">RANK: GOLD</option>
+            <option value="diamond">RANK: DIAMOND</option>
+            <option value="solar">RANK: SOLAR</option>
+        </select>
+        <input type="text" id="player-name" class="glow-text" value="GAMBLER_7" autocomplete="off" maxlength="12">
+        <button id="create-room-btn" class="action-btn red-glow">FIND MATCH</button>
     </div>
 
+    <!-- Phase 3: Lobby (7 Players) -->
     <div id="phase3" class="screen hidden">
-        <div class="lobby-header">
-            <h1>MATCHMAKING LOBBY</h1>
-            <div id="room-id" class="room-tag">ROOM: #7777</div>
-        </div>
-
+        <h1 style="font-size: 2.5rem; letter-spacing: 10px;">HIGH STAKES TABLE</h1>
+        <p style="color: #ff003c; font-size: 1.2rem; letter-spacing: 3px; margin-top: 5px;">7 PLAYERS READY</p>
+        
         <div id="players-row" class="players-row"></div>
 
-        <div class="multiplayer-btns">
+        <div style="display: flex;">
             <button id="leave-btn" class="action-btn">LEAVE</button>
-            <button id="launch-btn" class="action-btn red-glow">LAUNCH MATCH</button>
+            <button id="launch-btn" class="action-btn red-glow">DEAL CARDS</button>
         </div>
     </div>
 
+    <!-- Phase 4: The Card Game Arena -->
     <div id="phase4" class="screen hidden">
-        <div class="game-ui">
-            <h2>COSMIC ARENA: FREE FOR ALL</h2>
-            <p>CONTROLS: ARROWS / WASD TO MOVE | MOUSE TO AIM & CLICK TO SHOOT</p>
-            <p style="color: #a3e635;">PLAYERS ALIVE: <span id="alive-count">7</span> / 7</p>
+        <div id="game-arena">
+            <!-- طاولة الخصوم (6 لاعبين) -->
+            <div id="opponents-table" class="opponents-table"></div>
+            
+            <!-- الساحة المركزية لرمي الورق -->
+            <div id="center-table" class="center-table">
+                <div id="round-status">ROUND WINNER!</div>
+            </div>
+            
+            <!-- منطقتك كلاعب -->
+            <div class="my-table">
+                <div class="score-board">SCORE: <span id="my-score">0</span> / 3</div>
+                <div id="my-hand" style="display: flex; gap: 20px;"></div>
+                <button id="play-card-btn" class="action-btn red-glow" style="margin-top: 20px; display: none;">PLAY CARD</button>
+            </div>
         </div>
-        <div id="victory-banner" class="victory-screen">VICTORY!</div>
-        <canvas id="game-canvas" width="1200" height="700"></canvas>
     </div>
 
     <script>
-        // --- عناصر واجهة المستخدم ---
-        const phase1 = document.getElementById('phase1'), phase2 = document.getElementById('phase2');
-        const phase3 = document.getElementById('phase3'), phase4 = document.getElementById('phase4');
-        const startBtn = document.getElementById('start-btn'), createRoomBtn = document.getElementById('create-room-btn');
-        const launchBtn = document.getElementById('launch-btn'), leaveBtn = document.getElementById('leave-btn');
-        const rankSelect = document.getElementById('rank-select'), playerNameInput = document.getElementById('player-name');
-        const previewFrame = document.getElementById('preview-frame'), previewRankText = document.getElementById('preview-rank-text');
-        const playersRow = document.getElementById('players-row'), canvas = document.getElementById('game-canvas');
-        const ctx = canvas.getContext('2d');
+        // --- Navigation ---
+        const phases = [document.getElementById('phase1'), document.getElementById('phase2'), document.getElementById('phase3'), document.getElementById('phase4')];
+        function showPhase(index) { phases.forEach((p, i) => i === index ? p.classList.remove('hidden') : p.classList.add('hidden')); }
 
-        // --- البيانات العامة والألوان ---
+        document.getElementById('start-btn').addEventListener('click', () => showPhase(1));
+        document.getElementById('leave-btn').addEventListener('click', () => showPhase(1));
+
+        // --- Data & Colors ---
         const rankColors = { bronze: '#b87333', silver: '#9ca3af', gold: '#d97706', diamond: '#2563eb', solar: '#ea580c' };
-        let myData = { name: "PILOT_01", rank: "bronze", avatar: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" };
-
-        // توليد 6 لاعبين وهميين لإكمال الـ 7 لاعبين في اللوبي واللعبة
-        const botsData = [
-            { name: "X_SHADOW_X", rank: "solar" },
-            { name: "VORTEX", rank: "diamond" },
-            { name: "KINETIC", rank: "gold" },
-            { name: "Z3RO_COOL", rank: "silver" },
-            { name: "CYPHER", rank: "diamond" },
-            { name: "TITAN", rank: "bronze" }
+        let myData = { name: "GAMBLER_7", rank: "bronze", score: 0 };
+        const bots = [
+            { id: 1, name: "CYPHER", rank: "solar", score: 0 }, { id: 2, name: "VORTEX", rank: "diamond", score: 0 },
+            { id: 3, name: "KINETIC", rank: "gold", score: 0 }, { id: 4, name: "Z3RO", rank: "silver", score: 0 },
+            { id: 5, name: "GHOST", rank: "diamond", score: 0 }, { id: 6, name: "TITAN", rank: "bronze", score: 0 }
         ];
+        let allPlayers = []; // أنت + البوتات
 
-        // --- المعاينة الفورية في القائمة قبل الدخول ---
-        rankSelect.addEventListener('change', (e) => {
-            myData.rank = e.target.value;
-            previewFrame.className = `frame-box rank-${myData.rank}`;
-            previewRankText.textContent = myData.rank.toUpperCase();
-            previewRankText.style.color = rankColors[myData.rank];
-        });
-
-        startBtn.addEventListener('click', () => {
-            phase1.classList.add('hidden');
-            setTimeout(() => phase2.classList.remove('hidden'), 400);
-        });
-
-        // --- بناء اللوبي السينمائي لـ 7 لاعبين جنب بعض ---
-        function buildLobby() {
-            playersRow.innerHTML = ''; // تنظيف
-            myData.name = playerNameInput.value.toUpperCase() || "PILOT_01";
-
-            // 1. إدخالك أنت كلاعب أول
-            playersRow.innerHTML += createPlayerSlotHTML(myData.name, myData.rank, myData.avatar, "#ff003c");
-
-            // 2. إدخال الـ 6 لاعبين الآخرين بجانبك فوراً ليكون الإجمالي 7
-            botsData.forEach((bot, index) => {
+        // --- Phase 3: Build Lobby ---
+        document.getElementById('create-room-btn').addEventListener('click', () => {
+            myData.name = document.getElementById('player-name').value || "PLAYER";
+            myData.rank = document.getElementById('rank-select').value;
+            
+            const row = document.getElementById('players-row');
+            row.innerHTML = '';
+            
+            allPlayers = [{ id: 0, name: myData.name, rank: myData.rank, score: 0, isHuman: true }, ...bots];
+            
+            allPlayers.forEach((p, index) => {
                 setTimeout(() => {
-                    playersRow.innerHTML += createPlayerSlotHTML(bot.name, bot.rank, myData.avatar, rankColors[bot.rank]);
-                }, (index + 1) * 250); // أنيميشن دخول متتالي رهيب
+                    row.innerHTML += `
+                        <div class="player-slot">
+                            <div class="frame-box">
+                                <div class="avatar-box" style="border-color: ${rankColors[p.rank]}">
+                                    <img src="https://picsum.photos/seed/${p.name}/100/100">
+                                </div>
+                            </div>
+                            <div class="player-name" style="color: ${rankColors[p.rank]}">${p.name}</div>
+                        </div>`;
+                }, index * 200);
             });
+            showPhase(2);
+        });
+
+        // --- Phase 4: Card Game Logic ---
+        const oppTable = document.getElementById('opponents-table');
+        const centerTable = document.getElementById('center-table');
+        const myHand = document.getElementById('my-hand');
+        const playBtn = document.getElementById('play-card-btn');
+        const roundStatus = document.getElementById('round-status');
+
+        document.getElementById('launch-btn').addEventListener('click', () => {
+            showPhase(3);
+            resetGame();
+            setTimeout(dealCards, 1000);
+        });
+
+        function resetGame() {
+            allPlayers.forEach(p => p.score = 0);
+            document.getElementById('my-score').textContent = 0;
+            centerTable.innerHTML = '<div id="round-status"></div>';
         }
 
-        function createPlayerSlotHTML(name, rank, av, textColor) {
-            return `
-                <div class="player-slot">
-                    <div class="frame-box rank-${rank}">
-                        <div class="avatar-box"><img src="${av}"></div>
-                        <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none">
-                            <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="5"/>
-                        </svg>
+        // توليد بطاقة HTML
+        function createCardElement(playerId, color, power, ownerName) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `card-container card-${playerId}`;
+            wrapper.innerHTML = `
+                <div class="card" id="card-inner-${playerId}" style="color: ${color};">
+                    <div class="card-face card-back"></div>
+                    <div class="card-face card-front">
+                        <div class="card-power">${power}</div>
+                        <div class="card-owner">${ownerName}</div>
                     </div>
-                    <div class="player-name" style="color:${textColor}">${name}</div>
-                    <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); letter-spacing:1px; margin-top:2px;">READY</div>
                 </div>
             `;
+            return wrapper;
         }
 
-        createRoomBtn.addEventListener('click', () => {
-            phase2.classList.add('hidden');
-            setTimeout(() => {
-                phase3.classList.remove('hidden');
-                buildLobby();
-            }, 400);
-        });
-
-        leaveBtn.addEventListener('click', () => {
-            phase3.classList.add('hidden');
-            setTimeout(() => phase2.classList.remove('hidden'), 400);
-        });
-
-        // ==========================================
-        // 🎮 محرك اللعبة الحقيقي من 0 إلى 100 (GAME ENGINE)
-        // ==========================================
-        let players = [];
-        let bullets = [];
-        let gameLoopId;
-        let keys = {};
-
-        // مراقبة أزرار الكيبورد للتحكم
-        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-        
-        // مراقبة الماوس للتصويب والإطلاق
-        let mouseX = 0, mouseY = 0;
-        canvas.addEventListener('mousemove', e => {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
-        });
-        canvas.addEventListener('mousedown', () => {
-            if (players[0] && players[0].alive) {
-                fireBullet(players[0], mouseX, mouseY);
-            }
-        });
-
-        function setupGame() {
-            players = [];
-            bullets = [];
-            document.getElementById('victory-banner').style.display = 'none';
-
-            // إضافتك كلاعب رقم 1 (المركبة الحمراء المتحكم بها)
-            players.push({
-                id: 0, x: 100, y: 350, vx: 0, vy: 0, radius: 20,
-                color: '#ff003c', name: myData.name, isBot: false, alive: true, angle: 0
-            });
-
-            // إضافة الـ 6 لاعبين الآخرين كـ الأعداء (ذكاء اصطناعي يتحركون ويطلقون النار تلقائياً)
-            botsData.forEach((bot, i) => {
-                players.push({
-                    id: i + 1,
-                    x: 400 + (i * 120),
-                    y: 100 + (Math.random() * 500),
-                    vx: (Math.random() - 0.5) * 4,
-                    vy: (Math.random() - 0.5) * 4,
-                    radius: 20,
-                    color: rankColors[bot.rank],
-                    name: bot.name,
-                    isBot: true,
-                    alive: true,
-                    angle: 0,
-                    lastShot: 0
-                });
-            });
-        }
-
-        function fireBullet(fromPlayer, targetX, targetY) {
-            const angle = Math.atan2(targetY - fromPlayer.y, targetX - fromPlayer.x);
-            bullets.push({
-                x: fromPlayer.x + Math.cos(angle) * 25,
-                y: fromPlayer.y + Math.sin(angle) * 25,
-                vx: Math.cos(angle) * 10,
-                vy: Math.sin(angle) * 10,
-                owner: fromPlayer.id,
-                color: fromPlayer.color
-            });
-        }
-
-        function updateGame() {
-            // 1. تحريك اللاعب البشري (أنت) بواسطة WASD أو الأسهم
-            const p = players[0];
-            if (p && p.alive) {
-                if (keys['w'] || keys['arrowup']) p.y -= 4;
-                if (keys['s'] || keys['arrowdown']) p.y += 4;
-                if (keys['a'] || keys['arrowleft']) p.x -= 4;
-                if (keys['d'] || keys['arrowright']) p.x += 4;
-                p.angle = Math.atan2(mouseY - p.y, mouseX - p.x);
-
-                // الحدود لمنع الخروج من الشاشة
-                p.x = Math.max(p.radius, Math.min(canvas.width - p.radius, p.x));
-                p.y = Math.max(p.radius, Math.min(canvas.height - p.radius, p.y));
-            }
-
-            // 2. تحريك الـ 6 لاعبين الآخرين (الذكاء الاصطناعي Bot AI)
-            players.forEach(pl => {
-                if (!pl.alive || !pl.isBot) return;
-
-                // حركة عشوائية ذكية داخل الساحة
-                pl.x += pl.vx; pl.y += pl.vy;
-                if (pl.x < pl.radius || pl.x > canvas.width - pl.radius) pl.vx *= -1;
-                if (pl.y < pl.radius || pl.y > canvas.height - pl.radius) pl.vy *= -1;
-
-                // تصويب تلقائي وإطلاق نار على أقرب لاعب حي كل ثانية
-                let now = Date.now();
-                if (now - pl.lastShot > 1200) {
-                    let target = players.find(t => t.id !== pl.id && t.alive);
-                    if (target) {
-                        fireBullet(pl, target.x, target.y);
-                        pl.angle = Math.atan2(target.y - pl.y, target.x - pl.x);
-                    }
-                    pl.lastShot = now;
+        function dealCards() {
+            oppTable.innerHTML = ''; myHand.innerHTML = ''; centerTable.innerHTML = '<div id="round-status"></div>';
+            
+            allPlayers.forEach(p => {
+                // توليد قوة عشوائية للبطاقة من 1 إلى 100
+                p.currentPower = Math.floor(Math.random() * 100) + 1;
+                const cardEl = createCardElement(p.id, rankColors[p.rank], p.currentPower, p.name);
+                
+                if (p.isHuman) {
+                    myHand.appendChild(cardEl);
+                    // كشف بطاقتك لك فوراً
+                    setTimeout(() => document.getElementById(`card-inner-${p.id}`).classList.add('flipped'), 300);
+                } else {
+                    // بطاقات الخصوم مقلوبة للأعلى
+                    const oppWrapper = document.createElement('div');
+                    oppWrapper.innerHTML = `<div style="font-size: 0.8rem; color:${rankColors[p.rank]}; text-align:center; margin-bottom:5px;">${p.name}<br>(${p.score} pt)</div>`;
+                    oppWrapper.appendChild(cardEl);
+                    oppTable.appendChild(oppWrapper);
                 }
             });
 
-            // 3. تحريك وتحديث الطلقات والاصطدامات
-            bullets.forEach((b, bIdx) => {
-                b.x += b.vx; b.y += b.vy;
-
-                // اصطدام الرصاصة باللاعبين
-                players.forEach(pl => {
-                    if (pl.alive && b.owner !== pl.id) {
-                        let dist = Math.hypot(b.x - pl.x, b.y - pl.y);
-                        if (dist < pl.radius) {
-                            pl.alive = false; // خروج اللاعب المصاب فوراً
-                            bullets.splice(bIdx, 1);
-                        }
-                    }
-                });
-            });
-
-            // تنظيف الرصاص خارج الشاشة
-            bullets = bullets.filter(b => b.x > 0 && b.x < canvas.width && b.y > 0 && b.y < canvas.height);
-
-            // 4. حساب عدد الأحياء والتحقق من الفائز
-            let alivePlayers = players.filter(pl => pl.alive);
-            document.getElementById('alive-count').textContent = alivePlayers.length;
-
-            if (alivePlayers.length === 1) {
-                const winnerBanner = document.getElementById('victory-banner');
-                winnerBanner.textContent = `${alivePlayers[0].name} WINS!`;
-                winnerBanner.style.display = 'block';
-            }
+            playBtn.style.display = 'block';
         }
 
-        function drawGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        playBtn.addEventListener('click', () => {
+            playBtn.style.display = 'none';
+            
+            // نقل جميع البطاقات إلى المركز
+            allPlayers.forEach((p, idx) => {
+                const cardInner = document.getElementById(`card-inner-${p.id}`);
+                // حركة ديناميكية لرمي الورق في النص بـ Layout جميل
+                const angle = (idx * 360 / 7) * (Math.PI / 180);
+                const radius = 100;
+                const xOffset = Math.cos(angle) * radius;
+                const yOffset = Math.sin(angle) * radius;
 
-            // رسم الطلقات الليزرية الفضائية
-            bullets.forEach(b => {
-                ctx.beginPath();
-                ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = b.color;
-                ctx.shadowBlur = 15; ctx.shadowColor = b.color;
-                ctx.fill();
-                ctx.shadowBlur = 0; // إعادة التعيين لعدم تدمير الأداء
+                cardInner.style.position = 'absolute';
+                cardInner.style.left = `calc(50% + ${xOffset}px)`;
+                cardInner.style.top = `calc(50% + ${yOffset}px)`;
+                cardInner.style.transform = `translate(-50%, -50%) rotate(${idx * 15}deg)`;
+                cardInner.style.zIndex = 10;
+                
+                centerTable.appendChild(cardInner.parentElement);
             });
 
-            // رسم الـ 7 لاعبين (مركبات دائرية سينمائية موجهة)
-            players.forEach(pl => {
-                if (!pl.alive) return;
-
-                ctx.save();
-                ctx.translate(pl.x, pl.y);
-                ctx.rotate(pl.angle);
-
-                // رسم جسم المركبة الفضائية المثلث القتالي
-                ctx.beginPath();
-                ctx.moveTo(25, 0);
-                ctx.lineTo(-15, -15);
-                ctx.lineTo(-15, 15);
-                ctx.closePath();
-                ctx.fillStyle = pl.color;
-                ctx.shadowBlur = 20; ctx.shadowColor = pl.color;
-                ctx.fill();
-
-                // قمرة القيادة النظيفة
-                ctx.beginPath();
-                ctx.arc(0, 0, 6, 0, Math.PI * 2);
-                ctx.fillStyle = '#fff';
-                ctx.fill();
-                ctx.restore();
-                ctx.shadowBlur = 0;
-
-                // رسم اسم اللاعب فوق رأس المركبة الفضائية مباشرة وبشفافية
-                ctx.font = 'bold 12px Rajdhani';
-                ctx.fillStyle = 'rgba(255,255,255,0.8)';
-                ctx.textAlign = 'center';
-                ctx.fillText(pl.name, pl.x, pl.y - 30);
-            });
-        }
-
-        function mainLoop() {
-            updateGame();
-            drawGame();
-            gameLoopId = requestAnimationFrame(mainLoop);
-        }
-
-        launchBtn.addEventListener('click', () => {
-            phase3.classList.add('hidden');
+            // بعد ثانية، اقلب بطاقات الخصوم للكشف عنها
             setTimeout(() => {
-                phase4.classList.remove('hidden');
-                setupGame();
-                mainLoop();
-            }, 400);
+                allPlayers.forEach(p => {
+                    const cardInner = document.getElementById(`card-inner-${p.id}`);
+                    cardInner.style.transform = cardInner.style.transform.replace(/rotateY\(180deg\)/g, '') + ' rotateY(180deg)';
+                });
+                
+                // حساب الفائز بالجولة
+                setTimeout(resolveRound, 1200);
+            }, 800);
         });
+
+        function resolveRound() {
+            // البحث عن أعلى طاقة
+            let winner = allPlayers.reduce((max, p) => p.currentPower > max.currentPower ? p : max, allPlayers[0]);
+            winner.score += 1;
+
+            if (winner.isHuman) document.getElementById('my-score').textContent = winner.score;
+
+            // تمييز بطاقة الفائز
+            const winningCard = document.getElementById(`card-inner-${winner.id}`);
+            winningCard.style.transform = `translate(-50%, -50%) scale(1.6) rotateY(180deg)`;
+            winningCard.style.zIndex = 100;
+            winningCard.style.boxShadow = `0 0 50px ${rankColors[winner.rank]}`;
+
+            const status = document.getElementById('round-status');
+            status.textContent = `${winner.name} WINS ROUND!`;
+            status.style.color = rankColors[winner.rank];
+            status.style.opacity = 1;
+
+            // التحقق من نهاية المباراة
+            setTimeout(() => {
+                if (winner.score >= 3) {
+                    status.textContent = `${winner.name} WINS THE MATCH!`;
+                    setTimeout(() => showPhase(2), 3000); // العودة للوبي
+                } else {
+                    status.opacity = 0;
+                    dealCards(); // جولة جديدة
+                }
+            }, 2500);
+        }
     </script>
 </body>
 </html>
