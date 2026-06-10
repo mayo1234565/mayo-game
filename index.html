@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واجهة اللعبة الأسطورية | Overwatch Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Cairo:wght@600;800&display=swap" rel="stylesheet">
-    
+    <title>واجهة اللعبة | النسخة النهائية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&display=swap" rel="stylesheet">
     <style>
-        /* الإعدادات الأساسية للواجهة */
         * {
             margin: 0;
             padding: 0;
@@ -17,8 +15,8 @@
         }
 
         body {
-            background-color: #120422; /* لون أساسي احتياطي */
-            color: #ffffff;
+            background-color: #2b1b54;
+            color: #fff;
             overflow: hidden;
             height: 100vh;
             display: flex;
@@ -26,335 +24,326 @@
             align-items: center;
         }
 
-        /* 🌌 الخلفية البنفسجية الفخمة والمتحركة */
-        .epic-background {
+        /* 🌌 خلفية مستوحاة من Tricky Towers */
+        .sky-bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            background: linear-gradient(45deg, #1a0b2e, #4b1d52, #290a42, #11051d);
-            background-size: 400% 400%;
-            animation: gradientMovement 12s ease infinite;
+            top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            background: linear-gradient(180deg, #180b33 0%, #3e206d 50%, #683a9e 100%);
+            overflow: hidden;
         }
 
-        @keyframes gradientMovement {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* طبقة النجوم والجزيئات الواضحة */
-        .particles-layer {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
+        /* النجوم المتلألئة */
+        .stars {
+            position: absolute; top: 0; left: 0; width: 200%; height: 200%;
             background-image: 
-                radial-gradient(2px 2px at 40px 80px, #e2b3ff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 200px 300px, #fff, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 400px 150px, #ff9eff, rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 100px 500px, #b3d4ff, rgba(0,0,0,0));
+                radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 250px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 300px 100px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 400px, #fff, rgba(0,0,0,0));
             background-repeat: repeat;
-            animation: spaceDrift 40s linear infinite;
-            opacity: 0.6;
+            animation: twinkle 4s infinite alternate;
         }
 
-        @keyframes spaceDrift {
-            from { transform: rotate(0deg) translateY(0); }
-            to { transform: rotate(360deg) translateY(-50px); }
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
-        /* 📱 حاوية اللعبة */
-        .game-ui {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .screen {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .hidden {
-            opacity: 0;
-            transform: scale(0.9);
-            pointer-events: none;
-            position: absolute;
-        }
-
-        /* 🔴 زر ابدأ الأسطوري مع الهالة الحمراء (Overwatch Style) */
-        .btn-start {
-            background: linear-gradient(90deg, #ff3b3b, #cc0000);
-            color: #ffffff;
-            font-family: 'Teko', sans-serif;
-            font-size: 45px;
-            text-transform: uppercase;
-            padding: 10px 70px;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); /* قصة الأطراف المائلة */
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
-            transition: transform 0.2s, box-shadow 0.2s;
-            animation: redAuraPulse 2s infinite;
-        }
-
-        .btn-start:hover {
-            transform: scale(1.05);
-            background: linear-gradient(90deg, #ff5e5e, #e60000);
-            box-shadow: 0 0 40px rgba(255, 50, 50, 1);
-        }
-
-        @keyframes redAuraPulse {
-            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
-            50% { box-shadow: 0 0 40px rgba(255, 0, 0, 1); }
-            100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
-        }
-
-        /* 🃏 بطاقة اللاعب (Player Card) مثل الصورة المرجعية */
-        .player-card {
-            background: rgba(10, 15, 30, 0.8);
-            border: 2px solid #00f3ff;
-            border-radius: 12px;
-            padding: 30px 20px;
-            width: 100%;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            margin-bottom: 25px;
-        }
-
-        /* منطقة دمج الأفتار مع الإطار (الاحترافية) */
-        .portrait-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        /* الصورة تكون في الخلف ومقصوصة بشكل يناسب الإطار */
-        .avatar-layer {
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            background-color: #222;
-            background-size: cover;
-            background-position: center top;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* قص سداسي */
-            z-index: 1;
-            transition: background-image 0.3s ease;
-        }
-
-        /* الإطار يكون في الأمام تماماً وشفاف من المنتصف */
-        .frame-layer {
-            position: absolute;
-            width: 250px;
-            height: 250px;
+        /* الغيوم المتحركة */
+        .clouds-bg {
+            position: absolute; bottom: 0; left: 0; width: 200%; height: 40%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><path fill="%2324134d" d="M0 25 Q10 10 20 20 T40 10 T60 20 T80 5 T100 20 L100 25 Z"/></svg>');
+            background-size: 50% 100%;
+            background-repeat: repeat-x;
+            animation: driftClouds 60s linear infinite;
             z-index: 2;
-            background-image: url('ranks.webp'); /* اسم صورة الإطارات المجمعة */
-            background-size: 700% 100%; /* لأن لديك 7 إطارات في الصورة */
-            background-position: 0% 0%; /* يتغير برمجياً */
-            pointer-events: none;
-            transition: background-position 0.3s ease;
-        }
-
-        /* اسم اللاعب واللقب تحت الصورة */
-        .player-name-input {
-            background: transparent;
-            border: none;
-            color: #00f3ff;
-            font-family: 'Teko', sans-serif;
-            font-size: 38px;
-            text-transform: uppercase;
-            text-align: center;
-            letter-spacing: 2px;
-            outline: none;
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
-            width: 90%;
-            margin-top: 10px;
-        }
-        .player-name-input::placeholder { color: rgba(0, 243, 255, 0.3); }
-
-        .player-title {
-            color: #ffffff;
-            font-family: 'Teko', sans-serif;
-            font-size: 24px;
-            letter-spacing: 4px;
-            font-style: italic;
             opacity: 0.8;
         }
 
-        /* 🎛️ واجهة التحكم الأنيقة (بدون إزعاج) */
-        .controls-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .clouds-fg {
+            position: absolute; bottom: -5%; left: 0; width: 200%; height: 35%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><path fill="%23140a2e" d="M0 25 Q15 5 25 15 T50 10 T75 20 T100 10 L100 25 Z"/></svg>');
+            background-size: 50% 100%;
+            background-repeat: repeat-x;
+            animation: driftClouds 40s linear infinite;
+            z-index: 3;
         }
 
-        .control-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 8px;
-            border-left: 4px solid #cc00ff; /* لمسة بليزارد */
-            padding: 5px 10px;
+        @keyframes driftClouds {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
         }
 
-        .control-label {
-            font-size: 15px;
-            color: #d8c2ea;
-            font-weight: bold;
-            flex-grow: 1;
-            text-align: right;
-            padding-right: 15px;
+        /* 📱 حاوية الواجهة */
+        .ui-container {
+            position: relative; z-index: 10; width: 100%; max-width: 400px;
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px;
         }
 
-        .arrow-btn {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px 15px;
-            transition: color 0.2s, transform 0.2s;
+        .screen {
+            width: 100%; display: flex; flex-direction: column; align-items: center;
+            transition: all 0.4s ease-in-out;
         }
 
-        .arrow-btn:hover {
-            color: #00f3ff;
-            transform: scale(1.2);
+        .hidden { display: none !important; opacity: 0; transform: scale(0.95); }
+
+        /* 🔘 زر البداية النظيف والزجاجي */
+        .start-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; font-size: 32px; font-weight: 800;
+            padding: 15px 80px; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00f3ff;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            transform: translateY(-3px);
         }
 
-        .control-value {
-            font-family: 'Teko', sans-serif;
-            font-size: 22px;
-            letter-spacing: 1px;
-            min-width: 80px;
-            text-align: center;
-            color: #fff;
+        /* 🃏 بطاقة اللاعب والتخصيص */
+        .profile-card {
+            background: rgba(20, 10, 46, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 25px; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
+        /* منطقة الصورة والإطار القابلة للضغط */
+        .avatar-wrapper {
+            position: relative; width: 140px; height: 140px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+        .avatar-wrapper:hover { transform: scale(1.05); }
+
+        /* تلميح "اضغط للتغيير" */
+        .click-hint {
+            position: absolute; bottom: -15px; background: #00f3ff; color: #000;
+            font-size: 11px; padding: 2px 10px; border-radius: 10px; font-weight: 800;
+            z-index: 5; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .avatar-wrapper:hover .click-hint { opacity: 1; }
+
+        .avatar-img {
+            width: 100px; height: 100px; border-radius: 15px;
+            background-size: cover; background-position: center; z-index: 1;
+        }
+
+        .frame-img {
+            position: absolute; width: 160px; height: 160px;
+            background-size: contain; background-repeat: no-repeat;
+            background-position: center; z-index: 2; pointer-events: none;
+        }
+
+        /* مدخل الاسم */
+        .name-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 2px solid #3e206d;
+            color: #fff; font-size: 18px; text-align: center; padding: 12px;
+            border-radius: 10px; outline: none; margin-bottom: 20px; transition: 0.3s;
+        }
+        .name-input:focus { border-color: #00f3ff; box-shadow: 0 0 15px rgba(0,243,255,0.3); }
+
+        /* أزرار الغرف */
+        .btn-group { display: flex; width: 100%; gap: 10px; }
+        
+        .room-btn {
+            flex: 1; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; border: none; color: #fff;
+        }
+        .btn-create {
+            background: linear-gradient(135deg, #00f3ff, #007bb5);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+        .btn-create:hover { filter: brightness(1.2); }
+        
+        .btn-join { background: #3e206d; border: 1px solid #683a9e; }
+        .btn-join:hover { background: #4a2782; }
+
+        /* 🗗 النافذة المنبثقة (Modal) لاختيار الصور والإطارات */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-content {
+            background: #180b33; border: 2px solid #3e206d; border-radius: 15px;
+            width: 90%; max-width: 350px; padding: 20px; display: flex; flex-direction: column;
+            transform: translateY(20px); transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #3e206d; padding-bottom: 10px;
+        }
+        .close-btn { background: none; border: none; color: #ff3b3b; font-size: 24px; cursor: pointer; }
+
+        /* شبكة الاختيار (Grid) */
+        .selection-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            max-height: 300px; overflow-y: auto; padding-right: 5px;
+        }
+
+        .grid-item {
+            width: 100%; aspect-ratio: 1; background-size: cover; background-position: center;
+            border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.2s;
+        }
+        .grid-item:hover { border-color: #00f3ff; transform: scale(1.05); }
+
+        /* تصميم سكرول بار للشبكة */
+        .selection-grid::-webkit-scrollbar { width: 5px; }
+        .selection-grid::-webkit-scrollbar-thumb { background: #3e206d; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="epic-background"></div>
-    <div class="particles-layer"></div>
+    <div class="sky-bg">
+        <div class="stars"></div>
+        <div class="clouds-bg"></div>
+        <div class="clouds-fg"></div>
+    </div>
 
-    <div class="game-ui">
-
+    <div class="ui-container">
+        
         <div id="startScreen" class="screen">
-            <button class="btn-start" onclick="enterGame()">ابدأ</button>
+            <button class="start-btn" onclick="startGame()">ابــدأ</button>
         </div>
 
         <div id="setupScreen" class="screen hidden">
-            
-            <div class="player-card">
-                <div class="portrait-container">
-                    <div id="avatarLayer" class="avatar-layer"></div>
-                    <div id="frameLayer" class="frame-layer"></div>
-                </div>
+            <div class="profile-card">
                 
-                <input type="text" class="player-name-input" placeholder="أدخل اسمك..." maxlength="12">
-                <div class="player-title">CHALLENGER</div>
-            </div>
-
-            <div class="controls-section">
-                
-                <div class="control-row">
-                    <button class="arrow-btn" onclick="changeAvatar(1)">&#9654;</button>
-                    <div class="control-value" id="avatarText">صورة 1</div>
-                    <button class="arrow-btn" onclick="changeAvatar(-1)">&#9664;</button>
-                    <div class="control-label">الـصـورة</div>
+                <div class="avatar-wrapper" onclick="openModal('avatar')">
+                    <div id="currentAvatar" class="avatar-img"></div>
+                    <div class="click-hint">اضغط لتغيير الصورة</div>
                 </div>
 
-                <div class="control-row" style="border-left-color: #00f3ff;">
-                    <button class="arrow-btn" onclick="changeFrame(1)">&#9654;</button>
-                    <div class="control-value" id="frameText">BRONZE</div>
-                    <button class="arrow-btn" onclick="changeFrame(-1)">&#9664;</button>
-                    <div class="control-label">الـرتـبـة</div>
+                <div class="avatar-wrapper" onclick="openModal('frame')" style="position: absolute; pointer-events: auto; background: transparent; height: 160px; width: 160px;">
+                     <div id="currentFrame" class="frame-img"></div>
+                     <div class="click-hint" style="bottom: 0;">اضغط لتغيير الإطار</div>
+                </div>
+
+                <div style="height: 15px;"></div> <input type="text" id="playerName" class="name-input" placeholder="اكتب اسمك هنا..." maxlength="15">
+
+                <div class="btn-group">
+                    <button class="room-btn btn-create" onclick="createRoom()">إنشاء غرفة</button>
+                    <button class="room-btn btn-join" onclick="joinRoom()">انضمام لغرفة</button>
                 </div>
 
             </div>
         </div>
+    </div>
 
+    <div id="selectionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle">اختر</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="gridContainer" class="selection-grid">
+                </div>
+        </div>
     </div>
 
     <script>
-        // 🖼️ قائمة الصور (ضع روابط صور الأنمي هنا)
+        // 🔗 روابط حية لصور أنمي فخمة (ستعمل معك فوراً)
         const avatars = [
-            "https://i.pinimg.com/736x/8f/c3/86/8fc3864197dc2b37bd358d10b7ee8719.jpg", // صورة أنمي 1
-            "https://i.pinimg.com/736x/2b/43/b8/2b43b8110901e6ef67e2a9c375681729.jpg", // صورة أنمي 2
-            "https://i.pinimg.com/736x/c8/10/a4/c810a42df6495db7b494dff9c2ff1b06.jpg"  // صورة أنمي 3
+            "https://i.pinimg.com/736x/8f/c3/86/8fc3864197dc2b37bd358d10b7ee8719.jpg",
+            "https://i.pinimg.com/736x/2b/43/b8/2b43b8110901e6ef67e2a9c375681729.jpg",
+            "https://i.pinimg.com/736x/c8/10/a4/c810a42df6495db7b494dff9c2ff1b06.jpg",
+            "https://i.pinimg.com/736x/59/54/b4/5954b408c66525ad932faaeb9b8f0cc6.jpg",
+            "https://i.pinimg.com/736x/2f/1b/38/2f1b38f8cf0265d953ccf40192e21b21.jpg",
+            "https://i.pinimg.com/736x/a2/8d/b2/a28db2142289c09c2cc9d970e7960de2.jpg"
         ];
 
-        // 🛡️ إعدادات الإطارات
-        // الكود هنا يعتمد على صورة الإطارات المجمعة (ranks.webp) ويحركها بالنسبة المئوية 
-        // 0% = برونز | 16.6% = فضي | 33.3% = ذهبي ... وهكذا
+        // 🛡️ روابط حية لإطارات جاهزة شفافة (رتب الألعاب)
         const frames = [
-            { name: "BRONZE", bgPos: "0%" },
-            { name: "SILVER", bgPos: "16.66%" },
-            { name: "GOLD", bgPos: "33.33%" },
-            { name: "PLATINUM", bgPos: "50%" },
-            { name: "DIAMOND", bgPos: "66.66%" },
-            { name: "RUBY", bgPos: "83.33%" },
-            { name: "SOLAR", bgPos: "100%" }
+            "https://cdn-icons-png.flaticon.com/512/7592/7592982.png", // مثال برونز
+            "https://cdn-icons-png.flaticon.com/512/7592/7592985.png", // مثال فضي
+            "https://cdn-icons-png.flaticon.com/512/7592/7592988.png", // مثال ذهبي
+            "https://cdn-icons-png.flaticon.com/512/5482/5482613.png", // مثال بلاتيني
+            "https://cdn-icons-png.flaticon.com/512/5482/5482607.png", // مثال دايموند
+            "https://cdn-icons-png.flaticon.com/512/7593/7593005.png"  // مثال أسطوري
         ];
 
-        let avatarIndex = 0;
-        let frameIndex = 0;
+        let selectedAvatar = avatars[0];
+        let selectedFrame = frames[2]; // الافتراضي ذهبي
+        let currentModalType = '';
 
-        function enterGame() {
+        // تطبيق الصور الافتراضية عند فتح الصفحة
+        document.getElementById('currentAvatar').style.backgroundImage = `url('${selectedAvatar}')`;
+        document.getElementById('currentFrame').style.backgroundImage = `url('${selectedFrame}')`;
+
+        // دالة الضغط على ابدأ
+        function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             setTimeout(() => {
                 document.getElementById('setupScreen').classList.remove('hidden');
             }, 300);
-            updateUI();
         }
 
-        function changeAvatar(dir) {
-            avatarIndex += dir;
-            if (avatarIndex >= avatars.length) avatarIndex = 0;
-            if (avatarIndex < 0) avatarIndex = avatars.length - 1;
-            updateUI();
+        // دالة فتح نافذة الاختيار (تعرض الصور أو الإطارات في شبكة Grid)
+        function openModal(type) {
+            currentModalType = type;
+            const grid = document.getElementById('gridContainer');
+            grid.innerHTML = ''; // تفريغ الشبكة
+            
+            document.getElementById('modalTitle').innerText = type === 'avatar' ? 'اختر صورتك الشخصية' : 'اختر إطار الرتبة';
+
+            const dataArray = type === 'avatar' ? avatars : frames;
+
+            // تعبئة الشبكة بالصور
+            dataArray.forEach(url => {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.style.backgroundImage = `url('${url}')`;
+                if(type === 'frame') item.style.backgroundSize = 'contain'; // عشان الإطار ما ينقص
+                
+                // عند الضغط على الصورة في الشبكة
+                item.onclick = () => selectItem(url);
+                grid.appendChild(item);
+            });
+
+            document.getElementById('selectionModal').classList.add('active');
         }
 
-        function changeFrame(dir) {
-            frameIndex += dir;
-            if (frameIndex >= frames.length) frameIndex = 0;
-            if (frameIndex < 0) frameIndex = frames.length - 1;
-            updateUI();
+        // إغلاق النافذة
+        function closeModal() {
+            document.getElementById('selectionModal').classList.remove('active');
         }
 
-        function updateUI() {
-            // تحديث الصورة الخلفية
-            document.getElementById('avatarLayer').style.backgroundImage = `url('${avatars[avatarIndex]}')`;
-            document.getElementById('avatarText').innerText = `صورة ${avatarIndex + 1}`;
+        // دالة اختيار العنصر وتطبيقه على الواجهة
+        function selectItem(url) {
+            if (currentModalType === 'avatar') {
+                selectedAvatar = url;
+                document.getElementById('currentAvatar').style.backgroundImage = `url('${selectedAvatar}')`;
+            } else {
+                selectedFrame = url;
+                document.getElementById('currentFrame').style.backgroundImage = `url('${selectedFrame}')`;
+            }
+            closeModal();
+        }
 
-            // تحديث الإطار الأمامي عبر تحريك (Sprite)
-            const currentFrame = frames[frameIndex];
-            document.getElementById('frameLayer').style.backgroundPosition = `${currentFrame.bgPos} 0%`;
-            document.getElementById('frameText').innerText = currentFrame.name;
+        // دوال أزرار الغرف
+        function createRoom() {
+            const name = document.getElementById('playerName').value;
+            if(!name) return alert('الرجاء كتابة اسمك أولاً!');
+            alert(`تم إنشاء الغرفة باسم: ${name} (هنا تبرمج انتقالك للسيرفر)`);
+        }
+
+        function joinRoom() {
+            const name = document.getElementById('playerName').value;
+            if(!name) return alert('الرجاء كتابة اسمك أولاً!');
+            alert(`جاري البحث عن غرف للاعب: ${name} ...`);
         }
     </script>
 </body>
