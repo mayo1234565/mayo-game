@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinematic AAA Game Menu</title>
+    <title>Cinematic AAA Game Menu - With Custom Frames</title>
     <style>
         /* --- GLOBAL STYLES --- */
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
@@ -145,27 +145,48 @@
             max-width: 800px;
         }
 
-        /* Rank Hexagon Styling */
+        /* Rank Hexagon Styling - WITH CUSTOM FRAMES */
         .hex-outer {
-            width: 160px;
-            height: 180px;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            /* تعديل الأبعاد لتتناسب مع حجم الإطارات الجديدة */
+            width: 220px;
+            height: 250px;
+            
+            /* إزالة clip-path القديم */
+            /* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
+            
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background 0.5s ease, box-shadow 0.5s ease;
+            transition: background 0.5s ease, filter 0.5s ease;
             position: relative;
+
+            /* إعدادات الخلفية العامة للإطارات */
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         
         .hex-inner {
-            width: 144px;
-            height: 164px;
+            /* تعديل الأبعاد والموضع ليتناسب مع مركز الإطار السداسي في الصورة الجديدة */
+            width: 130px; 
+            height: 150px;
+            
+            /* إزالة clip-path القديم */
+            /* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
+            
+            /* جعل الصورة سداسية بسيطة بدون حدود */
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             background-color: #111;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            
+            /* تموضع دقيق داخل hex-outer */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .hex-inner img {
@@ -175,14 +196,61 @@
             transition: filter 0.3s ease;
         }
 
-        /* Rank Colors */
-        .rank-bronze { background: linear-gradient(to bottom, #cd7f32, #8b5a2b); filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
-        .rank-silver { background: linear-gradient(to bottom, #e5e4e2, #999); filter: drop-shadow(0 0 10px rgba(229, 228, 226, 0.5)); }
-        .rank-gold { background: linear-gradient(to bottom, #ffe600, #b8860b); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7)); }
-        .rank-platinum { background: linear-gradient(to bottom, #e5e4e2, #556b2f); filter: drop-shadow(0 0 15px rgba(180, 200, 200, 0.8)); }
-        .rank-diamond { background: linear-gradient(to bottom, #b9f2ff, #4da6ff); filter: drop-shadow(0 0 20px rgba(185, 242, 255, 0.8)); }
-        .rank-ruby { background: linear-gradient(to bottom, #ff1a4a, #8a0303); filter: drop-shadow(0 0 25px rgba(255, 26, 74, 0.9)); }
-        .rank-solar { background: linear-gradient(to bottom, #ff4500, #ffcc00); filter: drop-shadow(0 0 30px rgba(255, 165, 0, 1)); }
+        /* Rank Text Label below the frame */
+        .rank-name-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+        }
+
+        /* --- RANK SPECIFIC STYLES (IMAGES & GLOWS) --- */
+        /* استبدل هذه المسارات بمسارات ملفات الصور الحقيقية التي قمت بإنشائها */
+
+        .rank-bronze { 
+            background-image: url('images/frames/bronze_frame.png'); 
+            filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5));
+        }
+        .rank-bronze + .rank-name-label { color: #cd7f32; text-shadow: 0 0 5px rgba(205, 127, 50, 0.5); }
+
+        .rank-silver { 
+            background-image: url('images/frames/silver_frame.png'); 
+            filter: drop-shadow(0 0 10px rgba(229, 228, 226, 0.5));
+        }
+        .rank-silver + .rank-name-label { color: #e5e4e2; text-shadow: 0 0 5px rgba(229, 228, 226, 0.5); }
+
+        .rank-gold { 
+            background-image: url('images/frames/gold_frame.png'); 
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7));
+        }
+        .rank-gold + .rank-name-label { color: #ffe600; text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+
+        .rank-platinum { 
+            background-image: url('images/frames/platinum_frame.png'); 
+            filter: drop-shadow(0 0 15px rgba(180, 200, 200, 0.8));
+        }
+        .rank-platinum + .rank-name-label { color: #e5e4e2; text-shadow: 0 0 10px rgba(180, 200, 200, 0.8); }
+
+        .rank-diamond { 
+            background-image: url('images/frames/diamond_frame.png'); 
+            filter: drop-shadow(0 0 20px rgba(185, 242, 255, 0.8));
+        }
+        .rank-diamond + .rank-name-label { color: #b9f2ff; text-shadow: 0 0 15px rgba(185, 242, 255, 0.8); }
+
+        .rank-ruby { 
+            background-image: url('images/frames/ruby_frame.png'); 
+            filter: drop-shadow(0 0 25px rgba(255, 26, 74, 0.9));
+        }
+        .rank-ruby + .rank-name-label { color: #ff1a4a; text-shadow: 0 0 15px rgba(255, 26, 74, 0.9); }
+
+        .rank-solar { 
+            background-image: url('images/frames/solar_frame.png'); 
+            filter: drop-shadow(0 0 30px rgba(255, 165, 0, 1));
+        }
+        .rank-solar + .rank-name-label { color: #ff4500; text-shadow: 0 0 20px rgba(255, 165, 0, 1); }
 
         /* Form Controls */
         .controls {
@@ -318,6 +386,8 @@
                         <img id="profile-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Profile">
                     </div>
                 </div>
+                
+                <span id="rank-label" class="rank-name-label">BRONZE</span>
 
                 <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
                 <input type="file" id="upload-pic" accept="image/*" hidden>
@@ -351,6 +421,7 @@
         const planets = document.getElementById('planets');
         const hexBorder = document.getElementById('hex-border');
         const rankSelect = document.getElementById('rank-select');
+        const rankLabel = document.getElementById('rank-label'); // New element
         const uploadPic = document.getElementById('upload-pic');
         const profileImg = document.getElementById('profile-img');
 
@@ -432,12 +503,16 @@
             }
         });
 
-        // Lobby Logic: Rank Border Selection
+        // Lobby Logic: Rank Frame and Label Selection
         rankSelect.addEventListener('change', (e) => {
-            // Remove existing rank classes
-            hexBorder.className = 'hex-outer';
-            // Add new rank class based on selection
-            hexBorder.classList.add(`rank-${e.target.value}`);
+            const selectedRank = e.target.value;
+            
+            // 1. Update the Frame image (via CSS class)
+            hexBorder.className = 'hex-outer'; // Reset to base classes
+            hexBorder.classList.add(`rank-${selectedRank}`);
+            
+            // 2. Update the Text label
+            rankLabel.textContent = selectedRank.toUpperCase();
         });
 
     </script>
