@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinematic AAA Game Menu - Clean Borderless</title>
+    <title>Cosmic Arena AAA - Full Game 0 to 100</title>
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- التصميم العام والخطوط السينمائية --- */
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
 
         * {
@@ -18,13 +18,13 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: #030305;
+            background-color: #020204;
             font-family: 'Rajdhani', sans-serif;
             overflow: hidden;
             color: #fff;
         }
 
-        /* --- BACKGROUND ENVIRONMENT --- */
+        /* --- خلفية الفضاء المتحركة --- */
         #environment {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -44,27 +44,10 @@
 
         @keyframes twinkle {
             0% { opacity: 0.3; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff, 0 0 10px #fff; }
+            100% { opacity: 1; transform: scale(1.2); }
         }
 
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(2px);
-        }
-        .planet-1 {
-            width: 300px; height: 300px;
-            background: radial-gradient(circle at 30% 30%, #2a2a35, #000);
-            top: 10%; left: -100px;
-            animation: float 20s infinite ease-in-out alternate;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(40px) rotate(10deg); }
-        }
-
-        /* --- SCREENS --- */
+        /* --- الشاشات --- */
         .screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -73,58 +56,40 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .hidden {
             opacity: 0;
             pointer-events: none;
-            transform: scale(1.03) translateY(-10px);
+            transform: scale(1.02) translateY(-10px);
         }
 
-        /* --- START SCREEN --- */
+        /* --- الشاشة 1: ابدأ اللعب --- */
         #start-btn {
             background: transparent;
             border: none;
             color: #fff;
-            font-size: 3rem;
-            font-family: inherit;
+            font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 15px;
+            letter-spacing: 20px;
             cursor: pointer;
             outline: none;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
-            transition: text-shadow 0.3s ease, transform 0.3s ease;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
         }
         #start-btn:hover {
-            text-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c;
+            text-shadow: 0 0 25px #ff003c, 0 0 50px #ff003c;
             transform: scale(1.05);
         }
 
-        .particle {
-            position: absolute;
-            background-color: #ff003c;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #ff003c, 0 0 15px #ff003c;
-            pointer-events: none;
-            animation: particle-fade 1s ease-out forwards;
-        }
-
-        @keyframes particle-fade {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
-        }
-
-        /* --- CLEAN SETUP CONTAINER (NO BACKGROUND BOXES) --- */
-        .setup-container {
+        /* --- الشاشة 2: إعداد الملف الشخصي الشفاف تماماً --- */
+        .clean-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            background: transparent; /* إزالة المربع الخلفي تماماً */
-            padding: 0;
-            border: none;
-            box-shadow: none;
+            background: transparent;
         }
 
         .glow-text {
@@ -132,7 +97,7 @@
             border: none;
             color: #fff;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             letter-spacing: 2px;
             outline: none;
             text-align: center;
@@ -143,7 +108,7 @@
             padding: 10px;
             width: 260px;
             text-transform: uppercase;
-            transition: border-color 0.3s, text-shadow 0.3s;
+            transition: all 0.3s;
         }
         input[type="text"]:focus {
             border-bottom: 1px solid #ff003c;
@@ -157,443 +122,460 @@
             cursor: pointer;
             text-align-last: center;
         }
-        select option { background: #050505; color: #fff; }
+        select option { background: #0c0c12; color: #fff; }
 
-        .upload-lbl {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: color 0.3s;
-            letter-spacing: 1px;
-        }
-        .upload-lbl:hover { color: #fff; text-shadow: 0 0 5px #fff; }
-
-        .multiplayer-btns { display: flex; gap: 25px; margin-top: 15px; }
         .action-btn {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 22px;
-            color: rgba(255,255,255,0.8);
+            padding: 10px 30px;
+            color: #fff;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             letter-spacing: 2px;
             cursor: pointer;
             border-radius: 4px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
         .action-btn:hover { 
-            color: #fff; 
             border-color: #fff;
-            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
-        .action-btn.red-glow {
-            border-color: rgba(255, 0, 60, 0.4);
-            color: #ff003c;
-        }
-        .action-btn.red-glow:hover { 
-            color: #fff;
-            background: #ff003c;
-            box-shadow: 0 0 20px #ff003c;
-            border-color: #ff003c;
-        }
+        .action-btn.red-glow { border-color: #ff003c; color: #ff003c; }
+        .action-btn.red-glow:hover { background: #ff003c; color: #fff; box-shadow: 0 0 25px #ff003c; }
 
-        /* --- LOBBY SCREEN SHOWCASE --- */
-        .lobby-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .lobby-header h1 {
-            font-size: 2.5rem;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-        }
-        .room-id-tag {
-            font-size: 1.2rem;
-            color: #ff003c;
-            letter-spacing: 4px;
-            font-weight: 600;
-        }
+        /* --- الشاشة 3: اللوبي لـ 7 لاعبين جنباً إلى جنب (بدون مربعات خلفية) --- */
+        .lobby-header h1 { font-size: 2.5rem; letter-spacing: 10px; text-transform: uppercase; text-align: center;}
+        .room-tag { color: #ff003c; font-size: 1.3rem; text-align: center; letter-spacing: 3px; margin-top: 5px;}
 
-        .players-showcase {
+        .players-row {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
-            width: 100%;
-            min-height: 350px;
+            gap: 15px; /* مسافة متناسقة لتكفي 7 لاعبين عرضياً */
+            width: 95%;
+            max-width: 1600px;
+            margin: 40px 0;
         }
 
-        /* بطاقة اللاعب النظيفة والشفافة تماماً بدون أي خلفيات مربعة */
-        .player-card {
+        .player-slot {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: transparent; /* شفافة بالكامل */
-            border: none; /* بدون إطارات خارجية */
-            padding: 10px;
-            width: 220px;
-            animation: join-anim 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            width: 160px;
+            background: transparent;
+            animation: card-entry 0.5s ease-out forwards;
         }
 
-        @keyframes join-anim {
-            0% { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(5px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        @keyframes card-entry {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
-        .player-name-tag {
-            font-size: 1.5rem;
+        .player-name {
+            font-size: 1.2rem;
             font-weight: 700;
-            letter-spacing: 2px;
-            margin-top: 10px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
-            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            text-align: center;
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
         }
 
-        .player-status {
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            color: #a3e635;
-            text-shadow: 0 0 5px #a3e635;
-            margin-top: 3px;
-        }
-
-        .lobby-footer-btns {
-            margin-top: 40px;
-            display: flex;
-            gap: 20px;
-        }
-
-        /* --- VECTOR FRAME SYSTEM --- */
-        .frame-wrapper {
+        /* --- نظام الإطارات المرن --- */
+        .frame-box {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 150px;
+            height: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s ease;
         }
-
-        .rank-svg {
-            width: 100%;
-            height: 100%;
+        .rank-svg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2; }
+        .avatar-box {
             position: absolute;
-            top: 0; left: 0;
-            z-index: 2;
-        }
-
-        .avatar-container {
-            position: absolute;
-            width: 90px;
-            height: 103px;
-            top: 50px;
-            left: 65px;
+            width: 62px; height: 72px;
+            top: 34px; left: 44px;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            background: #111116;
+            background: #101015;
             z-index: 1;
         }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .avatar-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        /* ألوان وهالات الرتب */
+        .rank-bronze .accent-stroke { stroke: #b87333; } .rank-bronze .glow-effect { filter: drop-shadow(0 0 5px #b87333); }
+        .rank-silver .accent-stroke { stroke: #9ca3af; } .rank-silver .glow-effect { filter: drop-shadow(0 0 5px #9ca3af); }
+        .rank-gold .accent-stroke { stroke: #d97706; } .rank-gold .glow-effect { filter: drop-shadow(0 0 8px #d97706); }
+        .rank-diamond .accent-stroke { stroke: #2563eb; } .rank-diamond .glow-effect { filter: drop-shadow(0 0 10px #2563eb); }
+        .rank-solar .accent-stroke { stroke: #ea580c; } .rank-solar .glow-effect { filter: drop-shadow(0 0 12px #ea580c); }
+
+        /* --- الشاشة 4: ساحة اللعبة الحقيقية (Gameplay Arena) --- */
+        #game-canvas {
+            background: radial-gradient(circle, #090914 0%, #020205 100%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
+        .game-ui {
+            position: absolute;
+            top: 20px; left: 20px;
+            font-family: inherit;
+            letter-spacing: 2px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .game-ui h2 { color: #ff003c; text-shadow: 0 0 10px #ff003c; }
 
-        /* Dynamic Rank Colors & Glows */
-        .rank-bronze .accent-fill { fill: url(#bronze-grad); }
-        .rank-bronze .accent-stroke { stroke: url(#bronze-grad); }
-        .rank-bronze .glow-effect { filter: drop-shadow(0 0 8px rgba(167,105,71,0.6)); }
-
-        .rank-silver .accent-fill { fill: url(#silver-grad); }
-        .rank-silver .accent-stroke { stroke: url(#silver-grad); }
-        .rank-silver .glow-effect { filter: drop-shadow(0 0 8px rgba(200,200,210,0.6)); }
-
-        .rank-gold .accent-fill { fill: url(#gold-grad); }
-        .rank-gold .accent-stroke { stroke: url(#gold-grad); }
-        .rank-gold .glow-effect { filter: drop-shadow(0 0 12px rgba(250,190,40,0.7)); }
-
-        .rank-platinum .accent-fill { fill: url(#plat-grad); }
-        .rank-platinum .accent-stroke { stroke: url(#plat-grad); }
-        .rank-platinum .glow-effect { filter: drop-shadow(0 0 12px rgba(180,210,200,0.7)); }
-
-        .rank-diamond .accent-fill { fill: url(#diamond-grad); }
-        .rank-diamond .accent-stroke { stroke: url(#diamond-grad); }
-        .rank-diamond .glow-effect { filter: drop-shadow(0 0 15px rgba(100,180,255,0.8)); }
-
-        .rank-ruby .accent-fill { fill: url(#ruby-grad); }
-        .rank-ruby .accent-stroke { stroke: url(#ruby-grad); }
-        .rank-ruby .glow-effect { filter: drop-shadow(0 0 15px rgba(240,50,80,0.8)); }
-
-        .rank-solar .accent-fill { fill: url(#solar-grad); }
-        .rank-solar .accent-stroke { stroke: url(#solar-grad); }
-        .rank-solar .glow-effect { filter: drop-shadow(0 0 20px rgba(250,130,20,0.9)); }
-
-        .rank-title {
-            font-size: 1.3rem;
+        /* لافتة الفوز */
+        .victory-screen {
+            position: absolute;
+            font-size: 4rem;
             font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-top: 5px;
+            color: #fff;
+            text-shadow: 0 0 30px #ff003c;
+            letter-spacing: 10px;
+            display: none;
+            z-index: 105;
         }
     </style>
 </head>
 <body>
 
-    <!-- BACKGROUND -->
-    <div id="environment">
-        <div class="stars"></div>
-        <div class="planet planet-1"></div>
-    </div>
+    <div id="environment"><div class="stars"></div></div>
 
-    <!-- REUSABLE SVG GRADIENTS -->
-    <svg style="position: absolute; width: 0; height: 0;">
-        <defs>
-            <linearGradient id="bronze-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#b87333"/><stop offset="50%" stop-color="#ffd7b5"/><stop offset="100%" stop-color="#5c341a"/>
-            </linearGradient>
-            <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#9ca3af"/><stop offset="50%" stop-color="#f3f4f6"/><stop offset="100%" stop-color="#374151"/>
-            </linearGradient>
-            <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#d97706"/><stop offset="50%" stop-color="#fef08a"/><stop offset="100%" stop-color="#78350f"/>
-            </linearGradient>
-            <linearGradient id="plat-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#475569"/><stop offset="30%" stop-color="#cbd5e1"/><stop offset="70%" stop-color="#fef08a"/><stop offset="100%" stop-color="#1e293b"/>
-            </linearGradient>
-            <linearGradient id="diamond-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#2563eb"/><stop offset="40%" stop-color="#93c5fd"/><stop offset="70%" stop-color="#fdf2e9"/><stop offset="100%" stop-color="#1d4ed8"/>
-            </linearGradient>
-            <linearGradient id="ruby-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#991b1b"/><stop offset="40%" stop-color="#f87171"/><stop offset="70%" stop-color="#ffe4e6"/><stop offset="100%" stop-color="#450a0a"/>
-            </linearGradient>
-            <linearGradient id="solar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ea580c"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#7c2d12"/>
-            </linearGradient>
-        </defs>
-    </svg>
-
-    <!-- PHASE 1: START SCREEN -->
     <div id="phase1" class="screen">
-        <button id="start-btn">START</button>
+        <button id="start-btn">COSMIC ARENA</button>
     </div>
 
-    <!-- PHASE 2: PROFILE SETUP (LIVE PREVIEW BEFORE ENTRY) -->
     <div id="phase2" class="screen hidden">
-        <div class="setup-container">
-            
-            <!-- LIVE PREVIEW CONTAINER (الإطار والصورة تظهر هنا مباشرة أمامك لتعديلها) -->
-            <div id="preview-card" class="player-card">
-                <div id="preview-frame-wrapper" class="frame-wrapper rank-bronze">
-                    <div class="avatar-container">
-                        <img id="preview-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Avatar">
+        <div class="clean-container">
+            <div class="player-slot" style="width:200px;">
+                <div id="preview-frame" class="frame-box rank-bronze">
+                    <div class="avatar-box">
+                        <img id="preview-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
                     </div>
-                    <!-- Dynamic Live Vector Frame -->
-                    <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="4" stroke-opacity="0.8"/>
-                        <polygon points="130,48 192,80 192,160 130,192 68,160 68,80" class="accent-stroke" stroke-width="1" stroke-opacity="0.4"/>
-                        <path d="M52,70 Q25,90 35,140 Q45,165 62,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                        <path d="M208,70 Q235,90 225,140 Q215,165 198,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                        <path d="M110,32 L130,18 L150,32 L130,26 Z" class="accent-fill"/>
-                        <polygon points="130,218 134,226 143,226 136,231 139,240 130,234 121,240 124,231 117,226 126,226" class="accent-fill"/>
+                    <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none">
+                        <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="5"/>
+                        <path d="M52,70 Q25,90 35,140" class="accent-stroke" stroke-width="4"/>
+                        <path d="M208,70 Q235,90 225,140" class="accent-stroke" stroke-width="4"/>
                     </svg>
                 </div>
-                <div id="preview-rank-title" class="rank-title" style="color: #cd7f32;">Bronze</div>
+                <div id="preview-rank-text" class="player-name" style="color:#b87333; font-size:1rem;">BRONZE</div>
             </div>
-
-            <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
-            <input type="file" id="upload-pic" accept="image/*" hidden>
 
             <select id="rank-select" class="glow-text">
                 <option value="bronze">RANK: BRONZE</option>
                 <option value="silver">RANK: SILVER</option>
                 <option value="gold">RANK: GOLD</option>
-                <option value="platinum">RANK: PLATINUM</option>
                 <option value="diamond">RANK: DIAMOND</option>
-                <option value="ruby">RANK: RUBY</option>
                 <option value="solar">RANK: SOLAR</option>
             </select>
 
-            <input type="text" id="player-name" class="glow-text" value="RECON_SOLDIER" placeholder="ENTER PLAYER NAME" autocomplete="off" maxlength="14">
+            <input type="text" id="player-name" class="glow-text" value="PILOT_01" autocomplete="off" maxlength="12">
             
             <div class="multiplayer-btns">
-                <button id="join-room-btn" class="action-btn">JOIN ROOM</button>
-                <button id="create-room-btn" class="action-btn red-glow">CREATE ROOM</button>
+                <button id="create-room-btn" class="action-btn red-glow">CREATE ARENA</button>
             </div>
         </div>
     </div>
 
-    <!-- PHASE 3: MULTIPLAYER LOBBY (CLEAN SHOWCASE SIDE-BY-SIDE) -->
     <div id="phase3" class="screen hidden">
         <div class="lobby-header">
-            <h1>MULTIPLAYER LOBBY</h1>
-            <div id="room-id-display" class="room-id-tag">ROOM ID: #0000</div>
+            <h1>MATCHMAKING LOBBY</h1>
+            <div id="room-id" class="room-tag">ROOM: #7777</div>
         </div>
 
-        <!-- ساحة عرض اللاعبين النظيفة بدون مربعات خلفية -->
-        <div id="players-showcase" class="players-showcase"></div>
+        <div id="players-row" class="players-row"></div>
 
-        <div class="lobby-footer-btns">
-            <button id="leave-lobby-btn" class="action-btn" style="font-color: rgba(255,255,255,0.6);">LEAVE ROOM</button>
-            <button id="start-game-btn" class="action-btn red-glow">START MATCH</button>
+        <div class="multiplayer-btns">
+            <button id="leave-btn" class="action-btn">LEAVE</button>
+            <button id="launch-btn" class="action-btn red-glow">LAUNCH MATCH</button>
         </div>
     </div>
 
+    <div id="phase4" class="screen hidden">
+        <div class="game-ui">
+            <h2>COSMIC ARENA: FREE FOR ALL</h2>
+            <p>CONTROLS: ARROWS / WASD TO MOVE | MOUSE TO AIM & CLICK TO SHOOT</p>
+            <p style="color: #a3e635;">PLAYERS ALIVE: <span id="alive-count">7</span> / 7</p>
+        </div>
+        <div id="victory-banner" class="victory-screen">VICTORY!</div>
+        <canvas id="game-canvas" width="1200" height="700"></canvas>
+    </div>
+
     <script>
-        // --- DOM ELEMENTS ---
-        const startBtn = document.getElementById('start-btn');
-        const phase1 = document.getElementById('phase1');
-        const phase2 = document.getElementById('phase2');
-        const phase3 = document.getElementById('phase3');
-        
-        const rankSelect = document.getElementById('rank-select');
-        const playerNameInput = document.getElementById('player-name');
-        const uploadPic = document.getElementById('upload-pic');
-        
-        const previewFrameWrapper = document.getElementById('preview-frame-wrapper');
-        const previewRankTitle = document.getElementById('preview-rank-title');
-        const previewImg = document.getElementById('preview-img');
+        // --- عناصر واجهة المستخدم ---
+        const phase1 = document.getElementById('phase1'), phase2 = document.getElementById('phase2');
+        const phase3 = document.getElementById('phase3'), phase4 = document.getElementById('phase4');
+        const startBtn = document.getElementById('start-btn'), createRoomBtn = document.getElementById('create-room-btn');
+        const launchBtn = document.getElementById('launch-btn'), leaveBtn = document.getElementById('leave-btn');
+        const rankSelect = document.getElementById('rank-select'), playerNameInput = document.getElementById('player-name');
+        const previewFrame = document.getElementById('preview-frame'), previewRankText = document.getElementById('preview-rank-text');
+        const playersRow = document.getElementById('players-row'), canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
 
-        const createRoomBtn = document.getElementById('create-room-btn');
-        const joinRoomBtn = document.getElementById('join-room-btn');
-        const leaveLobbyBtn = document.getElementById('leave-lobby-btn');
-        const playersShowcase = document.getElementById('players-showcase');
-        const roomIdDisplay = document.getElementById('room-id-display');
+        // --- البيانات العامة والألوان ---
+        const rankColors = { bronze: '#b87333', silver: '#9ca3af', gold: '#d97706', diamond: '#2563eb', solar: '#ea580c' };
+        let myData = { name: "PILOT_01", rank: "bronze", avatar: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" };
 
-        // --- STATE DATA ---
-        let particleInterval;
-        let myAvatarData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-        
-        const rankColors = {
-            bronze: '#cd7f32', silver: '#e5e4e2', gold: '#ffe600',
-            platinum: '#a3e635', diamond: '#60a5fa', ruby: '#f43f5e', solar: '#f97316'
-        };
-
-        const mockPlayers = [
-            { name: "VORTEX_GHOST", rank: "diamond", avatar: "https://picsum.photos/id/1025/100/100" },
-            { name: "PHOENIX_N1", rank: "ruby", avatar: "https://picsum.photos/id/1074/100/100" }
+        // توليد 6 لاعبين وهميين لإكمال الـ 7 لاعبين في اللوبي واللعبة
+        const botsData = [
+            { name: "X_SHADOW_X", rank: "solar" },
+            { name: "VORTEX", rank: "diamond" },
+            { name: "KINETIC", rank: "gold" },
+            { name: "Z3RO_COOL", rank: "silver" },
+            { name: "CYPHER", rank: "diamond" },
+            { name: "TITAN", rank: "bronze" }
         ];
 
-        // --- LIVE PREVIEW UPDATES IN PHASE 2 ---
+        // --- المعاينة الفورية في القائمة قبل الدخول ---
         rankSelect.addEventListener('change', (e) => {
-            const val = e.target.value;
-            previewFrameWrapper.className = `frame-wrapper rank-${val}`;
-            previewRankTitle.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-            previewRankTitle.style.color = rankColors[val];
+            myData.rank = e.target.value;
+            previewFrame.className = `frame-box rank-${myData.rank}`;
+            previewRankText.textContent = myData.rank.toUpperCase();
+            previewRankText.style.color = rankColors[myData.rank];
         });
 
-        uploadPic.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    myAvatarData = event.target.result;
-                    previewImg.src = myAvatarData;
-                };
-                reader.readAsDataURL(file);
-            }
+        startBtn.addEventListener('click', () => {
+            phase1.classList.add('hidden');
+            setTimeout(() => phase2.classList.remove('hidden'), 400);
         });
 
-        // --- AMBIENT PARTICLES ---
-        function createParticles(e, burstCount = 1) {
-            const rect = startBtn.getBoundingClientRect();
-            const btnCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            for (let i = 0; i < burstCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                const size = Math.random() * 4 + 2;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${btnCenter.x + (Math.random() - 0.5) * rect.width}px`;
-                particle.style.top = `${btnCenter.y + (Math.random() - 0.5) * rect.height}px`;
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = Math.random() * 100 + 50;
-                particle.style.setProperty('--dx', `${Math.cos(angle) * velocity}px`);
-                particle.style.setProperty('--dy', `${Math.sin(angle) * velocity}px`);
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 1000);
-            }
+        // --- بناء اللوبي السينمائي لـ 7 لاعبين جنب بعض ---
+        function buildLobby() {
+            playersRow.innerHTML = ''; // تنظيف
+            myData.name = playerNameInput.value.toUpperCase() || "PILOT_01";
+
+            // 1. إدخالك أنت كلاعب أول
+            playersRow.innerHTML += createPlayerSlotHTML(myData.name, myData.rank, myData.avatar, "#ff003c");
+
+            // 2. إدخال الـ 6 لاعبين الآخرين بجانبك فوراً ليكون الإجمالي 7
+            botsData.forEach((bot, index) => {
+                setTimeout(() => {
+                    playersRow.innerHTML += createPlayerSlotHTML(bot.name, bot.rank, myData.avatar, rankColors[bot.rank]);
+                }, (index + 1) * 250); // أنيميشن دخول متتالي رهيب
+            });
         }
 
-        startBtn.addEventListener('mouseenter', (e) => {
-            createParticles(e, 5);
-            particleInterval = setInterval(() => createParticles(e, 2), 100);
-        });
-        startBtn.addEventListener('mouseleave', () => clearInterval(particleInterval));
-        startBtn.addEventListener('click', (e) => {
-            clearInterval(particleInterval);
-            createParticles(e, 30);
-            setTimeout(() => {
-                phase1.classList.add('hidden');
-                setTimeout(() => phase2.classList.remove('hidden'), 400);
-            }, 300);
-        });
-
-        // --- GENERATE CLEAN CARD HTML ---
-        function generatePlayerCardHTML(name, rank, avatarUrl) {
-            const color = rankColors[rank];
+        function createPlayerSlotHTML(name, rank, av, textColor) {
             return `
-                <div class="player-card">
-                    <div class="frame-wrapper rank-${rank}">
-                        <div class="avatar-container">
-                            <img src="${avatarUrl}" alt="Avatar">
-                        </div>
-                        <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="4" stroke-opacity="0.8"/>
-                            <polygon points="130,48 192,80 192,160 130,192 68,160 68,80" class="accent-stroke" stroke-width="1" stroke-opacity="0.4"/>
-                            <path d="M52,70 Q25,90 35,140 Q45,165 62,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M208,70 Q235,90 225,140 Q215,165 198,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M110,32 L130,18 L150,32 L130,26 Z" class="accent-fill"/>
-                            <polygon points="130,218 134,226 143,226 136,231 139,240 130,234 121,240 124,231 117,226 126,226" class="accent-fill"/>
+                <div class="player-slot">
+                    <div class="frame-box rank-${rank}">
+                        <div class="avatar-box"><img src="${av}"></div>
+                        <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none">
+                            <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="5"/>
                         </svg>
                     </div>
-                    <div class="rank-title" style="color: ${color};">${rank}</div>
-                    <div class="player-name-tag">${name}</div>
-                    <div class="player-status">READY</div>
+                    <div class="player-name" style="color:${textColor}">${name}</div>
+                    <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); letter-spacing:1px; margin-top:2px;">READY</div>
                 </div>
             `;
         }
 
-        function renderLobby(roomId) {
-            roomIdDisplay.textContent = `ROOM ID: #${roomId}`;
-            playersShowcase.innerHTML = ''; 
-
-            // إضافة بطاقتك النظيفة
-            const myName = playerNameInput.value.trim() || "PLAYER";
-            const myRank = rankSelect.value;
-            playersShowcase.innerHTML += generatePlayerCardHTML(myName, myRank, myAvatarData);
-
-            // إضافة بقية اللاعبين بجانبك
-            mockPlayers.forEach((p, index) => {
-                setTimeout(() => {
-                    playersShowcase.innerHTML += generatePlayerCardHTML(p.name, p.rank, p.avatar);
-                }, (index + 1) * 600);
-            });
-        }
-
         createRoomBtn.addEventListener('click', () => {
-            const randomRoomId = Math.floor(1000 + Math.random() * 9000);
             phase2.classList.add('hidden');
             setTimeout(() => {
                 phase3.classList.remove('hidden');
-                renderLobby(randomRoomId);
+                buildLobby();
             }, 400);
         });
 
-        joinRoomBtn.addEventListener('click', () => {
-            const targetRoom = prompt("ENTER 4-DIGIT ROOM ID:", "4590");
-            if (targetRoom) {
-                phase2.classList.add('hidden');
-                setTimeout(() => {
-                    phase3.classList.remove('hidden');
-                    renderLobby(targetRoom);
-                }, 400);
+        leaveBtn.addEventListener('click', () => {
+            phase3.classList.add('hidden');
+            setTimeout(() => phase2.classList.remove('hidden'), 400);
+        });
+
+        // ==========================================
+        // 🎮 محرك اللعبة الحقيقي من 0 إلى 100 (GAME ENGINE)
+        // ==========================================
+        let players = [];
+        let bullets = [];
+        let gameLoopId;
+        let keys = {};
+
+        // مراقبة أزرار الكيبورد للتحكم
+        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+        
+        // مراقبة الماوس للتصويب والإطلاق
+        let mouseX = 0, mouseY = 0;
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        canvas.addEventListener('mousedown', () => {
+            if (players[0] && players[0].alive) {
+                fireBullet(players[0], mouseX, mouseY);
             }
         });
 
-        leaveLobbyBtn.addEventListener('click', () => {
+        function setupGame() {
+            players = [];
+            bullets = [];
+            document.getElementById('victory-banner').style.display = 'none';
+
+            // إضافتك كلاعب رقم 1 (المركبة الحمراء المتحكم بها)
+            players.push({
+                id: 0, x: 100, y: 350, vx: 0, vy: 0, radius: 20,
+                color: '#ff003c', name: myData.name, isBot: false, alive: true, angle: 0
+            });
+
+            // إضافة الـ 6 لاعبين الآخرين كـ الأعداء (ذكاء اصطناعي يتحركون ويطلقون النار تلقائياً)
+            botsData.forEach((bot, i) => {
+                players.push({
+                    id: i + 1,
+                    x: 400 + (i * 120),
+                    y: 100 + (Math.random() * 500),
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    radius: 20,
+                    color: rankColors[bot.rank],
+                    name: bot.name,
+                    isBot: true,
+                    alive: true,
+                    angle: 0,
+                    lastShot: 0
+                });
+            });
+        }
+
+        function fireBullet(fromPlayer, targetX, targetY) {
+            const angle = Math.atan2(targetY - fromPlayer.y, targetX - fromPlayer.x);
+            bullets.push({
+                x: fromPlayer.x + Math.cos(angle) * 25,
+                y: fromPlayer.y + Math.sin(angle) * 25,
+                vx: Math.cos(angle) * 10,
+                vy: Math.sin(angle) * 10,
+                owner: fromPlayer.id,
+                color: fromPlayer.color
+            });
+        }
+
+        function updateGame() {
+            // 1. تحريك اللاعب البشري (أنت) بواسطة WASD أو الأسهم
+            const p = players[0];
+            if (p && p.alive) {
+                if (keys['w'] || keys['arrowup']) p.y -= 4;
+                if (keys['s'] || keys['arrowdown']) p.y += 4;
+                if (keys['a'] || keys['arrowleft']) p.x -= 4;
+                if (keys['d'] || keys['arrowright']) p.x += 4;
+                p.angle = Math.atan2(mouseY - p.y, mouseX - p.x);
+
+                // الحدود لمنع الخروج من الشاشة
+                p.x = Math.max(p.radius, Math.min(canvas.width - p.radius, p.x));
+                p.y = Math.max(p.radius, Math.min(canvas.height - p.radius, p.y));
+            }
+
+            // 2. تحريك الـ 6 لاعبين الآخرين (الذكاء الاصطناعي Bot AI)
+            players.forEach(pl => {
+                if (!pl.alive || !pl.isBot) return;
+
+                // حركة عشوائية ذكية داخل الساحة
+                pl.x += pl.vx; pl.y += pl.vy;
+                if (pl.x < pl.radius || pl.x > canvas.width - pl.radius) pl.vx *= -1;
+                if (pl.y < pl.radius || pl.y > canvas.height - pl.radius) pl.vy *= -1;
+
+                // تصويب تلقائي وإطلاق نار على أقرب لاعب حي كل ثانية
+                let now = Date.now();
+                if (now - pl.lastShot > 1200) {
+                    let target = players.find(t => t.id !== pl.id && t.alive);
+                    if (target) {
+                        fireBullet(pl, target.x, target.y);
+                        pl.angle = Math.atan2(target.y - pl.y, target.x - pl.x);
+                    }
+                    pl.lastShot = now;
+                }
+            });
+
+            // 3. تحريك وتحديث الطلقات والاصطدامات
+            bullets.forEach((b, bIdx) => {
+                b.x += b.vx; b.y += b.vy;
+
+                // اصطدام الرصاصة باللاعبين
+                players.forEach(pl => {
+                    if (pl.alive && b.owner !== pl.id) {
+                        let dist = Math.hypot(b.x - pl.x, b.y - pl.y);
+                        if (dist < pl.radius) {
+                            pl.alive = false; // خروج اللاعب المصاب فوراً
+                            bullets.splice(bIdx, 1);
+                        }
+                    }
+                });
+            });
+
+            // تنظيف الرصاص خارج الشاشة
+            bullets = bullets.filter(b => b.x > 0 && b.x < canvas.width && b.y > 0 && b.y < canvas.height);
+
+            // 4. حساب عدد الأحياء والتحقق من الفائز
+            let alivePlayers = players.filter(pl => pl.alive);
+            document.getElementById('alive-count').textContent = alivePlayers.length;
+
+            if (alivePlayers.length === 1) {
+                const winnerBanner = document.getElementById('victory-banner');
+                winnerBanner.textContent = `${alivePlayers[0].name} WINS!`;
+                winnerBanner.style.display = 'block';
+            }
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم الطلقات الليزرية الفضائية
+            bullets.forEach(b => {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = b.color;
+                ctx.shadowBlur = 15; ctx.shadowColor = b.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // إعادة التعيين لعدم تدمير الأداء
+            });
+
+            // رسم الـ 7 لاعبين (مركبات دائرية سينمائية موجهة)
+            players.forEach(pl => {
+                if (!pl.alive) return;
+
+                ctx.save();
+                ctx.translate(pl.x, pl.y);
+                ctx.rotate(pl.angle);
+
+                // رسم جسم المركبة الفضائية المثلث القتالي
+                ctx.beginPath();
+                ctx.moveTo(25, 0);
+                ctx.lineTo(-15, -15);
+                ctx.lineTo(-15, 15);
+                ctx.closePath();
+                ctx.fillStyle = pl.color;
+                ctx.shadowBlur = 20; ctx.shadowColor = pl.color;
+                ctx.fill();
+
+                // قمرة القيادة النظيفة
+                ctx.beginPath();
+                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+                ctx.restore();
+                ctx.shadowBlur = 0;
+
+                // رسم اسم اللاعب فوق رأس المركبة الفضائية مباشرة وبشفافية
+                ctx.font = 'bold 12px Rajdhani';
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                ctx.textAlign = 'center';
+                ctx.fillText(pl.name, pl.x, pl.y - 30);
+            });
+        }
+
+        function mainLoop() {
+            updateGame();
+            drawGame();
+            gameLoopId = requestAnimationFrame(mainLoop);
+        }
+
+        launchBtn.addEventListener('click', () => {
             phase3.classList.add('hidden');
-            setTimeout(() => phase2.classList.remove('hidden'), 400);
+            setTimeout(() => {
+                phase4.classList.remove('hidden');
+                setupGame();
+                mainLoop();
+            }, 400);
         });
     </script>
 </body>
