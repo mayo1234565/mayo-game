@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinematic AAA Game Menu - Vector Frames</title>
+    <title>Cinematic AAA Game Menu & Lobby</title>
     <style>
         /* --- GLOBAL STYLES --- */
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
 
         * {
             box-sizing: border-box;
@@ -73,13 +73,13 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            transition: opacity 1.5s ease, transform 1.5s ease;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .hidden {
             opacity: 0;
             pointer-events: none;
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-20px);
         }
 
         /* --- START SCREEN --- */
@@ -115,28 +115,175 @@
             100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
         }
 
-        /* --- LOBBY SCREEN --- */
-        .lobby-ui {
+        /* --- INTERACTIVE PROFILE SETUP --- */
+        .setup-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 30px;
-            width: 100%;
-            max-width: 800px;
+            gap: 20px;
+            background: rgba(5, 5, 10, 0.75);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .controls {
+        .glow-text {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            outline: none;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 10px;
+            width: 300px;
+            text-transform: uppercase;
+            transition: border-color 0.3s, text-shadow 0.3s;
+        }
+        input[type="text"]:focus {
+            border-bottom: 1px solid #ff003c;
+            text-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+        }
+
+        select {
+            appearance: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            cursor: pointer;
+            text-align-last: center;
+        }
+        select option { background: #050505; color: #fff; }
+
+        .upload-lbl {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .upload-lbl:hover { color: #fff; text-shadow: 0 0 5px #fff; }
+
+        .multiplayer-btns { display: flex; gap: 30px; margin-top: 10px; }
+        .action-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 25px;
+            color: rgba(255,255,255,0.8);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover { 
+            color: #fff; 
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        .action-btn.red-glow {
+            border-color: rgba(255, 0, 60, 0.4);
+            color: #ff003c;
+        }
+        .action-btn.red-glow:hover { 
+            color: #fff;
+            background: #ff003c;
+            box-shadow: 0 0 20px #ff003c;
+            border-color: #ff003c;
+        }
+
+        /* --- CINEMATIC MULTIPLAYER LOBBY SCREEN (PHASE 3) --- */
+        .lobby-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .lobby-header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+        .room-id-tag {
+            font-size: 1.2rem;
+            color: #ff003c;
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-top: 5px;
+            text-shadow: 0 0 10px rgba(255,0,60,0.4);
+        }
+
+        /* طريقة العرض الجانبية الممتازة للاعبين */
+        .players-showcase {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            width: 90%;
+            max-width: 1400px;
+            min-height: 400px;
+            padding: 20px;
+            background: radial-gradient(ellipse at center, rgba(15,15,25,0.6) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        /* بطاقة اللاعب داخل اللوبي */
+        .player-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            background: linear-gradient(180deg, rgba(20,20,30,0.6) 0%, rgba(5,5,10,0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            border-radius: 12px;
+            width: 240px;
+            position: relative;
+            animation: join-anim 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        /* --- DECORATIVE SVG FRAME SYSTEM --- */
+        @keyframes join-anim {
+            0% { opacity: 0; transform: scale(0.7) translateY(50px); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        .player-card .player-name-tag {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            text-align: center;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .player-card .player-status {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: #a3e635;
+            text-shadow: 0 0 5px #a3e635;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .lobby-footer-btns {
+            margin-top: 5px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* --- VECTOR FRAME SYSTEM --- */
         .frame-wrapper {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 200px;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -146,18 +293,16 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             z-index: 2;
         }
 
-        /* Avatar Container mapped inside the SVG Hexagon space */
         .avatar-container {
             position: absolute;
-            width: 106px;
-            height: 122px;
-            top: 59px;
-            left: 77px;
+            width: 82px;
+            height: 94px;
+            top: 45px;
+            left: 59px;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             background: #111116;
             z-index: 1;
@@ -169,7 +314,7 @@
             object-fit: cover;
         }
 
-        /* Dynamic Rank Colors & Glows via classes */
+        /* Dynamic Rank Colors & Glows */
         .rank-bronze .accent-fill { fill: url(#bronze-grad); }
         .rank-bronze .accent-stroke { stroke: url(#bronze-grad); }
         .rank-bronze .glow-effect { filter: drop-shadow(0 0 8px rgba(167,105,71,0.6)); }
@@ -199,69 +344,12 @@
         .rank-solar .glow-effect { filter: drop-shadow(0 0 20px rgba(250,130,20,0.9)); }
 
         .rank-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-top: -10px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
-
-        /* Form Controls */
-        .glow-text {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
             font-size: 1.2rem;
-            letter-spacing: 2px;
-            outline: none;
-            text-align: center;
-        }
-
-        input[type="text"] {
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 10px;
-            width: 300px;
-            transition: border-color 0.3s, text-shadow 0.3s;
-        }
-        input[type="text"]:focus {
-            border-bottom: 1px solid #fff;
-            text-shadow: 0 0 10px #fff;
-        }
-        input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
-
-        select {
-            appearance: none;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 20px;
-            cursor: pointer;
-        }
-        select option { background: #050505; color: #fff; }
-
-        .upload-lbl {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.5);
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        .upload-lbl:hover { color: #fff; text-shadow: 0 0 5px #fff; }
-
-        .multiplayer-btns { display: flex; gap: 40px; margin-top: 10px; }
-        .action-btn {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.6);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2rem;
             font-weight: 700;
-            letter-spacing: 4px;
-            cursor: pointer;
-            position: relative;
-            transition: color 0.3s, transform 0.3s;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: -5px;
         }
-        .action-btn:hover { color: #fff; transform: translateY(-2px); text-shadow: 0 0 15px #fff; }
-        .action-btn.red-glow:hover { color: #ff003c; text-shadow: 0 0 15px #ff003c; }
     </style>
 </head>
 <body>
@@ -271,125 +359,110 @@
         <div class="planet planet-1"></div>
     </div>
 
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <linearGradient id="bronze-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#b87333"/><stop offset="50%" stop-color="#ffd7b5"/><stop offset="100%" stop-color="#5c341a"/>
+            </linearGradient>
+            <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#9ca3af"/><stop offset="50%" stop-color="#f3f4f6"/><stop offset="100%" stop-color="#374151"/>
+            </linearGradient>
+            <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#d97706"/><stop offset="50%" stop-color="#fef08a"/><stop offset="100%" stop-color="#78350f"/>
+            </linearGradient>
+            <linearGradient id="plat-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#475569"/><stop offset="30%" stop-color="#cbd5e1"/><stop offset="70%" stop-color="#fef08a"/><stop offset="100%" stop-color="#1e293b"/>
+            </linearGradient>
+            <linearGradient id="diamond-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2563eb"/><stop offset="40%" stop-color="#93c5fd"/><stop offset="70%" stop-color="#fdf2e9"/><stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+            <linearGradient id="ruby-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#991b1b"/><stop offset="40%" stop-color="#f87171"/><stop offset="70%" stop-color="#ffe4e6"/><stop offset="100%" stop-color="#450a0a"/>
+            </linearGradient>
+            <linearGradient id="solar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ea580c"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#7c2d12"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
     <div id="phase1" class="screen">
         <button id="start-btn">START</button>
     </div>
 
     <div id="phase2" class="screen hidden">
-        <div class="lobby-ui">
+        <div class="setup-container">
+            <h2 style="letter-spacing: 5px; font-weight: 700; margin-bottom: 10px;">PLAYER PROFILE</h2>
             
-            <div class="controls">
-                <div id="frame-container" class="frame-wrapper rank-bronze">
-                    
-                    <div class="avatar-container">
-                        <img id="profile-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Avatar">
-                    </div>
+            <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
+            <input type="file" id="upload-pic" accept="image/*" hidden>
 
-                    <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="bronze-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#b87333"/>
-                                <stop offset="50%" stop-color="#ffd7b5"/>
-                                <stop offset="100%" stop-color="#5c341a"/>
-                            </linearGradient>
-                            <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#9ca3af"/>
-                                <stop offset="50%" stop-color="#f3f4f6"/>
-                                <stop offset="100%" stop-color="#374151"/>
-                            </linearGradient>
-                            <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#d97706"/>
-                                <stop offset="50%" stop-color="#fef08a"/>
-                                <stop offset="100%" stop-color="#78350f"/>
-                            </linearGradient>
-                            <linearGradient id="plat-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#475569"/>
-                                <stop offset="30%" stop-color="#cbd5e1"/>
-                                <stop offset="70%" stop-color="#fef08a"/>
-                                <stop offset="100%" stop-color="#1e293b"/>
-                            </linearGradient>
-                            <linearGradient id="diamond-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#2563eb"/>
-                                <stop offset="40%" stop-color="#93c5fd"/>
-                                <stop offset="70%" stop-color="#fdf2e9"/>
-                                <stop offset="100%" stop-color="#1d4ed8"/>
-                            </linearGradient>
-                            <linearGradient id="ruby-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#991b1b"/>
-                                <stop offset="40%" stop-color="#f87171"/>
-                                <stop offset="70%" stop-color="#ffe4e6"/>
-                                <stop offset="100%" stop-color="#450a0a"/>
-                            </linearGradient>
-                            <linearGradient id="solar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ea580c"/>
-                                <stop offset="50%" stop-color="#facc15"/>
-                                <stop offset="100%" stop-color="#7c2d12"/>
-                            </linearGradient>
-                        </defs>
+            <select id="rank-select" class="glow-text">
+                <option value="bronze">RANK: BRONZE</option>
+                <option value="silver">RANK: SILVER</option>
+                <option value="gold">RANK: GOLD</option>
+                <option value="platinum">RANK: PLATINUM</option>
+                <option value="diamond">RANK: DIAMOND</option>
+                <option value="ruby">RANK: RUBY</option>
+                <option value="solar">RANK: SOLAR</option>
+            </select>
 
-                        <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="4" stroke-opacity="0.8"/>
-                        <polygon points="130,48 192,80 192,160 130,192 68,160 68,80" class="accent-stroke" stroke-width="1" stroke-opacity="0.4"/>
-
-                        <path d="M52,70 Q25,90 35,140 Q45,165 62,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                        <path d="M42,85 C20,100 25,120 40,135" class="accent-stroke" stroke-width="3"/>
-                        <path d="M48,60 L35,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M36,105 L20,112" class="accent-stroke" stroke-width="3"/>
-                        <path d="M38,130 L24,140" class="accent-stroke" stroke-width="3"/>
-
-                        <path d="M208,70 Q235,90 225,140 Q215,165 198,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
-                        <path d="M218,85 C240,100 235,120 220,135" class="accent-stroke" stroke-width="3"/>
-                        <path d="M212,60 L225,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M224,105 L240,112" class="accent-stroke" stroke-width="3"/>
-                        <path d="M222,130 L236,140" class="accent-stroke" stroke-width="3"/>
-                        
-                        <path d="M110,32 L130,18 L150,32 L130,26 Z" class="accent-fill"/>
-
-                        <polygon points="50,198 52,203 57,203 53,206 55,211 50,208 45,211 47,206 43,203 48,203" class="accent-fill"/>
-                        <polygon points="85,213 87,219 93,219 88,222 90,228 85,224 80,228 82,222 77,219 83,219" class="accent-fill"/>
-                        <polygon points="130,218 134,226 143,226 136,231 139,240 130,234 121,240 124,231 117,226 126,226" class="accent-fill"/>
-                        <polygon points="175,213 177,219 183,219 178,222 180,228 175,224 170,228 172,222 167,219 173,219" class="accent-fill"/>
-                        <polygon points="210,198 212,203 217,203 213,206 215,211 210,208 205,211 207,206 203,203 208,203" class="accent-fill"/>
-                    </svg>
-                </div>
-                
-                <div id="rank-title-text" class="rank-title" style="color: #cd7f32;">Bronze</div>
-
-                <label for="upload-pic" class="upload-lbl">CLICK TO UPLOAD AVATAR</label>
-                <input type="file" id="upload-pic" accept="image/*" hidden>
-
-                <select id="rank-select" class="glow-text">
-                    <option value="bronze">RANK: BRONZE</option>
-                    <option value="silver">RANK: SILVER</option>
-                    <option value="gold">RANK: GOLD</option>
-                    <option value="platinum">RANK: PLATINUM</option>
-                    <option value="diamond">RANK: DIAMOND</option>
-                    <option value="ruby">RANK: RUBY</option>
-                    <option value="solar">RANK: SOLAR</option>
-                </select>
-
-                <input type="text" id="player-name" class="glow-text" placeholder="ENTER PLAYER NAME" autocomplete="off">
-            </div>
-
+            <input type="text" id="player-name" class="glow-text" value="RECON_SOLDIER" placeholder="ENTER PLAYER NAME" autocomplete="off" maxlength="14">
+            
             <div class="multiplayer-btns">
-                <button class="action-btn">JOIN ROOM</button>
-                <button class="action-btn red-glow">CREATE ROOM</button>
+                <button id="join-room-btn" class="action-btn">JOIN ROOM</button>
+                <button id="create-room-btn" class="action-btn red-glow">CREATE ROOM</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="phase3" class="screen hidden">
+        <div class="lobby-header">
+            <h1 id="lobby-title">MULTIPLAYER LOBBY</h1>
+            <div id="room-id-display" class="room-id-tag">ROOM ID: #0000</div>
+        </div>
+
+        <div id="players-showcase" class="players-showcase">
             </div>
 
+        <div class="lobby-footer-btns">
+            <button id="leave-lobby-btn" class="action-btn" style="font-size: 1.1rem; border-color: rgba(255,255,255,0.1)">LEAVE ROOM</button>
+            <button id="start-game-btn" class="action-btn red-glow" style="font-size: 1.1rem;">START MATCH</button>
         </div>
     </div>
 
     <script>
+        // --- DOM ELEMENTS ---
         const startBtn = document.getElementById('start-btn');
         const phase1 = document.getElementById('phase1');
         const phase2 = document.getElementById('phase2');
-        const frameContainer = document.getElementById('frame-container');
+        const phase3 = document.getElementById('phase3');
+        
         const rankSelect = document.getElementById('rank-select');
-        const rankTitleText = document.getElementById('rank-title-text');
+        const playerNameInput = document.getElementById('player-name');
         const uploadPic = document.getElementById('upload-pic');
-        const profileImg = document.getElementById('profile-img');
+        
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const leaveLobbyBtn = document.getElementById('leave-lobby-btn');
+        const playersShowcase = document.getElementById('players-showcase');
+        const roomIdDisplay = document.getElementById('room-id-display');
 
+        // --- STATE DATA ---
         let particleInterval;
+        let myAvatarData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+        
+        const rankColors = {
+            bronze: '#cd7f32', silver: '#e5e4e2', gold: '#ffe600',
+            platinum: '#a3e635', diamond: '#60a5fa', ruby: '#f43f5e', solar: '#f97316'
+        };
 
+        // مصفوفة وهمية للاعبين الآخرين لجعل اللوبي يبدو رائعاً ومليئاً باللاعبين عند الانضمام
+        const mockPlayers = [
+            { name: "VORTEX_GHOST", rank: "diamond", avatar: "https://picsum.photos/id/1025/100/100" },
+            { name: "PHOENIX_N1", rank: "ruby", avatar: "https://picsum.photos/id/1074/100/100" }
+        ];
+
+        // --- AMBIENT PARTICLES SYSTEM ---
         function createParticles(e, burstCount = 1) {
             const rect = startBtn.getBoundingClientRect();
             const btnCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
@@ -423,37 +496,99 @@
             createParticles(e, 30);
             setTimeout(() => {
                 phase1.classList.add('hidden');
-                setTimeout(() => phase2.classList.remove('hidden'), 600);
+                setTimeout(() => phase2.classList.remove('hidden'), 500);
             }, 300);
         });
 
+        // --- AVATAR UPLOAD ---
         uploadPic.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => profileImg.src = event.target.result;
+                reader.onload = (event) => {
+                    myAvatarData = event.target.result;
+                    alert("Avatar updated successfully!");
+                };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Color mapping for the rank text matching the image glows
-        const rankColors = {
-            bronze: '#cd7f32',
-            silver: '#e5e4e2',
-            gold: '#ffe600',
-            platinum: '#a3e635',
-            diamond: '#60a5fa',
-            ruby: '#f43f5e',
-            solar: '#f97316'
-        };
+        // --- FUNCTION TO GENERATE VECTOR CARD HTML ---
+        function generatePlayerCardHTML(name, rank, avatarUrl) {
+            const color = rankColors[rank];
+            return `
+                <div class="player-card">
+                    <div class="frame-wrapper rank-${rank}">
+                        <div class="avatar-container">
+                            <img src="${avatarUrl}" alt="Avatar">
+                        </div>
+                        <svg class="rank-svg glow-effect" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="130,42 200,77 200,163 130,198 60,163 60,77" class="accent-stroke" stroke-width="4" stroke-opacity="0.8"/>
+                            <polygon points="130,48 192,80 192,160 130,192 68,160 68,80" class="accent-stroke" stroke-width="1" stroke-opacity="0.4"/>
+                            <path d="M52,70 Q25,90 35,140 Q45,165 62,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M42,85 C20,100 25,120 40,135" class="accent-stroke" stroke-width="3"/>
+                            <path d="M48,60 L35,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M208,70 Q235,90 225,140 Q215,165 198,170" class="accent-stroke" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M212,60 L225,75" class="accent-stroke" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M110,32 L130,18 L150,32 L130,26 Z" class="accent-fill"/>
+                            <polygon points="130,218 134,226 143,226 136,231 139,240 130,234 121,240 124,231 117,226 126,226" class="accent-fill"/>
+                        </svg>
+                    </div>
+                    <div class="rank-title" style="color: ${color};">${rank}</div>
+                    <div class="player-name-tag">${name}</div>
+                    <div class="player-status">READY</div>
+                </div>
+            `;
+        }
 
-        rankSelect.addEventListener('change', (e) => {
-            const val = e.target.value;
-            // Clear current rank class and apply new one to update SVG styles
-            frameContainer.className = `frame-wrapper rank-${val}`;
-            // Update Text and color
-            rankTitleText.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-            rankTitleText.style.color = rankColors[val];
+        // --- LOBBY MANAGEMENT ---
+        function renderLobby(roomId) {
+            roomIdDisplay.textContent = `ROOM ID: #${roomId}`;
+            playersShowcase.innerHTML = ''; // تفريغ اللوبي أولاً
+
+            // 1. إضافة بطاقتك الخاصة أولاً كقائد للغرفة
+            const myName = playerNameInput.value.trim() || "PLAYER";
+            const myRank = rankSelect.value;
+            const myCard = generatePlayerCardHTML(myName, myRank, myAvatarData);
+            playersShowcase.innerHTML += myCard;
+
+            // 2. محاكاة انضمام اللاعبين الآخرين بشكل سينمائي بجانبك بعد ثوانٍ قليلة
+            mockPlayers.forEach((p, index) => {
+                setTimeout(() => {
+                    const otherCard = generatePlayerCardHTML(p.name, p.rank, p.avatar);
+                    playersShowcase.innerHTML += otherCard;
+                }, (index + 1) * 800); // يظهر كل لاعب بتأثير دخول زمني رائع
+            });
+        }
+
+        // زر إنشاء الغرفة
+        createRoomBtn.addEventListener('click', () => {
+            const randomRoomId = Math.floor(1000 + Math.random() * 9000);
+            phase2.classList.add('hidden');
+            setTimeout(() => {
+                phase3.classList.remove('hidden');
+                renderLobby(randomRoomId);
+            }, 500);
+        });
+
+        // زر الانضمام لغرفة
+        joinRoomBtn.addEventListener('click', () => {
+            const targetRoom = prompt("ENTER 4-DIGIT ROOM ID:", "4892");
+            if (targetRoom && targetRoom.trim() !== "") {
+                phase2.classList.add('hidden');
+                setTimeout(() => {
+                    phase3.classList.remove('hidden');
+                    renderLobby(targetRoom);
+                }, 500);
+            }
+        });
+
+        // مغادرة اللوبي والعودة للقائمة
+        leaveLobbyBtn.addEventListener('click', () => {
+            phase3.classList.add('hidden');
+            setTimeout(() => {
+                phase2.classList.remove('hidden');
+            }, 500);
         });
     </script>
 </body>
