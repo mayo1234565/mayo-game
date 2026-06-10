@@ -1,344 +1,303 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Clash - AAA Card Game</title>
+    <title>مين المختلف | Overwatch UI</title>
+    <!-- استدعاء Tailwind CSS وخطوط مشابهة لأوفرواتش -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=Teko:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* --- التصميم العام والخطوط --- */
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
-        body, html {
-            width: 100%; height: 100%;
-            background-color: #020204;
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; color: #fff;
+        :root {
+            --ow-orange: #f99e1a;
+            --ow-dark: #28354f;
+            --ow-light: #f3f3f3;
         }
-
-        /* --- خلفية الفضاء --- */
-        #environment {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+        body {
+            font-family: 'Tajawal', sans-serif;
+            /* خلفية شخصية من أوفرواتش */
+            background: url('https://images.hdqwalls.com/download/overwatch-2-genji-4k-7k-1920x1080.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            overflow: hidden;
+            user-select: none;
         }
-        .stars {
-            position: absolute; width: 2px; height: 2px; background: transparent;
-            box-shadow: 100px 200px #fff, 300px 500px #fff, 800px 100px #fff, 1200px 400px #fff, 500px 800px #fff, 1500px 900px #fff, 200px 900px #fff, 1000px 600px #fff, 1700px 200px #fff;
-            animation: twinkle 4s infinite alternate;
-        }
-        @keyframes twinkle { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
-
-        /* --- الشاشات الأساسية --- */
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 10; transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .hidden { opacity: 0; pointer-events: none; transform: scale(1.02) translateY(-10px); }
-
-        /* --- الأزرار والنصوص --- */
-        .title-text { font-size: 4rem; font-weight: 700; letter-spacing: 15px; text-shadow: 0 0 20px rgba(255,255,255,0.3); margin-bottom: 30px;}
-        .glow-text { background: transparent; border: none; color: #fff; font-family: inherit; font-size: 1.3rem; letter-spacing: 2px; outline: none; text-align: center; }
+        .ow-font { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
         
-        input[type="text"] { border-bottom: 1px solid rgba(255,255,255,0.2); padding: 10px; width: 260px; text-transform: uppercase; transition: all 0.3s; margin-bottom: 15px;}
-        input[type="text"]:focus { border-bottom: 1px solid #ff003c; text-shadow: 0 0 10px rgba(255, 0, 60, 0.5); }
-        select { appearance: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 5px 15px; cursor: pointer; text-align-last: center; margin-bottom: 20px;}
-        select option { background: #0c0c12; color: #fff; }
-
-        .action-btn {
-            background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 30px;
-            color: #fff; font-family: inherit; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px;
-            cursor: pointer; border-radius: 4px; transition: all 0.3s; margin: 10px;
+        /* تأثير الزجاج للقوائم (Glassmorphism) */
+        .glass-panel {
+            background: rgba(40, 53, 79, 0.85);
+            backdrop-filter: blur(12px);
+            border-right: 4px solid var(--ow-orange);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        .action-btn:hover { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-2px); }
-        .action-btn.red-glow { border-color: #ff003c; color: #ff003c; }
-        .action-btn.red-glow:hover { background: #ff003c; color: #fff; box-shadow: 0 0 25px #ff003c; }
 
-        /* --- اللوبي (ترتيب أفقي) --- */
-        .players-row { display: flex; justify-content: center; align-items: center; gap: 20px; width: 95%; margin: 40px 0; }
-        .player-slot { display: flex; flex-direction: column; align-items: center; width: 140px; animation: card-entry 0.5s ease forwards; }
-        @keyframes card-entry { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-        
-        /* إطارات اللوبي مبسطة (بدون مربعات خلفية) */
-        .frame-box { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
-        .avatar-box { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; overflow: hidden; z-index: 1; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        .player-name { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; margin-top: 10px; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
-
-        /* --- ساحة اللعبة (Card Arena) --- */
-        #game-arena {
-            width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
-            background: radial-gradient(circle at center, rgba(20,20,35,0.8) 0%, rgba(2,2,4,1) 100%);
+        /* أزرار أوفرواتش المائلة */
+        .ow-btn {
+            background-color: var(--ow-orange);
+            color: white;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 10px 40px;
+            transform: skewX(-15deg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: center;
         }
-        
-        /* طاولات اللاعبين */
-        .opponents-table { display: flex; justify-content: center; align-items: center; gap: 30px; padding-top: 30px; }
-        .center-table { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-        .my-table { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 30px; }
-
-        /* --- تصميم البطاقة المذهل (3D Card) --- */
-        .card-container { width: 100px; height: 140px; perspective: 1000px; margin: 0 10px; }
-        .card { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
-        .card.flipped { transform: rotateY(180deg); }
-        .card.played { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.2); z-index: 50; }
-        .card.played.flipped { transform: translate(-50%, -50%) scale(1.2) rotateY(180deg); }
-        
-        .card-face {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        .ow-btn:hover {
+            background-color: white;
+            color: var(--ow-orange);
+            border: 2px solid var(--ow-orange);
         }
-        /* ظهر الورقة */
-        .card-back { background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px); border-color: #555; }
-        .card-back::after { content: 'NEON'; font-size: 1.5rem; font-weight: bold; color: rgba(255,255,255,0.2); letter-spacing: 5px; transform: rotate(-45deg); }
-        
-        /* وجه الورقة */
-        .card-front { background: #0c0c14; transform: rotateY(180deg); position: relative; overflow: hidden; }
-        .card-power { font-size: 3.5rem; font-weight: 700; z-index: 2; text-shadow: 0 0 15px currentColor; }
-        .card-owner { position: absolute; bottom: 10px; font-size: 0.8rem; letter-spacing: 1px; color: #fff; z-index: 2; }
-        
-        /* تأثيرات الإشعاع للبطاقة حسب الرتبة */
-        .card-front::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(transparent, currentColor, transparent 30%);
-            animation: spin 3s linear infinite; z-index: 0; opacity: 0.3;
+        .ow-btn > span {
+            display: inline-block;
+            transform: skewX(15deg); /* تعديل ميلان النص */
         }
-        .card-front::after { content: ''; position: absolute; inset: 4px; background: #0c0c14; border-radius: 6px; z-index: 1; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* منطقة تسجيل النقاط */
-        .score-board { font-size: 1.5rem; color: #a3e635; letter-spacing: 3px; text-shadow: 0 0 10px #a3e635; margin-bottom: 15px;}
-        .hud-text { font-size: 1.2rem; color: rgba(255,255,255,0.6); letter-spacing: 2px; }
+        /* نظام الإطارات بناءً على اللفل */
+        .frame-bronze { border: 4px solid #cd7f32; box-shadow: 0 0 10px #cd7f32; }
+        .frame-silver { border: 4px solid #c0c0c0; box-shadow: 0 0 10px #c0c0c0; }
+        .frame-gold { border: 4px solid #ffd700; box-shadow: 0 0 15px #ffd700; }
 
-        /* الفائز بالجولة */
-        .card.winner { transform: translate(-50%, -50%) scale(1.5) rotateY(180deg) !important; z-index: 100; filter: drop-shadow(0 0 30px currentColor); }
-        #round-status { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); font-size: 3rem; font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 20px #fff; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none;}
+        .hidden-screen { display: none !important; }
+        
+        /* كولنج كارد */
+        .calling-card {
+            background: linear-gradient(90deg, rgba(40,53,79,1) 0%, rgba(249,158,26,0.8) 100%);
+            border-radius: 8px;
+        }
     </style>
 </head>
-<body>
+<body class="h-screen w-screen relative">
 
-    <div id="environment"><div class="stars"></div></div>
-
-    <!-- Phase 1: Start -->
-    <div id="phase1" class="screen">
-        <div class="title-text" style="color: #fff;">NEON <span style="color: #ff003c;">CLASH</span></div>
-        <button id="start-btn" class="action-btn red-glow">ENTER CASINO</button>
-    </div>
-
-    <!-- Phase 2: Setup -->
-    <div id="phase2" class="screen hidden">
-        <h2 style="font-size: 2rem; letter-spacing: 5px; margin-bottom: 30px;">CREATE PROFILE</h2>
-        <div class="frame-box" style="margin-bottom: 20px;">
-            <div class="avatar-box"><img id="preview-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="></div>
-        </div>
-        <select id="rank-select" class="glow-text">
-            <option value="bronze">RANK: BRONZE</option>
-            <option value="silver">RANK: SILVER</option>
-            <option value="gold">RANK: GOLD</option>
-            <option value="diamond">RANK: DIAMOND</option>
-            <option value="solar">RANK: SOLAR</option>
-        </select>
-        <input type="text" id="player-name" class="glow-text" value="GAMBLER_7" autocomplete="off" maxlength="12">
-        <button id="create-room-btn" class="action-btn red-glow">FIND MATCH</button>
-    </div>
-
-    <!-- Phase 3: Lobby (7 Players) -->
-    <div id="phase3" class="screen hidden">
-        <h1 style="font-size: 2.5rem; letter-spacing: 10px;">HIGH STAKES TABLE</h1>
-        <p style="color: #ff003c; font-size: 1.2rem; letter-spacing: 3px; margin-top: 5px;">7 PLAYERS READY</p>
-        
-        <div id="players-row" class="players-row"></div>
-
-        <div style="display: flex;">
-            <button id="leave-btn" class="action-btn">LEAVE</button>
-            <button id="launch-btn" class="action-btn red-glow">DEAL CARDS</button>
-        </div>
-    </div>
-
-    <!-- Phase 4: The Card Game Arena -->
-    <div id="phase4" class="screen hidden">
-        <div id="game-arena">
-            <!-- طاولة الخصوم (6 لاعبين) -->
-            <div id="opponents-table" class="opponents-table"></div>
-            
-            <!-- الساحة المركزية لرمي الورق -->
-            <div id="center-table" class="center-table">
-                <div id="round-status">ROUND WINNER!</div>
+    <!-- معلومات اللاعب (تظهر في كل الشاشات ما عدا البداية) -->
+    <div id="player-profile-hud" class="hidden-screen absolute top-4 left-4 calling-card flex items-center p-2 w-72 z-50 transition-all">
+        <img id="hud-avatar" src="" class="w-16 h-16 rounded-full frame-bronze object-cover">
+        <div class="mr-4 w-full">
+            <h2 id="hud-name" class="text-xl font-bold">الاسم</h2>
+            <div class="flex justify-between items-center text-sm">
+                <span>LVL <span id="hud-level" class="ow-font text-lg">1</span></span>
+                <span class="text-xs opacity-75">XP: <span id="hud-xp">0</span>/100</span>
             </div>
-            
-            <!-- منطقتك كلاعب -->
-            <div class="my-table">
-                <div class="score-board">SCORE: <span id="my-score">0</span> / 3</div>
-                <div id="my-hand" style="display: flex; gap: 20px;"></div>
-                <button id="play-card-btn" class="action-btn red-glow" style="margin-top: 20px; display: none;">PLAY CARD</button>
+            <!-- شريط الإكس بي -->
+            <div class="w-full bg-gray-700 h-2 mt-1 rounded-full overflow-hidden">
+                <div id="hud-xp-bar" class="bg-orange-400 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- Navigation ---
-        const phases = [document.getElementById('phase1'), document.getElementById('phase2'), document.getElementById('phase3'), document.getElementById('phase4')];
-        function showPhase(index) { phases.forEach((p, i) => i === index ? p.classList.remove('hidden') : p.classList.add('hidden')); }
-
-        document.getElementById('start-btn').addEventListener('click', () => showPhase(1));
-        document.getElementById('leave-btn').addEventListener('click', () => showPhase(1));
-
-        // --- Data & Colors ---
-        const rankColors = { bronze: '#b87333', silver: '#9ca3af', gold: '#d97706', diamond: '#2563eb', solar: '#ea580c' };
-        let myData = { name: "GAMBLER_7", rank: "bronze", score: 0 };
-        const bots = [
-            { id: 1, name: "CYPHER", rank: "solar", score: 0 }, { id: 2, name: "VORTEX", rank: "diamond", score: 0 },
-            { id: 3, name: "KINETIC", rank: "gold", score: 0 }, { id: 4, name: "Z3RO", rank: "silver", score: 0 },
-            { id: 5, name: "GHOST", rank: "diamond", score: 0 }, { id: 6, name: "TITAN", rank: "bronze", score: 0 }
-        ];
-        let allPlayers = []; // أنت + البوتات
-
-        // --- Phase 3: Build Lobby ---
-        document.getElementById('create-room-btn').addEventListener('click', () => {
-            myData.name = document.getElementById('player-name').value || "PLAYER";
-            myData.rank = document.getElementById('rank-select').value;
+    <!-- 1. شاشة إنشاء الحساب -->
+    <div id="screen-setup" class="h-full flex items-center justify-center">
+        <div class="glass-panel p-10 w-1/3 rounded-lg flex flex-col gap-6">
+            <h1 class="text-4xl font-black text-center text-orange-400 mb-4">إنشاء الملف الشخصي</h1>
             
-            const row = document.getElementById('players-row');
-            row.innerHTML = '';
-            
-            allPlayers = [{ id: 0, name: myData.name, rank: myData.rank, score: 0, isHuman: true }, ...bots];
-            
-            allPlayers.forEach((p, index) => {
-                setTimeout(() => {
-                    row.innerHTML += `
-                        <div class="player-slot">
-                            <div class="frame-box">
-                                <div class="avatar-box" style="border-color: ${rankColors[p.rank]}">
-                                    <img src="https://picsum.photos/seed/${p.name}/100/100">
-                                </div>
-                            </div>
-                            <div class="player-name" style="color: ${rankColors[p.rank]}">${p.name}</div>
-                        </div>`;
-                }, index * 200);
-            });
-            showPhase(2);
-        });
+            <div>
+                <label class="block mb-2 font-bold">اسم اللاعب:</label>
+                <input type="text" id="input-name" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-orange-400 outline-none" placeholder="أدخل اسمك هنا...">
+            </div>
 
-        // --- Phase 4: Card Game Logic ---
-        const oppTable = document.getElementById('opponents-table');
-        const centerTable = document.getElementById('center-table');
-        const myHand = document.getElementById('my-hand');
-        const playBtn = document.getElementById('play-card-btn');
-        const roundStatus = document.getElementById('round-status');
-
-        document.getElementById('launch-btn').addEventListener('click', () => {
-            showPhase(3);
-            resetGame();
-            setTimeout(dealCards, 1000);
-        });
-
-        function resetGame() {
-            allPlayers.forEach(p => p.score = 0);
-            document.getElementById('my-score').textContent = 0;
-            centerTable.innerHTML = '<div id="round-status"></div>';
-        }
-
-        // توليد بطاقة HTML
-        function createCardElement(playerId, color, power, ownerName) {
-            const wrapper = document.createElement('div');
-            wrapper.className = `card-container card-${playerId}`;
-            wrapper.innerHTML = `
-                <div class="card" id="card-inner-${playerId}" style="color: ${color};">
-                    <div class="card-face card-back"></div>
-                    <div class="card-face card-front">
-                        <div class="card-power">${power}</div>
-                        <div class="card-owner">${ownerName}</div>
-                    </div>
+            <div>
+                <label class="block mb-2 font-bold">اختر الأفاتار:</label>
+                <div class="flex gap-4 justify-center">
+                    <img src="https://i.pinimg.com/originals/a7/67/6a/a7676a0c0b115049c33bb32051d95011.png" class="avatar-select w-20 h-20 rounded-full border-2 border-gray-500 cursor-pointer hover:border-orange-400" onclick="selectAvatar(this.src)">
+                    <img src="https://i.pinimg.com/736x/87/42/41/8742416bc262edb393cb186bc54cd1c5.jpg" class="avatar-select w-20 h-20 rounded-full border-2 border-gray-500 cursor-pointer hover:border-orange-400" onclick="selectAvatar(this.src)">
                 </div>
-            `;
-            return wrapper;
+            </div>
+
+            <button onclick="saveProfile()" class="ow-btn mt-4"><span>دخول للقائمة الرئيسية</span></button>
+        </div>
+    </div>
+
+    <!-- 2. القائمة الرئيسية -->
+    <div id="screen-menu" class="hidden-screen h-full flex flex-col justify-center items-start p-20">
+        <h1 class="ow-font text-8xl italic font-black text-white mb-10 drop-shadow-lg">مين المختلف؟</h1>
+        <div class="flex flex-col gap-6 w-80">
+            <button onclick="showScreen('screen-lobby')" class="ow-btn"><span>إنشاء غرفة</span></button>
+            <button class="ow-btn bg-gray-600 hover:bg-white hover:text-gray-800 hover:border-gray-800"><span>الانضمام لغرفة</span></button>
+            <button class="ow-btn bg-red-600 hover:bg-white hover:text-red-600 hover:border-red-600"><span>خروج</span></button>
+        </div>
+    </div>
+
+    <!-- 3. غرفة الانتظار (اللوبي) -->
+    <div id="screen-lobby" class="hidden-screen h-full flex items-center justify-center">
+        <div class="glass-panel p-10 w-1/2 rounded-lg flex flex-col gap-6">
+            <h2 class="text-3xl font-bold flex justify-between">
+                <span>غرفة الانتظار</span>
+                <span class="text-orange-400">كود الغرفة: #9X2A</span>
+            </h2>
+            
+            <div class="bg-gray-800 p-4 rounded-lg flex flex-col gap-3 min-h-[200px]">
+                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded">
+                    <img id="lobby-my-avatar" src="" class="w-10 h-10 rounded-full">
+                    <span id="lobby-my-name" class="font-bold text-lg">الاسم</span>
+                    <span class="ml-auto text-green-400 text-sm">مضيف (أنت)</span>
+                </div>
+                <!-- لاعبين وهميين للمحاكاة -->
+                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded opacity-75">
+                    <div class="w-10 h-10 rounded-full bg-blue-500"></div>
+                    <span>أحمد (مستعد)</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded opacity-75">
+                    <div class="w-10 h-10 rounded-full bg-green-500"></div>
+                    <span>سارة (مستعد)</span>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="ow-btn"><span>بدء اللعبة</span></button>
+        </div>
+    </div>
+
+    <!-- 4. شاشة اللعب -->
+    <div id="screen-game" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-80 absolute top-0 w-full z-40">
+        
+        <!-- المؤقت -->
+        <div class="absolute top-10 ow-font text-6xl text-orange-400 flex flex-col items-center">
+            <span>الوقت المتبقي</span>
+            <span id="timer" class="text-8xl text-white">60</span>
+        </div>
+
+        <!-- الكلمة/الصورة/الرقم -->
+        <div class="glass-panel p-12 rounded-2xl text-center max-w-2xl mt-20">
+            <h3 class="text-2xl text-gray-300 mb-4" id="role-text">أنت لست المختلف! الكلمة المشتركة هي:</h3>
+            <h1 class="text-6xl font-black text-orange-400" id="prompt-text">سيارة</h1>
+            <p class="mt-6 text-lg text-gray-400">تناقشوا الآن لمعرفة من يمتلك كلمة مختلفة (أو من يمثل أنه يعرف الكلمة!)</p>
+        </div>
+
+        <button onclick="endTimerAndVote()" class="ow-btn mt-10 !bg-red-600"><span>تخطي الوقت والتصويت</span></button>
+    </div>
+
+    <!-- 5. شاشة التصويت والنتيجة للمختلف -->
+    <div id="screen-vote" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-90 absolute top-0 w-full z-50">
+        <h2 class="text-5xl font-bold mb-10 text-orange-400">انتهى الوقت! صوّت للمختلف</h2>
+        
+        <div class="flex gap-6 mb-10">
+            <div onclick="votePlayer('أحمد')" class="bg-gray-800 p-6 rounded-lg cursor-pointer hover:bg-orange-500 transition border-2 border-transparent hover:border-white text-center">
+                <div class="w-20 h-20 rounded-full bg-blue-500 mx-auto mb-3"></div>
+                <h3 class="text-xl font-bold">أحمد</h3>
+            </div>
+            <div onclick="votePlayer('سارة')" class="bg-gray-800 p-6 rounded-lg cursor-pointer hover:bg-orange-500 transition border-2 border-transparent hover:border-white text-center">
+                <div class="w-20 h-20 rounded-full bg-green-500 mx-auto mb-3"></div>
+                <h3 class="text-xl font-bold">سارة</h3>
+            </div>
+        </div>
+
+        <!-- خيارات المختلف (تظهر فقط للمختلف إذا تم كشفه) -->
+        <div id="imposter-guess" class="hidden flex-col items-center">
+            <h3 class="text-3xl text-red-400 mb-6 font-bold">لقد صادوك! لكن يمكنك سرقة الفوز.. ما هي الكلمة المشتركة؟</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">طيارة</button>
+                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">سيارة</button>
+                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">قطار</button>
+                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">دراجة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- سكريبت اللوجيك لمحاكاة اللعبة -->
+    <script>
+        // بيانات اللاعب الأساسية
+        let player = {
+            name: '',
+            avatar: '',
+            level: 1,
+            xp: 0
+        };
+
+        let timerInterval;
+
+        // اختيار الصورة
+        function selectAvatar(src) {
+            player.avatar = src;
+            document.querySelectorAll('.avatar-select').forEach(img => img.classList.remove('border-orange-400'));
+            event.target.classList.add('border-orange-400');
         }
 
-        function dealCards() {
-            oppTable.innerHTML = ''; myHand.innerHTML = ''; centerTable.innerHTML = '<div id="round-status"></div>';
+        // حفظ الحساب والدخول للقائمة
+        function saveProfile() {
+            const nameInput = document.getElementById('input-name').value;
+            if(!nameInput || !player.avatar) return alert('يرجى كتابة الاسم واختيار الصورة!');
             
-            allPlayers.forEach(p => {
-                // توليد قوة عشوائية للبطاقة من 1 إلى 100
-                p.currentPower = Math.floor(Math.random() * 100) + 1;
-                const cardEl = createCardElement(p.id, rankColors[p.rank], p.currentPower, p.name);
-                
-                if (p.isHuman) {
-                    myHand.appendChild(cardEl);
-                    // كشف بطاقتك لك فوراً
-                    setTimeout(() => document.getElementById(`card-inner-${p.id}`).classList.add('flipped'), 300);
-                } else {
-                    // بطاقات الخصوم مقلوبة للأعلى
-                    const oppWrapper = document.createElement('div');
-                    oppWrapper.innerHTML = `<div style="font-size: 0.8rem; color:${rankColors[p.rank]}; text-align:center; margin-bottom:5px;">${p.name}<br>(${p.score} pt)</div>`;
-                    oppWrapper.appendChild(cardEl);
-                    oppTable.appendChild(oppWrapper);
-                }
-            });
-
-            playBtn.style.display = 'block';
+            player.name = nameInput;
+            updateHUD();
+            
+            document.getElementById('player-profile-hud').classList.remove('hidden-screen');
+            showScreen('screen-menu');
         }
 
-        playBtn.addEventListener('click', () => {
-            playBtn.style.display = 'none';
+        // تحديث معلومات الشاشة العلوية (اللفل والإطار)
+        function updateHUD() {
+            document.getElementById('hud-name').innerText = player.name;
+            document.getElementById('hud-level').innerText = player.level;
+            document.getElementById('hud-xp').innerText = player.xp;
+            document.getElementById('hud-xp-bar').style.width = `${player.xp}%`;
             
-            // نقل جميع البطاقات إلى المركز
-            allPlayers.forEach((p, idx) => {
-                const cardInner = document.getElementById(`card-inner-${p.id}`);
-                // حركة ديناميكية لرمي الورق في النص بـ Layout جميل
-                const angle = (idx * 360 / 7) * (Math.PI / 180);
-                const radius = 100;
-                const xOffset = Math.cos(angle) * radius;
-                const yOffset = Math.sin(angle) * radius;
+            const avatarImg = document.getElementById('hud-avatar');
+            avatarImg.src = player.avatar;
 
-                cardInner.style.position = 'absolute';
-                cardInner.style.left = `calc(50% + ${xOffset}px)`;
-                cardInner.style.top = `calc(50% + ${yOffset}px)`;
-                cardInner.style.transform = `translate(-50%, -50%) rotate(${idx * 15}deg)`;
-                cardInner.style.zIndex = 10;
-                
-                centerTable.appendChild(cardInner.parentElement);
-            });
+            // تحديث لون الإطار حسب اللفل (1-10 برونزي، 11-50 فضي، 51+ ذهبي)
+            avatarImg.classList.remove('frame-bronze', 'frame-silver', 'frame-gold');
+            if(player.level < 10) avatarImg.classList.add('frame-bronze');
+            else if(player.level < 50) avatarImg.classList.add('frame-silver');
+            else avatarImg.classList.add('frame-gold');
 
-            // بعد ثانية، اقلب بطاقات الخصوم للكشف عنها
-            setTimeout(() => {
-                allPlayers.forEach(p => {
-                    const cardInner = document.getElementById(`card-inner-${p.id}`);
-                    cardInner.style.transform = cardInner.style.transform.replace(/rotateY\(180deg\)/g, '') + ' rotateY(180deg)';
-                });
-                
-                // حساب الفائز بالجولة
-                setTimeout(resolveRound, 1200);
-            }, 800);
-        });
+            // تحديث اللوبي
+            document.getElementById('lobby-my-name').innerText = player.name;
+            document.getElementById('lobby-my-avatar').src = player.avatar;
+        }
 
-        function resolveRound() {
-            // البحث عن أعلى طاقة
-            let winner = allPlayers.reduce((max, p) => p.currentPower > max.currentPower ? p : max, allPlayers[0]);
-            winner.score += 1;
+        // التنقل بين الشاشات
+        function showScreen(screenId) {
+            const screens = ['screen-setup', 'screen-menu', 'screen-lobby', 'screen-game', 'screen-vote'];
+            screens.forEach(s => document.getElementById(s).classList.add('hidden-screen'));
+            document.getElementById(screenId).classList.remove('hidden-screen');
+        }
 
-            if (winner.isHuman) document.getElementById('my-score').textContent = winner.score;
+        // بدء اللعبة (محاكاة)
+        function startGame() {
+            showScreen('screen-game');
+            let timeLeft = 60;
+            document.getElementById('timer').innerText = timeLeft;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if(timeLeft <= 0) endTimerAndVote();
+            }, 1000);
+        }
 
-            // تمييز بطاقة الفائز
-            const winningCard = document.getElementById(`card-inner-${winner.id}`);
-            winningCard.style.transform = `translate(-50%, -50%) scale(1.6) rotateY(180deg)`;
-            winningCard.style.zIndex = 100;
-            winningCard.style.boxShadow = `0 0 50px ${rankColors[winner.rank]}`;
+        // الانتقال لشاشة التصويت
+        function endTimerAndVote() {
+            clearInterval(timerInterval);
+            showScreen('screen-vote');
+        }
 
-            const status = document.getElementById('round-status');
-            status.textContent = `${winner.name} WINS ROUND!`;
-            status.style.color = rankColors[winner.rank];
-            status.style.opacity = 1;
+        // عند تصويت اللاعبين
+        function votePlayer(votedName) {
+            // محاكاة: نفترض أنك أنت المختلف وتم التصويت لك
+            document.querySelector('#screen-vote > div.flex').classList.add('hidden'); // إخفاء اللاعبين
+            document.querySelector('#screen-vote h2').innerText = "لقد تم كشفك! أنت المختلف!";
+            document.getElementById('imposter-guess').classList.remove('hidden'); // إظهار خيارات التخمين
+            document.getElementById('imposter-guess').classList.add('flex');
+        }
 
-            // التحقق من نهاية المباراة
-            setTimeout(() => {
-                if (winner.score >= 3) {
-                    status.textContent = `${winner.name} WINS THE MATCH!`;
-                    setTimeout(() => showPhase(2), 3000); // العودة للوبي
-                } else {
-                    status.opacity = 0;
-                    dealCards(); // جولة جديدة
-                }
-            }, 2500);
+        // عند الإجابة الصحيحة أو الفوز لكسب الخبرة XP
+        function winXP() {
+            alert('إجابة صحيحة! حصلت على 50 XP 🚀');
+            player.xp += 50;
+            if(player.xp >= 100) {
+                player.level++;
+                player.xp = player.xp - 100;
+                alert(`مبروك! وصلت للفل ${player.level} 🎉`);
+            }
+            updateHUD();
+            
+            // إعادة التعيين للوبي
+            document.getElementById('imposter-guess').classList.add('hidden');
+            document.getElementById('imposter-guess').classList.remove('flex');
+            document.querySelector('#screen-vote > div.flex.gap-6').classList.remove('hidden');
+            document.querySelector('#screen-vote h2').innerText = "انتهى الوقت! صوّت للمختلف";
+            showScreen('screen-menu');
         }
     </script>
 </body>
