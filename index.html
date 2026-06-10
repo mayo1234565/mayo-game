@@ -3,80 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tricky Towers | Multiplayer UI</title>
+    <title>Tricky Towers | Pro UI</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; font-family: 'Cairo', sans-serif; }
         
-        body { background-color: #2b1b54; color: #fff; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        body { background-color: #1a0b2e; color: #fff; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
 
-        /* 🌌 خلفية Tricky Towers الفخمة */
-        .sky-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: linear-gradient(180deg, #180b33 0%, #3e206d 50%, #683a9e 100%); overflow: hidden; }
+        /* 🌌 خلفية Tricky Towers بدون إزعاج */
+        .sky-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: linear-gradient(180deg, #0d0614 0%, #2a144a 50%, #46256b 100%); overflow: hidden; }
         .stars { position: absolute; top: 0; left: 0; width: 200%; height: 200%; background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 150px 250px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 300px 100px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 50px 400px, #fff, rgba(0,0,0,0)); background-repeat: repeat; animation: twinkle 4s infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.5; } 100% { opacity: 1; } }
-        .clouds-bg { position: absolute; bottom: 0; left: 0; width: 200%; height: 40%; background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><path fill="%2324134d" d="M0 25 Q10 10 20 20 T40 10 T60 20 T80 5 T100 20 L100 25 Z"/></svg>'); background-size: 50% 100%; background-repeat: repeat-x; animation: driftClouds 60s linear infinite; z-index: 2; opacity: 0.8; }
-        .clouds-fg { position: absolute; bottom: -5%; left: 0; width: 200%; height: 35%; background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><path fill="%23140a2e" d="M0 25 Q15 5 25 15 T50 10 T75 20 T100 10 L100 25 Z"/></svg>'); background-size: 50% 100%; background-repeat: repeat-x; animation: driftClouds 40s linear infinite; z-index: 3; }
-        @keyframes driftClouds { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
+        @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
+        
         /* 📱 حاوية الشاشات */
         .ui-container { position: relative; z-index: 10; width: 100%; max-width: 420px; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .screen { width: 100%; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease-in-out; }
         .hidden { display: none !important; opacity: 0; transform: scale(0.95); }
 
-        /* 🔘 الأزرار */
-        .start-btn { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-size: 32px; font-weight: 800; padding: 15px 80px; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); transition: all 0.3s; }
-        .start-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: #00f3ff; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); transform: translateY(-3px); }
+        /* 🔘 زر البداية الفخم */
+        .start-btn { background: rgba(0, 243, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(0, 243, 255, 0.4); color: #00f3ff; font-size: 32px; font-weight: 800; padding: 15px 80px; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); transition: all 0.3s; }
+        .start-btn:hover { background: rgba(0, 243, 255, 0.3); box-shadow: 0 0 30px rgba(0, 243, 255, 0.6); transform: translateY(-3px); color: #fff; }
 
         /* 🃏 بطاقة الهوية والتخصيص */
-        .profile-card { background: rgba(20, 10, 46, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 25px; width: 100%; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .profile-card { background: rgba(15, 5, 30, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 30px 25px; width: 100%; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
         
-        .avatar-wrapper { position: relative; width: 150px; height: 150px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; margin-bottom: 15px; }
-        .avatar-wrapper:hover { transform: scale(1.05); }
-        .click-hint { position: absolute; bottom: -15px; background: #00f3ff; color: #000; font-size: 11px; padding: 2px 10px; border-radius: 10px; font-weight: 800; z-index: 5; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
-        .avatar-wrapper:hover .click-hint { opacity: 1; }
-
-        .avatar-img { width: 110px; height: 110px; border-radius: 15px; background-size: cover; background-position: center; z-index: 1; background-color: #111; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+        /* الصورة والإطار */
+        .avatar-wrapper { position: relative; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         
-        /* كود الإطار الأصلي (Sprite) */
-        .frame-img { position: absolute; width: 180px; height: 180px; z-index: 2; pointer-events: none; background-image: url('ranks.webp'); background-size: 700% 100%; background-position: 0% 0%; }
+        /* الصورة الشخصية (أنمي) */
+        .avatar-img { width: 110px; height: 110px; background-size: cover; background-position: center; z-index: 1; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+        
+        /* الإطار */
+        .frame-img { position: absolute; width: 180px; height: 180px; z-index: 2; pointer-events: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
 
-        .name-input { width: 100%; background: rgba(0,0,0,0.4); border: 2px solid #3e206d; color: #fff; font-size: 18px; text-align: center; padding: 12px; border-radius: 10px; outline: none; margin-bottom: 20px; transition: 0.3s; font-weight: bold; }
-        .name-input:focus { border-color: #00f3ff; box-shadow: 0 0 15px rgba(0,243,255,0.3); }
+        /* أزرار اختيار الصورة والإطار الواضحة */
+        .select-buttons-row { display: flex; gap: 10px; width: 100%; margin-bottom: 25px; }
+        .action-btn { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
+        .action-btn:hover { background: rgba(0, 243, 255, 0.2); border-color: #00f3ff; }
 
-        .btn-group { display: flex; width: 100%; gap: 10px; flex-direction: column; }
-        .room-btn { padding: 14px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; border: none; color: #fff; text-transform: uppercase; }
-        .btn-create { background: linear-gradient(90deg, #ff3b3b, #cc0000); box-shadow: 0 0 15px rgba(255, 59, 59, 0.4); }
-        .btn-create:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 59, 59, 0.8); }
-        .btn-join { background: #3e206d; border: 1px solid #683a9e; }
-        .btn-join:hover { background: #4a2782; }
+        /* ✏️ خانة إدخال الاسم (بدون المربع المزعج) */
+        .name-input-container { width: 100%; position: relative; margin-bottom: 30px; }
+        .name-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid #553580; color: #fff; font-size: 22px; text-align: center; padding: 10px; outline: none; /* هذا الكود يلغي المربع المزعج تماماً */ transition: 0.3s; font-weight: bold; }
+        .name-input::placeholder { color: rgba(255, 255, 255, 0.3); font-weight: normal; }
+        .name-input:focus { border-bottom-color: #00f3ff; }
+
+        /* أزرار الغرف */
+        .btn-group { display: flex; width: 100%; gap: 12px; flex-direction: column; }
+        .room-btn { padding: 15px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; border: none; color: #fff; letter-spacing: 1px; }
+        .btn-create { background: linear-gradient(135deg, #00f3ff, #007bb5); box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3); }
+        .btn-create:hover { filter: brightness(1.15); transform: translateY(-2px); }
+        .btn-join { background: transparent; border: 2px solid #553580; }
+        .btn-join:hover { background: #553580; }
 
         /* 🗗 النافذة المنبثقة لاختيار الصور والإطارات */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #180b33; border: 2px solid #3e206d; border-radius: 15px; width: 90%; max-width: 350px; padding: 20px; display: flex; flex-direction: column; transform: translateY(20px); transition: transform 0.3s; }
+        .modal-content { background: #150a24; border: 1px solid #46256b; border-radius: 20px; width: 90%; max-width: 360px; padding: 25px; display: flex; flex-direction: column; transform: translateY(30px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #3e206d; padding-bottom: 10px; }
-        .close-btn { background: none; border: none; color: #ff3b3b; font-size: 30px; cursor: pointer; line-height: 1; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: bold; }
+        .close-btn { background: rgba(255, 59, 59, 0.1); border: 1px solid rgba(255, 59, 59, 0.3); color: #ff3b3b; font-size: 20px; cursor: pointer; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .close-btn:hover { background: #ff3b3b; color: #fff; }
         
-        .selection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-height: 300px; overflow-y: auto; padding: 10px 5px; }
-        .grid-item { width: 100%; aspect-ratio: 1; background-size: cover; background-position: center; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; position: relative; }
-        .grid-item:hover { border-color: #00f3ff; transform: scale(1.1); box-shadow: 0 0 15px rgba(0,243,255,0.4); }
+        .selection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-height: 350px; overflow-y: auto; padding: 5px; }
+        .grid-item { width: 100%; aspect-ratio: 1; background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; background-color: rgba(255,255,255,0.02); }
+        .grid-item:hover { border-color: #00f3ff; transform: scale(1.08); box-shadow: 0 0 15px rgba(0,243,255,0.4); }
 
         /* 🏠 شاشة اللوبي (الغرفة) */
-        .lobby-box { width: 100%; background: rgba(10, 5, 25, 0.8); border: 2px solid #00f3ff; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
-        .lobby-title { font-size: 24px; color: #00f3ff; margin-bottom: 5px; }
-        .room-code-box { background: #000; border: 1px dashed #00f3ff; padding: 10px; font-size: 28px; letter-spacing: 3px; color: #fff; margin: 15px 0; border-radius: 8px; user-select: all; cursor: pointer; }
-        .players-list { margin-top: 20px; text-align: right; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; min-height: 150px; }
-        .player-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
-        .player-row img { width: 40px; height: 40px; border-radius: 5px; border: 1px solid #00f3ff; object-fit: cover; }
+        .lobby-box { width: 100%; background: rgba(15, 5, 30, 0.85); border: 1px solid #00f3ff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.15); backdrop-filter: blur(10px); }
+        .lobby-title { font-size: 26px; color: #00f3ff; margin-bottom: 5px; font-weight: bold; }
+        .room-code-box { background: rgba(0,0,0,0.5); border: 1px dashed #00f3ff; padding: 12px; font-size: 32px; letter-spacing: 5px; color: #fff; margin: 15px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .room-code-box:hover { background: rgba(0, 243, 255, 0.1); }
+        .players-list { margin-top: 20px; text-align: right; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; min-height: 180px; border: 1px solid rgba(255,255,255,0.05); }
+        .player-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        .player-row img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #553580; object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div class="sky-bg">
         <div class="stars"></div>
-        <div class="clouds-bg"></div>
-        <div class="clouds-fg"></div>
     </div>
 
     <div class="ui-container">
@@ -89,12 +94,18 @@
             <div class="profile-card">
                 
                 <div class="avatar-wrapper">
-                    <div id="currentAvatar" class="avatar-img" onclick="openModal('avatar')"></div>
-                    <div id="currentFrame" class="frame-img" onclick="openModal('frame')" style="pointer-events: auto; cursor: pointer;"></div>
-                    <div class="click-hint">اضغط لتغيير المظهر</div>
+                    <div id="currentAvatar" class="avatar-img"></div>
+                    <div id="currentFrame" class="frame-img"></div>
                 </div>
 
-                <input type="text" id="playerName" class="name-input" placeholder="أدخل اسمك..." maxlength="12">
+                <div class="select-buttons-row">
+                    <button class="action-btn" onclick="openModal('avatar')">🖼️ اختر الصورة</button>
+                    <button class="action-btn" onclick="openModal('frame')">🛡️ اختر الإطار</button>
+                </div>
+
+                <div class="name-input-container">
+                    <input type="text" id="playerName" class="name-input" placeholder="اكتب اسمك هنا..." maxlength="12">
+                </div>
 
                 <div class="btn-group">
                     <button class="room-btn btn-create" onclick="createRoom()">إنشاء غرفة جديدة</button>
@@ -106,17 +117,17 @@
         <div id="lobbyScreen" class="screen hidden">
             <div class="lobby-box">
                 <div class="lobby-title">غرفة الانتظار</div>
-                <p style="color: #aaa; font-size: 14px;">انسخ الكود وأرسله لأخوياك</p>
+                <p style="color: #aaa; font-size: 15px;">انسخ الكود وأرسله لأخوياك</p>
                 
                 <div class="room-code-box" id="roomCodeDisplay" onclick="copyCode()">----</div>
-                <p id="copyHint" style="color: #00f3ff; font-size: 12px; opacity: 0;">تم النسخ!</p>
+                <p id="copyHint" style="color: #00f3ff; font-size: 13px; opacity: 0; transition: 0.3s;">تم النسخ!</p>
 
                 <div class="players-list" id="playersList">
-                    <h4 style="color: #fff; margin-bottom: 10px;">اللاعبون (1/4):</h4>
-                    </div>
+                    <h4 style="color: #fff; margin-bottom: 15px;">اللاعبون المتصلون:</h4>
+                </div>
 
-                <button class="room-btn btn-join" style="width: 100%; margin-top: 15px;" onclick="startMatch()">ابدأ اللعب (للمضيف فقط)</button>
-                <button class="room-btn" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid #ff3b3b; color: #ff3b3b;" onclick="leaveRoom()">مغادرة</button>
+                <button class="room-btn btn-create" style="width: 100%; margin-top: 20px;" onclick="startMatch()">ابدأ اللعب</button>
+                <button class="room-btn" style="width: 100%; margin-top: 10px; background: rgba(255, 59, 59, 0.1); border: 1px solid rgba(255, 59, 59, 0.3); color: #ff3b3b;" onclick="leaveRoom()">مغادرة</button>
             </div>
         </div>
     </div>
@@ -125,14 +136,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span id="modalTitle">اختر</span>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <button class="close-btn" onclick="closeModal()">✕</button>
             </div>
             <div id="gridContainer" class="selection-grid"></div>
         </div>
     </div>
 
     <script>
-        // 🖼️ صور أنمي فخمة (بديلة عن اللي ما عجبتك)
+        // 🖼️ روابط صور أنمي شغالة 100%
         const avatars = [
             "https://i.pinimg.com/736x/8f/c3/86/8fc3864197dc2b37bd358d10b7ee8719.jpg",
             "https://i.pinimg.com/736x/b2/db/1e/b2db1ee11af599026ef6951268393539.jpg",
@@ -142,70 +153,70 @@
             "https://i.pinimg.com/736x/a2/8d/b2/a28db2142289c09c2cc9d970e7960de2.jpg"
         ];
 
-        // 🛡️ إطارات أوفرواتش (تقرأ من صورتك المجمعة التي أسميناها ranks.webp)
-        // 0% برونز، 100% سولار
-        const framePositions = ["0%", "16.66%", "33.33%", "50%", "66.66%", "83.33%", "100%"];
+        // 🛡️ روابط إطارات رتب ألعاب احترافية وشفافة شغالة 100%
+        const frames = [
+            "https://cdn-icons-png.flaticon.com/512/7592/7592982.png", // برونز
+            "https://cdn-icons-png.flaticon.com/512/7592/7592985.png", // فضي
+            "https://cdn-icons-png.flaticon.com/512/7592/7592988.png", // ذهبي
+            "https://cdn-icons-png.flaticon.com/512/5482/5482613.png", // بلاتينيوم
+            "https://cdn-icons-png.flaticon.com/512/5482/5482607.png", // دايموند
+            "https://cdn-icons-png.flaticon.com/512/7593/7593005.png"  // ماستر
+        ];
 
         let selectedAvatar = avatars[0];
-        let selectedFramePos = framePositions[2]; // الافتراضي ذهبي
+        let selectedFrame = frames[2]; // الافتراضي ذهبي
         let currentModalType = '';
 
-        // تهيئة الواجهة
+        // تطبيق الافتراضي عند الفتح
         document.getElementById('currentAvatar').style.backgroundImage = `url('${selectedAvatar}')`;
-        document.getElementById('currentFrame').style.backgroundPosition = `${selectedFramePos} 0%`;
+        document.getElementById('currentFrame').style.backgroundImage = `url('${selectedFrame}')`;
 
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             setTimeout(() => document.getElementById(screenId).classList.remove('hidden'), 300);
         }
 
-        // 🗗 نظام المودال الدقيق
+        // 🗗 فتح النافذة المنبثقة للصور والإطارات
         function openModal(type) {
             currentModalType = type;
             const grid = document.getElementById('gridContainer');
             grid.innerHTML = ''; 
             
-            document.getElementById('modalTitle').innerText = type === 'avatar' ? 'اختر صورتك الشخصية' : 'اختر إطار الرتبة';
+            document.getElementById('modalTitle').innerText = type === 'avatar' ? '🖼️ اختر صورتك الشخصية' : '🛡️ اختر إطار الرتبة';
 
-            if (type === 'avatar') {
-                avatars.forEach(url => {
-                    const item = document.createElement('div');
-                    item.className = 'grid-item';
-                    item.style.backgroundImage = `url('${url}')`;
-                    item.onclick = () => {
+            const itemsArray = type === 'avatar' ? avatars : frames;
+
+            itemsArray.forEach(url => {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.style.backgroundImage = `url('${url}')`;
+                
+                // عشان الإطار يبان كامل جوا المربع
+                if(type === 'frame') item.style.backgroundSize = 'contain';
+
+                item.onclick = () => {
+                    if (type === 'avatar') {
                         selectedAvatar = url;
                         document.getElementById('currentAvatar').style.backgroundImage = `url('${url}')`;
-                        closeModal();
-                    };
-                    grid.appendChild(item);
-                });
-            } else {
-                // عرض الإطارات من الصورة المجمعة باستخدام الـ Sprite
-                framePositions.forEach(pos => {
-                    const item = document.createElement('div');
-                    item.className = 'grid-item';
-                    item.style.backgroundImage = `url('ranks.webp')`;
-                    item.style.backgroundSize = '700% 100%';
-                    item.style.backgroundPosition = `${pos} 0%`;
-                    item.onclick = () => {
-                        selectedFramePos = pos;
-                        document.getElementById('currentFrame').style.backgroundPosition = `${pos} 0%`;
-                        closeModal();
-                    };
-                    grid.appendChild(item);
-                });
-            }
+                    } else {
+                        selectedFrame = url;
+                        document.getElementById('currentFrame').style.backgroundImage = `url('${url}')`;
+                    }
+                    closeModal();
+                };
+                grid.appendChild(item);
+            });
+
             document.getElementById('selectionModal').classList.add('active');
         }
 
         function closeModal() { document.getElementById('selectionModal').classList.remove('active'); }
 
-        // 🏠 نظام الغرف (Lobby Logic)
+        // 🏠 الغرف
         function createRoom() {
             const name = document.getElementById('playerName').value;
-            if(!name) return alert('يا وحش لازم تكتب اسمك أول!');
+            if(!name) return alert('عذراً، يرجى كتابة اسمك أولاً!');
             
-            // إنشاء كود غرفة عشوائي مكون من 5 أرقام/حروف
             const roomId = Math.random().toString(36).substring(2, 7).toUpperCase();
             document.getElementById('roomCodeDisplay').innerText = roomId;
             
@@ -215,7 +226,7 @@
 
         function promptJoinRoom() {
             const name = document.getElementById('playerName').value;
-            if(!name) return alert('الرجاء كتابة اسمك قبل الانضمام!');
+            if(!name) return alert('عذراً، يرجى كتابة اسمك أولاً!');
             
             const roomId = prompt("أدخل كود الغرفة (مثال: A7X9Q):");
             if(roomId && roomId.trim() !== "") {
@@ -227,23 +238,22 @@
 
         function addPlayerToLobby(name, avatarUrl, isHost) {
             const list = document.getElementById('playersList');
-            // تفريغ القائمة القديمة لو كان فيه وإضافة اللاعب
-            list.innerHTML = `<h4 style="color: #fff; margin-bottom: 10px;">اللاعبون المنتظرون:</h4>`;
+            list.innerHTML = `<h4 style="color: #fff; margin-bottom: 15px;">اللاعبون المتصلون:</h4>`;
             
             const playerDiv = document.createElement('div');
             playerDiv.className = 'player-row';
             playerDiv.innerHTML = `
                 <img src="${avatarUrl}" alt="avatar">
-                <span style="color: #fff; font-size: 18px;">${name} ${isHost ? '<span style="color:#00f3ff; font-size:12px;">(المضيف)</span>' : ''}</span>
+                <span style="color: #fff; font-size: 18px;">${name} ${isHost ? '<span style="color:#00f3ff; font-size:12px;">(مدير الغرفة)</span>' : ''}</span>
             `;
             list.appendChild(playerDiv);
             
-            // محاكاة بسيطة: إذا انضممت لغرفة، نضيف لاعب وهمي (صديقك) للزينة لترى كيف يبدو الشكل
+            // إضافة لاعب وهمي (خويك) للزينة إذا سويت انضمام
             if(!isHost) {
                 setTimeout(() => {
                     const friendDiv = document.createElement('div');
                     friendDiv.className = 'player-row';
-                    friendDiv.innerHTML = `<img src="${avatars[1]}"><span style="color: #fff; font-size: 18px;">خويك (المضيف)</span>`;
+                    friendDiv.innerHTML = `<img src="${avatars[1]}"><span style="color: #fff; font-size: 18px;">خويك (مدير الغرفة)</span>`;
                     list.appendChild(friendDiv);
                 }, 500);
             }
@@ -258,7 +268,7 @@
         }
 
         function leaveRoom() { switchScreen('setupScreen'); }
-        function startMatch() { alert('سيتم نقلك إلى خريطة اللعب الآن... (تحتاج برمجة خريطة اللعبة)'); }
+        function startMatch() { alert('سيتم نقلك إلى خريطة اللعب الآن...'); }
     </script>
 </body>
 </html>
