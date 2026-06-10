@@ -3,220 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مين المختلف | Overwatch UI</title>
-    <!-- استدعاء Tailwind CSS وخطوط مشابهة لأوفرواتش -->
+    <title>مين المختلف | النسخة الاحترافية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=Teko:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --ow-orange: #f99e1a;
-            --ow-dark: #28354f;
-            --ow-light: #f3f3f3;
         }
         body {
-            font-family: 'Tajawal', sans-serif;
-            /* خلفية شخصية من أوفرواتش */
-            background: url('https://images.hdqwalls.com/download/overwatch-2-genji-4k-7k-1920x1080.jpg') no-repeat center center fixed;
+            /* خط كايرو للعربي النظيف */
+            font-family: 'Cairo', sans-serif;
+            /* خلفية بكسل آرت متحركة خرافية (مدينة/طبيعة) */
+            background: url('https://i.pinimg.com/originals/3b/8a/0a/3b8a0a86b3df3ba058e578daee14a09c.gif') no-repeat center center fixed;
             background-size: cover;
             color: white;
             overflow: hidden;
             user-select: none;
-        }
-        .ow-font { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
-        
-        /* تأثير الزجاج للقوائم (Glassmorphism) */
-        .glass-panel {
-            background: rgba(40, 53, 79, 0.85);
-            backdrop-filter: blur(12px);
-            border-right: 4px solid var(--ow-orange);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 0;
+            padding: 0;
         }
 
-        /* أزرار أوفرواتش المائلة */
-        .ow-btn {
-            background-color: var(--ow-orange);
-            color: white;
+        /* تظليل خفيف للشاشة عشان يبرز الكلام بدون ما نحط مربعات */
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+
+        /* خط أوفرواتش للأرقام والكلمات الإنجليزية */
+        .ow-font { font-family: 'Oswald', sans-serif; }
+
+        /* أزرار القائمة الرئيسية (بدون خلفيات، فقط كلام طاير زي أوفرواتش) */
+        .ow-menu-btn {
+            font-size: 3.5rem;
             font-weight: 900;
-            font-size: 1.5rem;
-            padding: 10px 40px;
-            transform: skewX(-15deg);
-            transition: all 0.2s ease;
+            font-style: italic;
+            color: white;
             cursor: pointer;
-            border: 2px solid transparent;
-            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            transition: all 0.2s ease;
+            text-align: right;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 0;
+            line-height: 1.2;
         }
-        .ow-btn:hover {
-            background-color: white;
+        .ow-menu-btn:hover {
             color: var(--ow-orange);
-            border: 2px solid var(--ow-orange);
-        }
-        .ow-btn > span {
-            display: inline-block;
-            transform: skewX(15deg); /* تعديل ميلان النص */
+            transform: translateX(-20px); /* يتحرك لليسار شوي عند التأشير */
         }
 
-        /* نظام الإطارات بناءً على اللفل */
-        .frame-bronze { border: 4px solid #cd7f32; box-shadow: 0 0 10px #cd7f32; }
-        .frame-silver { border: 4px solid #c0c0c0; box-shadow: 0 0 10px #c0c0c0; }
-        .frame-gold { border: 4px solid #ffd700; box-shadow: 0 0 15px #ffd700; }
+        /* النصوص العادية المظللة عشان تنقري بدون إطارات */
+        .floating-text {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* إطارات اللفل لأوفرواتش */
+        .portrait-border {
+            border: 4px solid #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        .level-badge {
+            background-color: var(--ow-orange);
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
 
         .hidden-screen { display: none !important; }
         
-        /* كولنج كارد */
-        .calling-card {
-            background: linear-gradient(90deg, rgba(40,53,79,1) 0%, rgba(249,158,26,0.8) 100%);
-            border-radius: 8px;
+        /* تأثير اختيار الصورة */
+        .avatar-select {
+            transition: transform 0.2s;
+            background: rgba(0,0,0,0.4);
+        }
+        .avatar-select:hover {
+            transform: scale(1.1);
+        }
+        .avatar-selected {
+            border-color: var(--ow-orange) !important;
+            transform: scale(1.1);
+            background: var(--ow-orange);
         }
     </style>
 </head>
 <body class="h-screen w-screen relative">
+    <div class="vignette"></div> <!-- تظليل حواف الشاشة -->
 
-    <!-- معلومات اللاعب (تظهر في كل الشاشات ما عدا البداية) -->
-    <div id="player-profile-hud" class="hidden-screen absolute top-4 left-4 calling-card flex items-center p-2 w-72 z-50 transition-all">
-        <img id="hud-avatar" src="" class="w-16 h-16 rounded-full frame-bronze object-cover">
-        <div class="mr-4 w-full">
-            <h2 id="hud-name" class="text-xl font-bold">الاسم</h2>
-            <div class="flex justify-between items-center text-sm">
-                <span>LVL <span id="hud-level" class="ow-font text-lg">1</span></span>
-                <span class="text-xs opacity-75">XP: <span id="hud-xp">0</span>/100</span>
-            </div>
-            <!-- شريط الإكس بي -->
-            <div class="w-full bg-gray-700 h-2 mt-1 rounded-full overflow-hidden">
-                <div id="hud-xp-bar" class="bg-orange-400 h-full transition-all duration-500" style="width: 0%"></div>
+    <!-- بروفايل اللاعب (فوق يمين مثل أوفرواتش) -->
+    <div id="player-profile-hud" class="hidden-screen absolute top-6 right-8 flex items-center gap-4 z-50">
+        <div class="text-right">
+            <div id="hud-name" class="text-3xl font-black text-white floating-text tracking-wider">الاسم</div>
+            <div class="text-sm font-bold text-orange-400 floating-text">XP: <span id="hud-xp" class="ow-font text-lg">0</span>/100</div>
+        </div>
+        <div class="relative">
+            <!-- الصورة الدائرية -->
+            <img id="hud-avatar" src="" class="w-20 h-20 rounded-full portrait-border object-cover bg-black">
+            <!-- شارة اللفل أسفل الصورة -->
+            <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 level-badge text-white font-black px-4 rounded-md text-xl ow-font">
+                <span id="hud-level">1</span>
             </div>
         </div>
     </div>
 
     <!-- 1. شاشة إنشاء الحساب -->
-    <div id="screen-setup" class="h-full flex items-center justify-center">
-        <div class="glass-panel p-10 w-1/3 rounded-lg flex flex-col gap-6">
-            <h1 class="text-4xl font-black text-center text-orange-400 mb-4">إنشاء الملف الشخصي</h1>
-            
-            <div>
-                <label class="block mb-2 font-bold">اسم اللاعب:</label>
-                <input type="text" id="input-name" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-orange-400 outline-none" placeholder="أدخل اسمك هنا...">
-            </div>
+    <div id="screen-setup" class="h-full flex flex-col items-center justify-center relative z-10">
+        <h1 class="text-6xl font-black text-white italic mb-12 floating-text">عرّف عن نفسك</h1>
+        
+        <div class="w-full max-w-2xl flex flex-col items-center gap-10">
+            <!-- حقل الاسم (تصميم مسطح بدون إطار مزعج) -->
+            <input type="text" id="input-name" class="w-2/3 p-4 bg-black bg-opacity-40 text-white text-3xl font-bold text-center border-b-4 border-orange-400 outline-none floating-text rounded-t-lg transition focus:bg-opacity-60" placeholder="اكتب اسمك هنا...">
 
-            <div>
-                <label class="block mb-2 font-bold">اختر الأفاتار:</label>
-                <div class="flex gap-4 justify-center">
-                    <img src="https://i.pinimg.com/originals/a7/67/6a/a7676a0c0b115049c33bb32051d95011.png" class="avatar-select w-20 h-20 rounded-full border-2 border-gray-500 cursor-pointer hover:border-orange-400" onclick="selectAvatar(this.src)">
-                    <img src="https://i.pinimg.com/736x/87/42/41/8742416bc262edb393cb186bc54cd1c5.jpg" class="avatar-select w-20 h-20 rounded-full border-2 border-gray-500 cursor-pointer hover:border-orange-400" onclick="selectAvatar(this.src)">
+            <!-- اختيار الصور (صور بكسل آرت احترافية) -->
+            <div class="text-center w-full">
+                <h3 class="text-2xl font-bold text-gray-200 mb-6 floating-text">اختر الأفاتار:</h3>
+                <div class="flex flex-wrap justify-center gap-6" id="avatar-container">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Ninja" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Joker" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=King" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Sam" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Wolf" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Bear" class="avatar-select w-24 h-24 rounded-full border-4 border-transparent cursor-pointer" onclick="selectAvatar(this)">
                 </div>
             </div>
 
-            <button onclick="saveProfile()" class="ow-btn mt-4"><span>دخول للقائمة الرئيسية</span></button>
+            <!-- زر الدخول -->
+            <button onclick="saveProfile()" class="mt-8 text-4xl font-black italic text-orange-400 hover:text-white transition floating-text uppercase">
+                دخول اللعبة ⮜
+            </button>
         </div>
     </div>
 
-    <!-- 2. القائمة الرئيسية -->
-    <div id="screen-menu" class="hidden-screen h-full flex flex-col justify-center items-start p-20">
-        <h1 class="ow-font text-8xl italic font-black text-white mb-10 drop-shadow-lg">مين المختلف؟</h1>
-        <div class="flex flex-col gap-6 w-80">
-            <button onclick="showScreen('screen-lobby')" class="ow-btn"><span>إنشاء غرفة</span></button>
-            <button class="ow-btn bg-gray-600 hover:bg-white hover:text-gray-800 hover:border-gray-800"><span>الانضمام لغرفة</span></button>
-            <button class="ow-btn bg-red-600 hover:bg-white hover:text-red-600 hover:border-red-600"><span>خروج</span></button>
+    <!-- 2. القائمة الرئيسية (تصميم أوفرواتش الأصلي) -->
+    <div id="screen-menu" class="hidden-screen h-full flex flex-col justify-center items-start pl-20 pr-20 z-10 relative">
+        <h1 class="ow-font text-8xl italic font-black text-orange-400 mb-16 floating-text">مين المختلف؟</h1>
+        <div class="flex flex-col gap-2 items-start">
+            <button onclick="showScreen('screen-lobby')" class="ow-menu-btn">إنشاء غرفة</button>
+            <button class="ow-menu-btn">الانضمام لغرفة</button>
+            <button class="ow-menu-btn">الإعدادات</button>
+            <button class="ow-menu-btn" style="color: #ef4444;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ef4444'">خروج</button>
         </div>
     </div>
 
-    <!-- 3. غرفة الانتظار (اللوبي) -->
-    <div id="screen-lobby" class="hidden-screen h-full flex items-center justify-center">
-        <div class="glass-panel p-10 w-1/2 rounded-lg flex flex-col gap-6">
-            <h2 class="text-3xl font-bold flex justify-between">
-                <span>غرفة الانتظار</span>
-                <span class="text-orange-400">كود الغرفة: #9X2A</span>
-            </h2>
+    <!-- 3. غرفة الانتظار (اللوبي بدون مربعات) -->
+    <div id="screen-lobby" class="hidden-screen h-full flex flex-col items-center justify-center relative z-10">
+        <h2 class="text-5xl font-black italic text-white floating-text mb-4">غرفة الانتظار</h2>
+        <h3 class="text-2xl font-bold text-orange-400 floating-text mb-12">كود الغرفة: #9X2A</h3>
+        
+        <!-- قائمة اللاعبين (نصوص وصور طايرة فقط) -->
+        <div class="flex flex-col gap-6 w-full max-w-md">
+            <div class="flex items-center gap-6">
+                <img id="lobby-my-avatar" src="" class="w-16 h-16 rounded-full border-2 border-white bg-black shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                <span id="lobby-my-name" class="font-black text-3xl floating-text text-white">الاسم</span>
+                <span class="mr-auto font-bold text-orange-400 floating-text text-xl">مضيف (أنت)</span>
+            </div>
             
-            <div class="bg-gray-800 p-4 rounded-lg flex flex-col gap-3 min-h-[200px]">
-                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded">
-                    <img id="lobby-my-avatar" src="" class="w-10 h-10 rounded-full">
-                    <span id="lobby-my-name" class="font-bold text-lg">الاسم</span>
-                    <span class="ml-auto text-green-400 text-sm">مضيف (أنت)</span>
-                </div>
-                <!-- لاعبين وهميين للمحاكاة -->
-                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded opacity-75">
-                    <div class="w-10 h-10 rounded-full bg-blue-500"></div>
-                    <span>أحمد (مستعد)</span>
-                </div>
-                <div class="flex items-center gap-3 p-2 bg-gray-700 rounded opacity-75">
-                    <div class="w-10 h-10 rounded-full bg-green-500"></div>
-                    <span>سارة (مستعد)</span>
-                </div>
+            <div class="flex items-center gap-6 opacity-80">
+                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Alex" class="w-16 h-16 rounded-full border-2 border-gray-400 bg-black">
+                <span class="font-black text-3xl floating-text text-gray-300">أحمد</span>
+                <span class="mr-auto font-bold text-green-400 floating-text text-xl">مستعد</span>
             </div>
 
-            <button onclick="startGame()" class="ow-btn"><span>بدء اللعبة</span></button>
+            <div class="flex items-center gap-6 opacity-80">
+                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Sarah" class="w-16 h-16 rounded-full border-2 border-gray-400 bg-black">
+                <span class="font-black text-3xl floating-text text-gray-300">سارة</span>
+                <span class="mr-auto font-bold text-green-400 floating-text text-xl">مستعد</span>
+            </div>
         </div>
+
+        <button onclick="startGame()" class="mt-16 text-5xl font-black italic text-orange-400 hover:text-white transition floating-text uppercase">
+            بدء اللعبة ⮜
+        </button>
     </div>
 
     <!-- 4. شاشة اللعب -->
-    <div id="screen-game" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-80 absolute top-0 w-full z-40">
-        
+    <div id="screen-game" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-70 absolute top-0 w-full z-40 backdrop-blur-sm">
         <!-- المؤقت -->
-        <div class="absolute top-10 ow-font text-6xl text-orange-400 flex flex-col items-center">
-            <span>الوقت المتبقي</span>
-            <span id="timer" class="text-8xl text-white">60</span>
+        <div class="absolute top-12 flex flex-col items-center floating-text">
+            <span class="text-2xl font-bold text-orange-400 mb-2">الوقت المتبقي</span>
+            <span id="timer" class="ow-font text-8xl text-white font-black">60</span>
         </div>
 
-        <!-- الكلمة/الصورة/الرقم -->
-        <div class="glass-panel p-12 rounded-2xl text-center max-w-2xl mt-20">
-            <h3 class="text-2xl text-gray-300 mb-4" id="role-text">أنت لست المختلف! الكلمة المشتركة هي:</h3>
-            <h1 class="text-6xl font-black text-orange-400" id="prompt-text">سيارة</h1>
-            <p class="mt-6 text-lg text-gray-400">تناقشوا الآن لمعرفة من يمتلك كلمة مختلفة (أو من يمثل أنه يعرف الكلمة!)</p>
+        <!-- الكلمة المشتركة -->
+        <div class="text-center mt-10">
+            <h3 class="text-3xl font-bold text-gray-300 mb-6 floating-text">أنت لست المختلف! الكلمة المشتركة هي:</h3>
+            <h1 class="text-8xl font-black text-orange-400 floating-text italic">سيارة</h1>
+            <p class="mt-8 text-2xl font-bold text-gray-400 floating-text">تناقشوا الآن لمعرفة من يمتلك كلمة مختلفة!</p>
         </div>
 
-        <button onclick="endTimerAndVote()" class="ow-btn mt-10 !bg-red-600"><span>تخطي الوقت والتصويت</span></button>
+        <button onclick="endTimerAndVote()" class="absolute bottom-12 text-3xl font-black italic text-red-500 hover:text-white transition floating-text">
+            تخطي الوقت للتصويت ⮜
+        </button>
     </div>
 
-    <!-- 5. شاشة التصويت والنتيجة للمختلف -->
-    <div id="screen-vote" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-90 absolute top-0 w-full z-50">
-        <h2 class="text-5xl font-bold mb-10 text-orange-400">انتهى الوقت! صوّت للمختلف</h2>
+    <!-- 5. شاشة التصويت والنتيجة -->
+    <div id="screen-vote" class="hidden-screen h-full flex flex-col items-center justify-center bg-black bg-opacity-80 absolute top-0 w-full z-50 backdrop-blur-md">
+        <h2 id="vote-title" class="text-6xl font-black italic mb-16 text-orange-400 floating-text">صوّت للمختلف!</h2>
         
-        <div class="flex gap-6 mb-10">
-            <div onclick="votePlayer('أحمد')" class="bg-gray-800 p-6 rounded-lg cursor-pointer hover:bg-orange-500 transition border-2 border-transparent hover:border-white text-center">
-                <div class="w-20 h-20 rounded-full bg-blue-500 mx-auto mb-3"></div>
-                <h3 class="text-xl font-bold">أحمد</h3>
+        <div id="players-to-vote" class="flex gap-12 mb-10">
+            <!-- أحمد -->
+            <div onclick="votePlayer('أحمد')" class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition duration-300">
+                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Alex" class="w-32 h-32 rounded-full border-4 border-gray-400 hover:border-orange-400 bg-black mb-4 shadow-lg">
+                <h3 class="text-3xl font-black floating-text text-white">أحمد</h3>
             </div>
-            <div onclick="votePlayer('سارة')" class="bg-gray-800 p-6 rounded-lg cursor-pointer hover:bg-orange-500 transition border-2 border-transparent hover:border-white text-center">
-                <div class="w-20 h-20 rounded-full bg-green-500 mx-auto mb-3"></div>
-                <h3 class="text-xl font-bold">سارة</h3>
+            <!-- سارة -->
+            <div onclick="votePlayer('سارة')" class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition duration-300">
+                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Sarah" class="w-32 h-32 rounded-full border-4 border-gray-400 hover:border-orange-400 bg-black mb-4 shadow-lg">
+                <h3 class="text-3xl font-black floating-text text-white">سارة</h3>
             </div>
         </div>
 
-        <!-- خيارات المختلف (تظهر فقط للمختلف إذا تم كشفه) -->
-        <div id="imposter-guess" class="hidden flex-col items-center">
-            <h3 class="text-3xl text-red-400 mb-6 font-bold">لقد صادوك! لكن يمكنك سرقة الفوز.. ما هي الكلمة المشتركة؟</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">طيارة</button>
-                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">سيارة</button>
-                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">قطار</button>
-                <button onclick="winXP()" class="bg-gray-700 hover:bg-orange-500 text-white p-4 rounded text-xl font-bold">دراجة</button>
+        <!-- خيارات المختلف (تظهر بس للمختلف إذا انصاد) -->
+        <div id="imposter-guess" class="hidden flex-col items-center w-full max-w-3xl">
+            <h3 class="text-4xl text-white mb-10 font-black floating-text text-center">حاول سرقة الفوز! وش هي الكلمة المشتركة؟</h3>
+            <div class="grid grid-cols-2 gap-8 w-full">
+                <button onclick="winXP()" class="text-4xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">طيارة</button>
+                <button onclick="winXP()" class="text-4xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">سيارة</button>
+                <button onclick="winXP()" class="text-4xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">قطار</button>
+                <button onclick="winXP()" class="text-4xl font-black italic text-gray-400 hover:text-orange-400 transition floating-text text-center">دراجة</button>
             </div>
         </div>
     </div>
 
-    <!-- سكريبت اللوجيك لمحاكاة اللعبة -->
+    <!-- السكريبت -->
     <script>
-        // بيانات اللاعب الأساسية
-        let player = {
-            name: '',
-            avatar: '',
-            level: 1,
-            xp: 0
-        };
-
+        let player = { name: '', avatar: '', level: 1, xp: 0 };
         let timerInterval;
 
         // اختيار الصورة
-        function selectAvatar(src) {
-            player.avatar = src;
-            document.querySelectorAll('.avatar-select').forEach(img => img.classList.remove('border-orange-400'));
-            event.target.classList.add('border-orange-400');
+        function selectAvatar(imgElement) {
+            player.avatar = imgElement.src;
+            document.querySelectorAll('.avatar-select').forEach(img => {
+                img.classList.remove('avatar-selected');
+            });
+            imgElement.classList.add('avatar-selected');
         }
 
-        // حفظ الحساب والدخول للقائمة
+        // الحفظ والدخول
         function saveProfile() {
             const nameInput = document.getElementById('input-name').value;
-            if(!nameInput || !player.avatar) return alert('يرجى كتابة الاسم واختيار الصورة!');
+            if(!nameInput || !player.avatar) return alert('يا بطل، اكتب اسمك واختار شخصية!');
             
             player.name = nameInput;
             updateHUD();
@@ -225,23 +252,18 @@
             showScreen('screen-menu');
         }
 
-        // تحديث معلومات الشاشة العلوية (اللفل والإطار)
+        // تحديث البروفايل (أعلى اليمين)
         function updateHUD() {
             document.getElementById('hud-name').innerText = player.name;
             document.getElementById('hud-level').innerText = player.level;
             document.getElementById('hud-xp').innerText = player.xp;
-            document.getElementById('hud-xp-bar').style.width = `${player.xp}%`;
             
             const avatarImg = document.getElementById('hud-avatar');
             avatarImg.src = player.avatar;
 
-            // تحديث لون الإطار حسب اللفل (1-10 برونزي، 11-50 فضي، 51+ ذهبي)
-            avatarImg.classList.remove('frame-bronze', 'frame-silver', 'frame-gold');
-            if(player.level < 10) avatarImg.classList.add('frame-bronze');
-            else if(player.level < 50) avatarImg.classList.add('frame-silver');
-            else avatarImg.classList.add('frame-gold');
+            // تغيير لون إطار البروفايل بناءً على اللفل
+            avatarImg.style.borderColor = player.level < 10 ? '#cd7f32' : (player.level < 50 ? '#c0c0c0' : '#ffd700');
 
-            // تحديث اللوبي
             document.getElementById('lobby-my-name').innerText = player.name;
             document.getElementById('lobby-my-avatar').src = player.avatar;
         }
@@ -253,7 +275,6 @@
             document.getElementById(screenId).classList.remove('hidden-screen');
         }
 
-        // بدء اللعبة (محاكاة)
         function startGame() {
             showScreen('screen-game');
             let timeLeft = 60;
@@ -266,22 +287,20 @@
             }, 1000);
         }
 
-        // الانتقال لشاشة التصويت
         function endTimerAndVote() {
             clearInterval(timerInterval);
             showScreen('screen-vote');
         }
 
-        // عند تصويت اللاعبين
         function votePlayer(votedName) {
-            // محاكاة: نفترض أنك أنت المختلف وتم التصويت لك
-            document.querySelector('#screen-vote > div.flex').classList.add('hidden'); // إخفاء اللاعبين
-            document.querySelector('#screen-vote h2').innerText = "لقد تم كشفك! أنت المختلف!";
-            document.getElementById('imposter-guess').classList.remove('hidden'); // إظهار خيارات التخمين
+            document.getElementById('players-to-vote').classList.add('hidden');
+            document.getElementById('vote-title').innerText = "لقد تم كشفك! أنت المختلف!";
+            document.getElementById('vote-title').classList.replace('text-orange-400', 'text-red-500');
+            
+            document.getElementById('imposter-guess').classList.remove('hidden');
             document.getElementById('imposter-guess').classList.add('flex');
         }
 
-        // عند الإجابة الصحيحة أو الفوز لكسب الخبرة XP
         function winXP() {
             alert('إجابة صحيحة! حصلت على 50 XP 🚀');
             player.xp += 50;
@@ -292,11 +311,13 @@
             }
             updateHUD();
             
-            // إعادة التعيين للوبي
+            // إعادة تعيين شاشة التصويت للوضع الأصلي
             document.getElementById('imposter-guess').classList.add('hidden');
             document.getElementById('imposter-guess').classList.remove('flex');
-            document.querySelector('#screen-vote > div.flex.gap-6').classList.remove('hidden');
-            document.querySelector('#screen-vote h2').innerText = "انتهى الوقت! صوّت للمختلف";
+            document.getElementById('players-to-vote').classList.remove('hidden');
+            document.getElementById('vote-title').innerText = "صوّت للمختلف!";
+            document.getElementById('vote-title').classList.replace('text-red-500', 'text-orange-400');
+            
             showScreen('screen-menu');
         }
     </script>
