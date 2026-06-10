@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبتي</title>
+    <title>واجهة اللعبة الاحترافية</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap');
         
@@ -18,7 +18,7 @@
             overflow: hidden;
         }
 
-        /* خلفية النجوم (حركة هادئة جداً ومريحة) */
+        /* خلفية النجوم الهادئة */
         .stars-bg {
             position: absolute;
             width: 100%;
@@ -33,7 +33,7 @@
             to { background-position: -2000px 1000px; }
         }
 
-        /* الكوكب المتحرك ببطء في الخلفية */
+        /* الكوكب المتحرك ببطء */
         .planet {
             position: absolute;
             top: 20%;
@@ -52,7 +52,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* إعدادات الشاشات للتنقل */
+        /* الشاشات */
         .screen {
             position: absolute;
             width: 100%;
@@ -70,7 +70,7 @@
             flex-direction: column;
         }
 
-        /* زر البداية بستايل بكسل */
+        /* زر البداية بكسل */
         .start-btn {
             background-color: transparent;
             color: #fff;
@@ -91,20 +91,17 @@
             box-shadow: 7px 7px 0px #e60039;
         }
 
-        /* واجهة قائمة الـ UI المستوحاة من البلايستيشن */
+        /* واجهة الـ UI الاحترافية (بدون المربع الخلفي المزعج - خلفية شفافة وناعمة جداً) */
         .ps-panel {
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(10, 10, 15, 0.6); /* شفافة جداً ومريحة للعين */
             border-radius: 24px;
-            padding: 40px;
+            padding: 20px;
             width: 90%;
             max-width: 440px;
             text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
         }
 
-        /* حاوية الأفاتار والإطار مثل أوفرواتش */
+        /* حاوية الأفاتار والإطار (أوفرواتش ستايل) */
         .avatar-wrapper {
             position: relative;
             width: 200px;
@@ -115,16 +112,16 @@
             align-items: center;
         }
 
-        /* صورة الأنمي المظلم */
         .avatar-img {
             width: 110px;
             height: 110px;
             border-radius: 6px;
             object-fit: cover;
             z-index: 1;
+            transition: 0.3s;
         }
 
-        /* الإطار السداسي الياقوتي */
+        /* الإطار الديناميكي المربوط برابط ريديت المباشر */
         .frame-overlay {
             position: absolute;
             top: 50%;
@@ -132,21 +129,22 @@
             transform: translate(-50%, -50%);
             width: 230px; 
             height: 230px;
-            /* تم استخدام رابط مباشر متاح للجميع من ريديت للـتأكد من عمله */
             background-image: url('https://preview.redd.it/give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.png?width=1080&crop=smart&auto=webp&s=87204f0525d8869b2d07519ba2a3286377777d13');
             background-size: 730% auto; 
+            /* الافتراضي: ياقوتي (Ruby) */
             background-position: 81.3% center; 
-            mix-blend-mode: screen; /* إخفاء الخلفية السوداء */
+            mix-blend-mode: screen; 
             z-index: 2;
             pointer-events: none;
+            transition: background-position 0.3s ease;
         }
 
-        /* أزرار التعديل */
+        /* أزرار التحكم الفورية */
         .edit-btns {
             display: flex;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 35px;
+            margin-bottom: 20px;
         }
 
         .edit-btn {
@@ -164,14 +162,40 @@
         .edit-btn:hover {
             background: rgba(255,255,255,0.2);
             color: #fff;
-            border-color: rgba(255,255,255,0.4);
         }
 
-        /* حقل الاسم الاحترافي (خط سفلي فقط) */
+        /* لوحة اختيار الإطارات التفاعلية الخفية وتظهر عند الضغط */
+        .frames-selector {
+            display: none;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .frame-option {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .frame-option:hover {
+            border-color: #e60039;
+            background: #e60039;
+        }
+
+        /* حقل الاسم الصافي بدون مربعات */
         .name-input {
             width: 75%;
             padding: 8px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             background: transparent;
             border: none;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
@@ -187,7 +211,7 @@
             border-bottom: 2px solid #e60039; 
         }
 
-        /* أزرار الغرف */
+        /* أزرار الغرف تحت */
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -212,6 +236,22 @@
             border-color: #e60039;
             box-shadow: 0 0 20px rgba(230, 0, 57, 0.6);
         }
+
+        /* نافذة الغرفة المنبثقة المحترفة */
+        .room-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 15, 25, 0.95);
+            border: 2px solid #e60039;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(230, 0, 57, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -227,44 +267,93 @@
         <div class="ps-panel">
             
             <div class="avatar-wrapper">
-                <img src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="Avatar" class="avatar-img">
-                <div class="frame-overlay"></div>
+                <img id="avatar" src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="Avatar" class="avatar-img">
+                <div id="frame" class="frame-overlay"></div>
             </div>
 
             <div class="edit-btns">
-                <button class="edit-btn" onclick="alert('سيتم فتح ألبوم الصور قريباً!')">تغيير الصورة</button>
-                <button class="edit-btn" onclick="alert('سيتم فتح قائمة الإطارات قريباً!')">تغيير الإطار</button>
+                <button class="edit-btn" onclick="changeAvatar()">تغيير الصورة</button>
+                <button class="edit-btn" onclick="toggleFrameSelector()">تغيير الإطار</button>
+            </div>
+
+            <div id="selector" class="frames-selector">
+                <button class="frame-option" onclick="setFrame('bronze')">برونزي</button>
+                <button class="frame-option" onclick="setFrame('silver')">فضي</button>
+                <button class="frame-option" onclick="setFrame('gold')">ذهبي</button>
+                <button class="frame-option" onclick="setFrame('ruby')">ياقوتي (الأحمر)</button>
             </div>
 
             <input type="text" class="name-input" placeholder="اسمك...">
 
             <div class="action-buttons">
-                <button class="action-btn" onclick="createRoom()">إنشاء غرفة</button>
-                <button class="action-btn" onclick="alert('جاري البحث عن غرف متاحة...')">انضمام لغرفة</button>
+                <button class="action-btn" onclick="showRoom()">إنشاء غرفة</button>
+                <button class="action-btn" onclick="alert('جاري البحث عن غرف...')">انضمام لغرفة</button>
             </div>
         </div>
     </div>
 
+    <div id="roomModal" class="room-modal">
+        <h2>تم إنشاء الغرفة بنجاح! 🔥</h2>
+        <p style="font-size: 1.5rem; color: #e60039; font-weight: bold;">كود الغرفة: <span id="roomCode">------</span></p>
+        <p>انتظار دخول أخوياك...</p>
+        <button class="edit-btn" onclick="closeRoom()">إغلاق</button>
+    </div>
+
     <script>
+        // التنقل بين الشاشات
         function goToSetup() {
-            const startScreen = document.getElementById('start-screen');
-            const setupScreen = document.getElementById('setup-screen');
-            
-            startScreen.style.opacity = '0';
-            
+            document.getElementById('start-screen').style.opacity = '0';
             setTimeout(() => {
-                startScreen.style.display = 'none';
-                setupScreen.style.display = 'flex';
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('setup-screen').style.display = 'flex';
                 setTimeout(() => {
-                    setupScreen.style.opacity = '1';
+                    document.getElementById('setup-screen').style.opacity = '1';
                 }, 50);
             }, 600);
         }
 
-        function createRoom() {
-            // كود محاكاة لإنشاء غرفة حقيقية وإعطاء رقم عشوائي
-            const roomId = Math.floor(100000 + Math.random() * 900000);
-            alert("تم إنشاء الغرفة بنجاح! \nرقم الغرفة: " + roomId + "\nأرسل الرقم لأصدقائك ليدخلوا معك.");
+        // إظهار وإخفاء قائمة الإطارات
+        function toggleFrameSelector() {
+            const selector = document.getElementById('selector');
+            selector.style.display = selector.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // تغيير الإطار بشكل حي وفوري بالاعتماد على إحداثيات الصورة المرفوعة
+        function setFrame(rank) {
+            const frame = document.getElementById('frame');
+            if (rank === 'bronze') {
+                frame.style.backgroundPosition = "2.5% center";
+            } else if (rank === 'silver') {
+                frame.style.backgroundPosition = "18.3% center";
+            } else if (rank === 'gold') {
+                frame.style.backgroundPosition = "34.2% center";
+            } else if (rank === 'ruby') {
+                frame.style.backgroundPosition = "81.3% center";
+            }
+        }
+
+        // تبديل فوري بين صورتين أنمي مظلم
+        let currentAvatar = 1;
+        function changeAvatar() {
+            const avatar = document.getElementById('avatar');
+            if (currentAvatar === 1) {
+                avatar.src = "https://i.pinimg.com/736x/19/bf/02/19bf0283f5fb47b8559091629fa03328.jpg"; // صورة أنمي مظلم بديلة
+                currentAvatar = 2;
+            } else {
+                avatar.src = "https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg";
+                currentAvatar = 1;
+            }
+        }
+
+        // تشغيل نظام إنشاء الغرفة داخل اللعبة
+        function showRoom() {
+            const code = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('roomCode').innerText = code;
+            document.getElementById('roomModal').style.display = 'block';
+        }
+
+        function closeRoom() {
+            document.getElementById('roomModal').style.display = 'none';
         }
     </script>
 
