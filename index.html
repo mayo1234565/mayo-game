@@ -12,7 +12,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #050505;
+            background-color: #020202;
             color: white;
             font-family: 'Changa', sans-serif;
             overflow: hidden;
@@ -25,7 +25,7 @@
             height: 100%;
             background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
             z-index: 0;
-            animation: moveStars 150s linear infinite; 
+            animation: moveStars 180s linear infinite; 
         }
 
         @keyframes moveStars {
@@ -33,18 +33,18 @@
             to { background-position: -2000px 1000px; }
         }
 
-        /* الكوكب المتحرك ببطء (في الشاشة الأولى) */
+        /* الكوكب المتحرك ببطء في الخلفية */
         .planet {
             position: absolute;
             top: 20%;
-            left: 20%;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle at 30% 30%, #3b3b4f, #0d0d14);
+            left: 15%;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 30% 30%, #2c3e50, #000000);
             border-radius: 50%;
-            box-shadow: 0 0 30px rgba(59, 59, 79, 0.3);
+            box-shadow: 0 0 40px rgba(44, 62, 80, 0.4);
             z-index: 1;
-            animation: rotatePlanet 60s linear infinite;
+            animation: rotatePlanet 100s linear infinite;
         }
 
         @keyframes rotatePlanet {
@@ -61,7 +61,7 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            transition: opacity 0.8s ease;
+            transition: opacity 0.6s ease;
         }
 
         #setup-screen {
@@ -75,110 +75,109 @@
             background-color: transparent;
             color: #fff;
             border: 4px solid #fff;
-            padding: 15px 50px;
-            font-size: 2.5rem;
+            padding: 15px 60px;
+            font-size: 2.8rem;
             font-family: monospace;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 4px 4px 0px rgba(200, 0, 40, 0.8);
-            text-shadow: 2px 2px 0px rgba(200, 0, 40, 0.8);
+            box-shadow: 5px 5px 0px #e60039;
+            text-shadow: 2px 2px 0px #e60039;
             transition: all 0.2s;
             z-index: 2;
         }
 
         .start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 6px 6px 0px rgba(200, 0, 40, 0.8);
+            box-shadow: 7px 7px 0px #e60039;
         }
 
-        /* واجهة البلايستيشن */
+        /* واجهة قائمة الـ UI المستوحاة من البلايستيشن */
         .ps-panel {
-            background: rgba(15, 15, 20, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
             padding: 40px;
             width: 90%;
-            max-width: 450px;
+            max-width: 440px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
         }
 
-        /* -------------------------------------- */
-        /* منطقة الأفاتار والإطار (نظام أوفرواتش) */
-        /* -------------------------------------- */
+        /* حاوية الأفاتار والإطار مثل أوفرواتش */
         .avatar-wrapper {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 10px auto;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px auto;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* صورة الأنمي (الأساس) */
+        /* صورة الأنمي المظلم */
         .avatar-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 5px; /* حواف ناعمة لتناسب الشكل السداسي */
+            width: 110px;
+            height: 110px;
+            border-radius: 6px;
             object-fit: cover;
             z-index: 1;
         }
 
-        /* الإطار (فوق الأنمي) */
+        /* الإطار السداسي الياقوتي */
         .frame-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 180px; 
-            height: 180px;
-            /* استخدمنا الصورة اللي أرسلتها */
-            background-image: url('give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.webp');
-            background-size: 750% auto; /* تكبير الصورة عشان نركز على إطار واحد */
-            background-position: 81.5% center; /* هذا الرقم يحدد الإطار الأحمر (Ruby) بالضبط */
-            mix-blend-mode: screen; /* 🔥 السر هنا: يخفي الخلفية السوداء ويخلي الإطار يضوي 🔥 */
+            width: 230px; 
+            height: 230px;
+            /* تم استخدام رابط مباشر متاح للجميع من ريديت للـتأكد من عمله */
+            background-image: url('https://preview.redd.it/give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.png?width=1080&crop=smart&auto=webp&s=87204f0525d8869b2d07519ba2a3286377777d13');
+            background-size: 730% auto; 
+            background-position: 81.3% center; 
+            mix-blend-mode: screen; /* إخفاء الخلفية السوداء */
             z-index: 2;
             pointer-events: none;
         }
 
-        /* أزرار التعديل الصغار */
+        /* أزرار التعديل */
         .edit-btns {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
         }
 
         .edit-btn {
-            background: rgba(255,255,255,0.1);
-            color: #ccc;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 15px;
+            background: rgba(255,255,255,0.06);
+            color: #b3b3b3;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 6px 18px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: 0.3s;
             font-family: 'Changa', sans-serif;
         }
 
         .edit-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.2);
             color: #fff;
+            border-color: rgba(255,255,255,0.4);
         }
 
-        /* حقل إدخال الاسم (خط ناعم فقط) */
+        /* حقل الاسم الاحترافي (خط سفلي فقط) */
         .name-input {
-            width: 70%;
-            padding: 10px;
+            width: 75%;
+            padding: 8px;
             margin-bottom: 40px;
             background: transparent;
             border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-family: 'Changa', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             text-align: center;
             outline: none;
             transition: border-color 0.3s;
@@ -196,13 +195,13 @@
         }
 
         .action-btn {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(20, 20, 25, 0.6);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 25px;
-            font-size: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 14px 25px;
+            font-size: 1.1rem;
             font-family: 'Changa', sans-serif;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
             flex: 1;
@@ -211,7 +210,7 @@
         .action-btn:hover {
             background: #e60039;
             border-color: #e60039;
-            box-shadow: 0 0 15px rgba(230, 0, 57, 0.5);
+            box-shadow: 0 0 20px rgba(230, 0, 57, 0.6);
         }
     </style>
 </head>
@@ -228,20 +227,20 @@
         <div class="ps-panel">
             
             <div class="avatar-wrapper">
-                <img src="dark-anime-pictures-iwmu3b0sun9r6789.webp" alt="Avatar" class="avatar-img">
+                <img src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="Avatar" class="avatar-img">
                 <div class="frame-overlay"></div>
             </div>
 
             <div class="edit-btns">
-                <button class="edit-btn">تغيير الصورة</button>
-                <button class="edit-btn">تغيير الإطار</button>
+                <button class="edit-btn" onclick="alert('سيتم فتح ألبوم الصور قريباً!')">تغيير الصورة</button>
+                <button class="edit-btn" onclick="alert('سيتم فتح قائمة الإطارات قريباً!')">تغيير الإطار</button>
             </div>
 
             <input type="text" class="name-input" placeholder="اسمك...">
 
             <div class="action-buttons">
                 <button class="action-btn" onclick="createRoom()">إنشاء غرفة</button>
-                <button class="action-btn">انضمام لغرفة</button>
+                <button class="action-btn" onclick="alert('جاري البحث عن غرف متاحة...')">انضمام لغرفة</button>
             </div>
         </div>
     </div>
@@ -251,22 +250,21 @@
             const startScreen = document.getElementById('start-screen');
             const setupScreen = document.getElementById('setup-screen');
             
-            // إخفاء الشاشة الأولى
             startScreen.style.opacity = '0';
             
             setTimeout(() => {
                 startScreen.style.display = 'none';
-                
-                // إظهار الشاشة الثانية
                 setupScreen.style.display = 'flex';
                 setTimeout(() => {
                     setupScreen.style.opacity = '1';
                 }, 50);
-            }, 800);
+            }, 600);
         }
 
         function createRoom() {
-            alert("تم إنشاء الغرفة! بانتظار أصدقائك...");
+            // كود محاكاة لإنشاء غرفة حقيقية وإعطاء رقم عشوائي
+            const roomId = Math.floor(100000 + Math.random() * 900000);
+            alert("تم إنشاء الغرفة بنجاح! \nرقم الغرفة: " + roomId + "\nأرسل الرقم لأصدقائك ليدخلوا معك.");
         }
     </script>
 
