@@ -3,50 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واجهة لعبة - شاشة التجهيز</title>
+    <title>لعبتي</title>
     <style>
-        /* إعدادات عامة للواجهة (UI) */
+        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap');
+        
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #05050a; /* خلفية داكنة جداً */
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* لمنع شريطة التمرير */
+            background-color: #050505;
+            color: white;
+            font-family: 'Changa', sans-serif;
+            overflow: hidden;
         }
 
-        /* خلفية الفضاء: النجوم والكوكب */
-        .space-background {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* خلفية النجوم (حركة هادئة جداً ومريحة) */
+        .stars-bg {
+            position: absolute;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* حركة خلفية النجوم - أبطأ بكثير وأهدأ */
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-            background-repeat: repeat;
-            animation: moveStars 60s linear infinite; /* 60 ثانية للدورة الكاملة */
+            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
+            z-index: 0;
+            animation: moveStars 150s linear infinite; 
         }
 
         @keyframes moveStars {
             from { background-position: 0 0; }
-            to { background-position: -1000px 500px; }
+            to { background-position: -2000px 1000px; }
         }
 
-        /* حركة دوران الكوكب - أهدأ وواقعية */
+        /* الكوكب المتحرك ببطء (في الشاشة الأولى) */
         .planet {
-            width: 300px;
-            height: 300px;
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 30% 30%, #3b3b4f, #0d0d14);
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #4facfe, #00f2fe);
-            box-shadow: 0 0 50px rgba(79, 172, 254, 0.5);
-            animation: rotatePlanet 120s linear infinite; /* 120 ثانية للدوران الكامل */
+            box-shadow: 0 0 30px rgba(59, 59, 79, 0.3);
+            z-index: 1;
+            animation: rotatePlanet 60s linear infinite; /* الكوكب يدور حول نفسه */
         }
 
         @keyframes rotatePlanet {
@@ -54,183 +52,216 @@
             to { transform: rotate(360deg); }
         }
 
-        /* الحاوية الرئيسية (نظام قوائم بلايستيشن) */
-        .ui-container {
+        /* إعدادات الشاشات للتنقل */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(5px); /* تأثير ضبابي خفيف */
+            z-index: 10;
+            transition: opacity 0.8s ease;
         }
 
-        .main-panel {
-            background-color: rgba(20, 20, 30, 0.85); /* لوحة شبه شفافة */
-            border: 1px solid rgba(100, 100, 150, 0.3);
-            border-radius: 15px;
+        #setup-screen {
+            display: none;
+            opacity: 0;
+            flex-direction: column;
+        }
+
+        /* زر البداية بستايل بكسل / ريترو */
+        .start-btn {
+            background-color: transparent;
+            color: #fff;
+            border: 4px solid #fff;
+            padding: 15px 50px;
+            font-size: 2.5rem;
+            font-family: monospace; /* خط بستايل بكسل */
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px rgba(200, 0, 40, 0.8);
+            text-shadow: 2px 2px 0px rgba(200, 0, 40, 0.8);
+            transition: all 0.2s;
+            z-index: 2;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 6px 6px 0px rgba(200, 0, 40, 0.8);
+        }
+
+        /* واجهة البلايستيشن (الشاشة الثانية) */
+        .ps-panel {
+            background: rgba(15, 15, 20, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
             padding: 40px;
             width: 90%;
-            max-width: 600px;
+            max-width: 450px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
 
-        .panel-header {
-            font-size: 1.5rem;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            margin-bottom: 25px;
-        }
-
-        /* حاوية الأفاتار والإطار */
-        .avatar-section {
+        /* حاوية الأفاتار والإطار مثل أوفرواتش */
+        .avatar-wrapper {
             position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 0 auto 30px;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .avatar-image {
-            width: 130px;
-            height: 130px;
+        .avatar-img {
+            width: 110px;
+            height: 110px;
             border-radius: 10px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             object-fit: cover;
             z-index: 1;
         }
 
-        .frame-image {
-            width: 100%;
-            height: 100%;
+        .frame-img {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 190px; 
+            height: 190px;
             z-index: 2;
-            pointer-events: none; /* عشان ما يأثر على الكليك */
+            pointer-events: none;
+            /* استخدمت هذي الخاصية عشان تقص صورة الإطارات اللي أرسلتها وتركز على إطار واحد كأنه شفاف */
+            object-fit: cover;
+            object-position: 85% center; 
         }
 
-        /* الأزرار الخلفية (كانت محجوبة) */
-        .hidden-buttons-container {
-            margin-bottom: 20px;
-        }
-
-        .action-button-mini {
-            background-color: transparent;
-            color: #00f2fe;
-            border: 1px solid #00f2fe;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 5px;
-            text-shadow: 0 0 5px #00f2fe;
-        }
-
-        .action-button-mini:hover {
-            background-color: rgba(0, 242, 254, 0.2);
-            box-shadow: 0 0 10px #00f2fe;
-        }
-
-        /* حقل إدخال الاسم */
-        .name-input {
-            width: 80%;
-            padding: 12px;
+        /* أزرار التعديل الصغار */
+        .edit-btns {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 30px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .edit-btn {
+            background: rgba(255,255,255,0.1);
+            color: #ccc;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Changa', sans-serif;
+        }
+
+        .edit-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+
+        /* حقل إدخال الاسم (بدون المربع المزعج، مجرد خط احترافي) */
+        .name-input {
+            width: 70%;
+            padding: 10px;
+            margin-bottom: 40px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            font-size: 1.1rem;
+            font-family: 'Changa', sans-serif;
+            font-size: 1.5rem;
             text-align: center;
-            border-radius: 5px;
             outline: none;
             transition: border-color 0.3s;
         }
 
         .name-input:focus {
-            border-color: #00f2fe;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+            border-bottom: 2px solid #e60039; 
         }
 
-        /* أزرار الإجراءات الرئيسية */
-        .primary-actions {
+        /* أزرار الغرف */
+        .action-buttons {
             display: flex;
-            justify-content: center;
             gap: 15px;
+            justify-content: center;
         }
 
-        .main-action-button {
-            flex: 1;
-            padding: 15px;
-            font-size: 1.1rem;
+        .action-btn {
+            background: rgba(0, 0, 0, 0.5);
             color: white;
-            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            font-family: 'Changa', sans-serif;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: bold;
+            flex: 1;
         }
 
-        .main-action-button.create {
-            background: linear-gradient(45deg, #00c6ff, #0072ff);
-            border: none;
-            box-shadow: 0 0 15px rgba(0, 198, 255, 0.5);
-        }
-
-        .main-action-button.create:hover {
-            box-shadow: 0 0 25px rgba(0, 198, 255, 0.8);
-            transform: translateY(-2px);
-        }
-
-        .main-action-button.join {
-            background: transparent;
-            border: 2px solid #ffffff;
-        }
-
-        .main-action-button.join:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+        .action-btn:hover {
+            background: #e60039;
+            border-color: #e60039;
+            box-shadow: 0 0 15px rgba(230, 0, 57, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <div class="space-background">
+    <div class="stars-bg"></div>
+
+    <div id="start-screen" class="screen">
         <div class="planet"></div>
+        <button class="start-btn" onclick="goToSetup()">ابــــدأ</button>
     </div>
 
-    <div class="ui-container">
-        <div class="main-panel">
-            <div class="panel-header">تجهيز الملف الشخصي</div>
-
-            <div class="avatar-section">
-                <img src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="الأفاتار" class="avatar-image">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Hexagon_border.svg/1024px-Hexagon_border.svg.png" alt="الإطار" class="frame-image">
+    <div id="setup-screen" class="screen">
+        <div class="ps-panel">
+            
+            <div class="avatar-wrapper">
+                <img src="dark-anime-pictures-iwmu3b0sun9r6789.webp" alt="Avatar" class="avatar-img">
+                
+                <img src="give-us-back-this-right-now-ranks-and-level-portraits-v0-t9ciyfkjjl5d1.webp" alt="Frame" class="frame-img">
             </div>
 
-            <div class="hidden-buttons-container">
-                <button class="action-button-mini" onclick="alert('تغيير صورة الشخصية...');">تغيير الصورة</button>
-                <button class="action-button-mini" onclick="alert('تغيير الإطار...');">تغيير الإطار</button>
+            <div class="edit-btns">
+                <button class="edit-btn">تغيير الصورة</button>
+                <button class="edit-btn">تغيير الإطار</button>
             </div>
 
-            <input type="text" class="name-input" placeholder="أدخل اسمك هنا...">
+            <input type="text" class="name-input" placeholder="اسمك...">
 
-            <div class="primary-actions">
-                <button class="main-action-button create" onclick="createRoom();">إنشاء غرفة</button>
-                <button class="main-action-button join">انضمام لغرفة</button>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="createRoom()">إنشاء غرفة</button>
+                <button class="action-btn">انضمام لغرفة</button>
             </div>
         </div>
     </div>
 
     <script>
-        // وظيفة محاكاة إنشاء الغرفة
-        function createRoom() {
-            // توليد رمز عشوائي للغرفة (محاكاة)
-            let roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        function goToSetup() {
+            const startScreen = document.getElementById('start-screen');
+            const setupScreen = document.getElementById('setup-screen');
             
-            // إظهار نافذة منبثقة (Popup)
-            alert("تم إنشاء الغرفة بنجاح!\nكود الغرفة هو: " + roomCode + "\nانتظار انضمام اللاعبين...");
+            // إخفاء الشاشة الأولى
+            startScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                
+                // إظهار الشاشة الثانية
+                setupScreen.style.display = 'flex';
+                setTimeout(() => {
+                    setupScreen.style.opacity = '1';
+                }, 50);
+            }, 800);
+        }
+
+        function createRoom() {
+            alert("تم إنشاء الغرفة! بانتظار أصدقائك...");
         }
     </script>
 
