@@ -3,126 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبتي</title>
+    <title>واجهة لعبة - شاشة التجهيز</title>
     <style>
-        /* إعدادات عامة والخطوط */
-        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap');
-        
+        /* إعدادات عامة للواجهة (UI) */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #050505;
-            color: white;
-            font-family: 'Changa', sans-serif; /* خط مناسب للألعاب */
-            overflow: hidden;
+            background-color: #05050a; /* خلفية داكنة جداً */
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* لمنع شريطة التمرير */
         }
 
-        /* خلفية النجوم (موجودة في الشاشتين) */
-        .stars-bg {
-            position: absolute;
+        /* خلفية الفضاء: النجوم والكوكب */
+        .space-background {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
-            z-index: 0;
-            animation: moveStars 50s linear infinite;
+            z-index: -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* حركة خلفية النجوم - أبطأ بكثير وأهدأ */
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            background-repeat: repeat;
+            animation: moveStars 60s linear infinite; /* 60 ثانية للدورة الكاملة */
         }
 
         @keyframes moveStars {
             from { background-position: 0 0; }
-            to { background-position: -10000px 5000px; }
+            to { background-position: -1000px 500px; }
         }
 
-        /* الكوكب (في الشاشة الأولى فقط) */
+        /* حركة دوران الكوكب - أهدأ وواقعية */
         .planet {
-            position: absolute;
-            top: 20%;
-            left: 10%;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle at 30% 30%, #4a4a5a, #1a1a25);
+            width: 300px;
+            height: 300px;
             border-radius: 50%;
-            box-shadow: 0 0 40px rgba(74, 74, 90, 0.3);
-            z-index: 1;
-            animation: float 10s ease-in-out infinite;
+            background: radial-gradient(circle at 30% 30%, #4facfe, #00f2fe);
+            box-shadow: 0 0 50px rgba(79, 172, 254, 0.5);
+            animation: rotatePlanet 120s linear infinite; /* 120 ثانية للدوران الكامل */
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        @keyframes rotatePlanet {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* الشاشات */
-        .screen {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        /* الحاوية الرئيسية (نظام قوائم بلايستيشن) */
+        .ui-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10;
-            transition: opacity 0.5s ease;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(5px); /* تأثير ضبابي خفيف */
         }
 
-        #setup-screen {
-            display: none; /* مخفية في البداية */
-            opacity: 0;
-            flex-direction: column;
-        }
-
-        /* زر البداية (ستايل بكسل/ريترو) */
-        .start-btn {
-            background-color: transparent;
-            color: #fff;
-            border: 4px solid #fff;
-            padding: 15px 50px;
-            font-size: 2rem;
-            font-family: 'Changa', sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-            text-shadow: 2px 2px 0px #ff003c;
-            box-shadow: 4px 4px 0px #ff003c;
-            transition: all 0.2s;
-        }
-
-        .start-btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px #ff003c;
-        }
-
-        /* واجهة البلايستيشن (الشاشة الثانية) */
-        .ps-panel {
-            background: rgba(20, 20, 30, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .main-panel {
+            background-color: rgba(20, 20, 30, 0.85); /* لوحة شبه شفافة */
+            border: 1px solid rgba(100, 100, 150, 0.3);
             border-radius: 15px;
             padding: 40px;
             width: 90%;
             max-width: 600px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
         }
 
-        .ps-panel h2 {
-            margin-top: 0;
-            font-size: 1.8rem;
-            color: #00d2ff;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        .panel-header {
+            font-size: 1.5rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            margin-bottom: 25px;
         }
 
-        /* إعدادات الأفاتار والإطار */
-        .avatar-container {
+        /* حاوية الأفاتار والإطار */
+        .avatar-section {
             position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 20px auto;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 30px;
         }
 
-        .avatar-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 10px; /* أو 50% لو تبيها دائرية */
+        .avatar-image {
+            width: 130px;
+            height: 130px;
+            border-radius: 10px;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -131,7 +102,7 @@
             z-index: 1;
         }
 
-        .frame-img {
+        .frame-image {
             width: 100%;
             height: 100%;
             position: absolute;
@@ -141,16 +112,38 @@
             pointer-events: none; /* عشان ما يأثر على الكليك */
         }
 
+        /* الأزرار الخلفية (كانت محجوبة) */
+        .hidden-buttons-container {
+            margin-bottom: 20px;
+        }
+
+        .action-button-mini {
+            background-color: transparent;
+            color: #00f2fe;
+            border: 1px solid #00f2fe;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 5px;
+            text-shadow: 0 0 5px #00f2fe;
+        }
+
+        .action-button-mini:hover {
+            background-color: rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 10px #00f2fe;
+        }
+
         /* حقل إدخال الاسم */
         .name-input {
             width: 80%;
             padding: 12px;
-            margin: 20px 0;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            font-family: 'Changa', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: center;
             border-radius: 5px;
             outline: none;
@@ -158,83 +151,86 @@
         }
 
         .name-input:focus {
-            border-color: #00d2ff;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+            border-color: #00f2fe;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
-        /* أزرار الغرف */
-        .action-buttons {
+        /* أزرار الإجراءات الرئيسية */
+        .primary-actions {
             display: flex;
-            gap: 15px;
             justify-content: center;
-            margin-top: 20px;
+            gap: 15px;
         }
 
-        .action-btn {
-            background: transparent;
+        .main-action-button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1rem;
             color: white;
-            border: 2px solid #00d2ff;
-            padding: 10px 25px;
-            font-size: 1.2rem;
-            font-family: 'Changa', sans-serif;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
-            flex: 1;
+            font-weight: bold;
         }
 
-        .action-btn:hover {
-            background: #00d2ff;
-            color: black;
-            box-shadow: 0 0 15px #00d2ff;
+        .main-action-button.create {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.5);
+        }
+
+        .main-action-button.create:hover {
+            box-shadow: 0 0 25px rgba(0, 198, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .main-action-button.join {
+            background: transparent;
+            border: 2px solid #ffffff;
+        }
+
+        .main-action-button.join:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <div class="stars-bg"></div>
-
-    <div id="start-screen" class="screen">
+    <div class="space-background">
         <div class="planet"></div>
-        <button class="start-btn" onclick="goToSetup()">ابــــدأ</button>
     </div>
 
-    <div id="setup-screen" class="screen">
-        <div class="ps-panel">
-            <h2>تجهيز اللاعب</h2>
-            
-            <div class="avatar-container">
-                <img src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="Avatar" class="avatar-img" id="user-avatar">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Hexagon_border.svg/1024px-Hexagon_border.svg.png" alt="Frame" class="frame-img" id="user-frame">
+    <div class="ui-container">
+        <div class="main-panel">
+            <div class="panel-header">تجهيز الملف الشخصي</div>
+
+            <div class="avatar-section">
+                <img src="https://i.pinimg.com/736x/21/df/b7/21dfb731dd5da68832c3cb16a49fa7e5.jpg" alt="الأفاتار" class="avatar-image">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Hexagon_border.svg/1024px-Hexagon_border.svg.png" alt="الإطار" class="frame-image">
+            </div>
+
+            <div class="hidden-buttons-container">
+                <button class="action-button-mini" onclick="alert('تغيير صورة الشخصية...');">تغيير الصورة</button>
+                <button class="action-button-mini" onclick="alert('تغيير الإطار...');">تغيير الإطار</button>
             </div>
 
             <input type="text" class="name-input" placeholder="أدخل اسمك هنا...">
 
-            <div class="action-buttons">
-                <button class="action-btn">إنشاء غرفة</button>
-                <button class="action-btn">انضمام لغرفة</button>
+            <div class="primary-actions">
+                <button class="main-action-button create" onclick="createRoom();">إنشاء غرفة</button>
+                <button class="main-action-button join">انضمام لغرفة</button>
             </div>
         </div>
     </div>
 
     <script>
-        function goToSetup() {
-            const startScreen = document.getElementById('start-screen');
-            const setupScreen = document.getElementById('setup-screen');
+        // وظيفة محاكاة إنشاء الغرفة
+        function createRoom() {
+            // توليد رمز عشوائي للغرفة (محاكاة)
+            let roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             
-            // إخفاء شاشة البداية
-            startScreen.style.opacity = '0';
-            
-            setTimeout(() => {
-                startScreen.style.display = 'none';
-                
-                // إظهار شاشة الإعدادات (بدون الكوكب)
-                setupScreen.style.display = 'flex';
-                // تأخير بسيط عشان يشتغل الـ transition صح
-                setTimeout(() => {
-                    setupScreen.style.opacity = '1';
-                }, 50);
-            }, 500); // نفس مدة الـ transition في الـ CSS
+            // إظهار نافذة منبثقة (Popup)
+            alert("تم إنشاء الغرفة بنجاح!\nكود الغرفة هو: " + roomCode + "\nانتظار انضمام اللاعبين...");
         }
     </script>
 
