@@ -56,7 +56,7 @@
             100% { background-position: 10px 100px; }
         }
 
-        /* --- التصميم الزجاجي (Glassmorphism) --- */
+        /* --- التصميم الزجاجي (يستخدم فقط داخل القيم الآن) --- */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -120,18 +120,19 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- شاشة التسجيل (Setup) --- */
+        /* --- شاشة التسجيل (بدون إطار خلفي) --- */
         .setup-container {
             width: 800px;
             max-width: 90%;
-            padding: 40px;
+            padding: 20px;
         }
         
         .setup-container h1 {
             text-align: center;
-            font-size: 40px;
+            font-size: 48px;
             margin-bottom: 30px;
-            text-shadow: 0 2px 10px rgba(255,255,255,0.2);
+            color: var(--primary);
+            text-shadow: 2px 2px 15px #000, 0 0 20px var(--primary);
         }
 
         .input-group {
@@ -139,24 +140,26 @@
         }
         .input-group label {
             display: block;
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 10px;
-            color: var(--text-muted);
+            color: #fff;
+            text-shadow: 2px 2px 5px #000;
         }
         .input-group input {
             width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #555;
             padding: 15px;
             border-radius: 10px;
             color: white;
             font-size: 18px;
             outline: none;
             transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
         .input-group input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(217,37,37,0.3);
+            box-shadow: 0 0 15px rgba(217,37,37,0.5);
         }
 
         /* شبكات الاختيار (صور وألوان) */
@@ -165,46 +168,50 @@
             gap: 15px;
             margin-bottom: 20px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
         }
         
         .avatar-option {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 3px solid #333;
             transition: 0.3s;
-            background-color: #222;
+            background-color: #111;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
         .avatar-option:hover, .avatar-option.selected {
             border-color: var(--primary);
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 0 20px var(--primary);
         }
 
         .card-option {
-            width: 120px;
-            height: 60px;
+            width: 130px;
+            height: 70px;
             border-radius: 10px;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 2px solid #333;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             transition: 0.3s;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
         .card-option.selected {
             border-color: white;
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
         }
 
         /* أنواع الـ Calling Cards */
         .c-blood { background: linear-gradient(135deg, #4a0000, #1a0000); border-left: 4px solid #ff0000; }
         .c-shadow { background: linear-gradient(135deg, #111, #000); border-left: 4px solid #555; }
         .c-ocean { background: linear-gradient(135deg, #001a33, #00050a); border-left: 4px solid #0088ff; }
-        .c-gold { background: linear-gradient(135deg, #332700, #1a1400); border-left: 4px solid #ffcc00; }
+        .c-gold { background: linear-gradient(135deg, #332700, #1a1400); border-left: 4px solid #ffcc00; color: #fff;}
 
         /* --- البار العلوي في الصفحة الرئيسية --- */
         .top-bar {
@@ -238,11 +245,10 @@
         /* --- الصفحة الرئيسية (إنشاء وانضمام) --- */
         .lobby-actions {
             display: flex;
-            gap: 30px;
+            gap: 40px;
         }
         .action-box {
-            width: 300px;
-            height: 300px;
+            width: 250px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -250,13 +256,16 @@
             gap: 20px;
             cursor: pointer;
             transition: 0.3s;
+            text-align: center;
         }
-        .action-box i { font-size: 60px; color: var(--primary); }
-        .action-box h2 { font-size: 28px; }
-        .action-box:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 40px rgba(217,37,37,0.2);
+        .action-box i { font-size: 80px; color: var(--primary); text-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: 0.3s; }
+        .action-box h2 { font-size: 32px; text-shadow: 2px 2px 10px #000; margin: 0; }
+        .action-box p { color: #ccc; text-shadow: 1px 1px 5px #000; margin: 0;}
+        
+        .action-box:hover i {
+            transform: translateY(-10px) scale(1.1);
+            color: var(--primary-hover);
+            text-shadow: 0 0 20px var(--primary);
         }
 
         /* --- غرفة الانتظار (اللوبي) --- */
@@ -268,10 +277,11 @@
             font-size: 40px;
             letter-spacing: 5px;
             color: var(--primary);
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
             padding: 10px 30px;
             border-radius: 10px;
-            border: 1px dashed var(--primary);
+            border: 2px dashed var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
         .players-grid {
             display: grid;
@@ -282,17 +292,30 @@
             margin-bottom: 40px;
         }
 
+        /* --- المؤقت (Timer) --- */
+        .timer-container {
+            font-size: 30px;
+            text-shadow: 2px 2px 10px #000;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #round-time {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 36px;
+        }
+
         /* --- داخل اللعبة (In-Game) --- */
         .game-layout {
             display: flex;
-            flex-direction: row;
+            flex-direction: row; /* يمين ويسار */
             gap: 30px;
             width: 100%;
             max-width: 1300px;
             align-items: flex-start;
         }
 
-        /* القسم الأيسر: بطاقتي وقدراتي */
+        /* القسم الأيمن: بطاقتي وقدراتي */
         .my-section {
             flex: 1;
             display: flex;
@@ -322,7 +345,6 @@
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--primary);
         }
 
-        /* تم التعديل هنا لعرض صورة الأنمي المظلمة التي أرسلتها */
         .role-image {
             width: 200px; height: 200px;
             background-image: url('dark-anime-pictures-iwmu3b0sun9r6789.webp');
@@ -335,7 +357,7 @@
             box-shadow: 0 0 20px rgba(255,0,0,0.5);
         }
 
-        .role-title { font-size: 32px; color: var(--primary); margin-bottom: 10px; }
+        .role-title { font-size: 32px; color: var(--primary); margin-bottom: 10px; text-shadow: 1px 1px 5px #000; }
         .role-desc { text-align: center; font-size: 16px; color: #ccc; }
 
         .game-actions {
@@ -351,7 +373,7 @@
             padding: 10px;
         }
 
-        /* القسم الأيمن: ساحة اللاعبين الآخرين */
+        /* القسم الأيسر: ساحة اللاعبين الآخرين */
         .arena-section {
             flex: 2;
             background: var(--glass-bg);
@@ -359,15 +381,15 @@
             border-radius: 20px;
             padding: 25px;
             backdrop-filter: blur(12px);
+            width: 100%;
         }
 
         .arena-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
         }
 
-        /* بطاقة اللاعب الآخر في الساحة */
         .target-card {
             background: rgba(0,0,0,0.7);
             border: 2px solid #333;
@@ -385,17 +407,15 @@
             transform: translateY(-5px);
         }
 
-        /* عند تحديد اللاعب */
         .target-card.selected-target {
             border-color: var(--primary);
             box-shadow: 0 0 20px rgba(217, 37, 37, 0.6);
             transform: scale(1.05);
         }
 
-        /* شكل البطاقة من الخلف */
         .hidden-card {
             margin-top: 15px;
-            height: 70px;
+            height: 60px;
             background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px);
             border: 1px solid #444;
             border-radius: 8px;
@@ -403,15 +423,14 @@
             align-items: center;
             justify-content: center;
             color: #777;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
         }
 
-        /* عند موت اللاعب */
         .target-card.dead {
             filter: grayscale(100%);
             opacity: 0.5;
-            pointer-events: none; /* يمنع الضغط عليه */
+            pointer-events: none;
         }
 
         .dead-stamp {
@@ -438,14 +457,62 @@
             width: 70px; height: 70px; border-radius: 50%; border: 2px solid #555; margin-bottom: 10px;
         }
 
-        /* الاستجابة للشاشات الصغيرة */
+        /* --- استجابة الجوال (Mobile Layout) --- */
         @media (max-width: 900px) {
+            .screen {
+                padding: 15px;
+            }
+            /* الحفاظ على البطاقة يمين واللاعبين يسار في الجوال */
             .game-layout {
-                flex-direction: column;
+                flex-direction: row; 
+                gap: 10px;
             }
             .my-section {
-                width: 100%;
-                max-width: 100%;
+                flex: 1;
+                min-width: 0; /* إلغاء الحد الأدنى للعرض */
+            }
+            .arena-section {
+                flex: 1.5;
+                padding: 10px;
+            }
+            .role-card {
+                padding: 15px;
+            }
+            .role-image {
+                width: 100px;
+                height: 100px;
+            }
+            .role-title {
+                font-size: 20px;
+            }
+            .role-desc {
+                font-size: 12px;
+            }
+            .game-actions {
+                flex-direction: column; /* الأزرار تحت بعض في الجوال */
+            }
+            .game-actions .btn {
+                font-size: 12px;
+                padding: 8px;
+            }
+            .arena-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+            }
+            .target-avatar-img {
+                width: 50px;
+                height: 50px;
+            }
+            .target-card h3 {
+                font-size: 14px;
+            }
+            .hidden-card {
+                height: 40px;
+                font-size: 10px;
+            }
+            .lobby-actions {
+                flex-direction: column;
+                gap: 20px;
             }
         }
     </style>
@@ -459,12 +526,12 @@
 
     <!-- 1. شاشة البداية والتسجيل -->
     <div id="screen-setup" class="screen active">
-        <div class="glass-panel setup-container">
-            <h1>إعداد الملف الشخصي</h1>
+        <div class="setup-container">
+            <h1>عكس المافيا</h1>
             
             <div class="input-group">
                 <label>الاسم المستعار:</label>
-                <input type="text" id="p-name" placeholder="مثال: Zero, Ghost...">
+                <input type="text" id="p-name" placeholder="أدخل اسمك المرعب...">
             </div>
 
             <div class="input-group">
@@ -484,15 +551,15 @@
                 </div>
             </div>
 
-            <button class="btn" onclick="goToLobby()" style="width: 100%;">
-                <i class="fa-solid fa-right-to-bracket"></i> دخول السفينة
+            <button class="btn" onclick="goToLobby()" style="width: 100%; font-size: 24px; padding: 15px;">
+                <i class="fa-solid fa-right-to-bracket"></i> صعود السفينة
             </button>
         </div>
     </div>
 
     <!-- 2. الشاشة الرئيسية (القائمة) -->
     <div id="screen-main-lobby" class="screen">
-        <!-- البار العلوي (Calling Card الخاص بك) -->
+        <!-- البار العلوي -->
         <div class="top-bar">
             <div id="my-calling-card" class="player-card glass-panel c-blood">
                 <img id="my-avatar" src="" alt="Avatar">
@@ -501,23 +568,20 @@
                     <p><i class="fa-solid fa-star"></i> المستوى: <span id="my-level">1</span></p>
                 </div>
             </div>
-            
-            <button class="btn btn-secondary" onclick="location.reload()">
-                <i class="fa-solid fa-power-off"></i> خروج
-            </button>
+            <button class="btn btn-secondary" onclick="location.reload()"><i class="fa-solid fa-power-off"></i></button>
         </div>
 
-        <!-- خيارات اللعب -->
+        <!-- خيارات اللعب (بدون إطار) -->
         <div class="lobby-actions">
-            <div class="glass-panel action-box" onclick="createRoom()">
+            <div class="action-box" onclick="createRoom()">
                 <i class="fa-solid fa-plus-circle"></i>
                 <h2>إنشاء غرفة</h2>
-                <p style="color: var(--text-muted)">كن أنت الهوست (Host)</p>
+                <p>كن أنت الهوست (Host)</p>
             </div>
-            <div class="glass-panel action-box" onclick="joinRoomPrompt()">
+            <div class="action-box" onclick="joinRoomPrompt()">
                 <i class="fa-solid fa-users"></i>
                 <h2>انضمام لغرفة</h2>
-                <p style="color: var(--text-muted)">أدخل كود صديقك</p>
+                <p>أدخل كود صديقك</p>
             </div>
         </div>
     </div>
@@ -525,9 +589,9 @@
     <!-- 3. غرفة الانتظار (اللوبي مع الأصدقاء) -->
     <div id="screen-room" class="screen">
         <div class="room-header">
-            <h2 style="font-size: 30px; margin-bottom: 10px;">كود الغرفة:</h2>
+            <h2 style="font-size: 30px; margin-bottom: 10px; text-shadow: 2px 2px 5px #000;">كود الغرفة:</h2>
             <div class="room-code" id="display-room-code">----</div>
-            <p style="margin-top: 15px; color: var(--text-muted)">شارك الكود مع أصدقائك للإنضمام...</p>
+            <p style="margin-top: 15px; color: #ccc; text-shadow: 1px 1px 5px #000;">شارك الكود مع أصدقائك للإنضمام...</p>
         </div>
 
         <!-- شبكة اللاعبين المتصلين -->
@@ -542,37 +606,41 @@
 
     <!-- 4. داخل اللعبة (واجهة البطاقة والقدرات واللاعبين) -->
     <div id="screen-game" class="screen">
-        <h1 style="font-size: 35px; text-shadow: 0 0 10px var(--primary); margin-bottom: 20px;">القيم بدأ - ابحث عن ضحيتك</h1>
+        
+        <!-- المؤقت الجديد -->
+        <div class="timer-container">
+            الوقت المتبقي: <span id="round-time">30</span> ثانية
+        </div>
         
         <div class="game-layout">
-            <!-- القسم الأيسر: بطاقتك وقدراتك -->
+            <!-- القسم الأيمن: بطاقتك وقدراتك -->
             <div class="my-section">
                 <div class="role-card">
                     <!-- الصورة المظلمة التي أرسلتها -->
                     <div class="role-image"></div>
                     <h2 class="role-title">محقق (مافيا)</h2>
                     <p class="role-desc">
-                        أنت محقق فاسد تعمل مع المافيا.<br><br>
-                        <strong>مهمتك:</strong> حدد لاعباً من الساحة لاغتياله أو استجوابه.<br><br>
-                        <span style="color: #ff4444; font-size: 14px;">تحذير: إذا المافيا قتلوا 3 منهم بالغلط، تخسرون!</span>
+                        أنت محقق فاسد تعمل مع المافيا.<br>
+                        <strong>مهمتك:</strong> اقتل المواطنين الأبرياء.<br>
+                        <span style="color: #ff4444; font-size: 12px; display:block; margin-top:5px;">(يمكنك قتل شخص واحد فقط في كل راوند)</span>
                     </p>
                 </div>
 
                 <div class="game-actions">
-                    <button class="btn" onclick="useAbility('kill')">
-                        <i class="fa-solid fa-skull"></i> قتل
+                    <button class="btn" id="btn-kill" onclick="useAbility('kill')">
+                        <i class="fa-solid fa-skull"></i> اغتيال
                     </button>
                     <button class="btn btn-secondary" onclick="useAbility('investigate')">
                         <i class="fa-solid fa-magnifying-glass"></i> استجواب
                     </button>
                 </div>
                 
-                <p id="action-result" style="color: #ffcc00; font-size: 18px; margin-top: 20px; text-align: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; width: 100%; display: none;"></p>
+                <p id="action-result" style="color: #ffcc00; font-size: 16px; margin-top: 15px; text-align: center; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; width: 100%; display: none;"></p>
             </div>
 
-            <!-- القسم الأيمن: اللاعبون الآخرون -->
+            <!-- القسم الأيسر: اللاعبون الآخرون -->
             <div class="arena-section">
-                <h2 style="margin-bottom: 20px; color: white;">اللاعبون في الساحة: <span style="font-size:16px; color:#aaa;">(اضغط على بطاقة لتحديدها)</span></h2>
+                <h2 style="margin-bottom: 20px; color: white; text-shadow: 1px 1px 5px #000; font-size: 22px;">اللاعبون في الساحة:</h2>
                 <div class="arena-grid" id="arena-players">
                     <!-- سيتم إضافة اللاعبين (الأهداف) هنا -->
                 </div>
@@ -582,7 +650,7 @@
 
     <!-- السكربت (JavaScript) -->
     <script>
-        // --- 1. إعدادات شخصيات الأنمي (Avatars) ---
+        // --- 1. إعدادات شخصيات الأنمي ---
         const avatars = [
             'https://api.dicebear.com/7.x/lorelei/svg?seed=Ryuko',
             'https://api.dicebear.com/7.x/lorelei/svg?seed=Goku',
@@ -596,8 +664,13 @@
         let selectedCardClass = 'c-blood';
         let playerLevel = localStorage.getItem('rm_level') || 1;
         
-        let playersList = []; // مصفوفة لحفظ جميع اللاعبين في الغرفة
-        let currentTargetIndex = null; // يحفظ رقم اللاعب المحدد في ساحة اللعب
+        let playersList = []; 
+        let currentTargetIndex = null; 
+
+        // متغيرات نظام الراوندات
+        let roundTime = 30;
+        let timerInterval;
+        let hasKilledThisRound = false;
 
         // ملء شبكة الصور
         const avatarGrid = document.getElementById('avatar-grid');
@@ -628,11 +701,8 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // من التسجيل إلى اللوبي الرئيسي
         function goToLobby() {
-            const name = document.getElementById('p-name').value.trim() || 'لاعب مجهول';
-            
-            // تحديث البار العلوي
+            const name = document.getElementById('p-name').value.trim() || 'مجهول';
             document.getElementById('my-name').innerText = name;
             document.getElementById('my-avatar').src = selectedAvatar;
             document.getElementById('my-level').innerText = playerLevel;
@@ -643,39 +713,32 @@
             switchScreen('screen-main-lobby');
         }
 
-        // إنشاء غرفة
         function createRoom() {
-            playersList = []; // تفريغ القائمة عند إنشاء غرفة جديدة
+            playersList = []; 
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             document.getElementById('display-room-code').innerText = code;
-            document.getElementById('room-players').innerHTML = ""; // تفريغ واجهة اللوبي
+            document.getElementById('room-players').innerHTML = ""; 
             
-            // إضافة اللاعب نفسه
             addFakePlayer(document.getElementById('my-name').innerText, selectedAvatar, selectedCardClass, playerLevel, true);
-
             switchScreen('screen-room');
 
-            // محاكاة دخول لاعبين آخرين بعد ثواني
-            setTimeout(() => addFakePlayer('DarkKnight', avatars[2], 'c-shadow', 5, false), 2000);
-            setTimeout(() => addFakePlayer('Slayer99', avatars[1], 'c-gold', 12, false), 4000);
-            setTimeout(() => addFakePlayer('InnocentBoy', avatars[3], 'c-ocean', 2, false), 5500);
+            setTimeout(() => addFakePlayer('DarkKnight', avatars[2], 'c-shadow', 5, false), 1500);
+            setTimeout(() => addFakePlayer('Slayer99', avatars[1], 'c-gold', 12, false), 3000);
+            setTimeout(() => addFakePlayer('InnocentBoy', avatars[3], 'c-ocean', 2, false), 4500);
         }
 
         function joinRoomPrompt() {
             const code = prompt("أدخل كود الغرفة المكون من 6 حروف وأرقام:");
             if(code && code.length > 3) {
                 alert("تم الانضمام للغرفة!");
-                createRoom(); // محاكاة دخول للغرفة
+                createRoom(); 
                 document.getElementById('display-room-code').innerText = code.toUpperCase();
-                document.getElementById('start-game-btn').style.display = 'none'; // الهوست بس يبدأ
+                document.getElementById('start-game-btn').style.display = 'none'; 
             }
         }
 
-        // رسم اللاعبين في اللوبي
         function addFakePlayer(name, avatar, card, level, isHost) {
-            // إضافة اللاعب للمصفوفة (مع إضافة خاصية isDead عشان نظام القتل)
             playersList.push({ name, avatar, card, level, isHost, isDead: false });
-            
             const grid = document.getElementById('room-players');
             grid.innerHTML += `
                 <div class="player-card glass-panel ${card}">
@@ -688,20 +751,71 @@
             `;
         }
 
-        // --- 3. بدء القيم وساحة اللعب (In-Game) ---
+        // --- 3. بدء القيم ونظام الراوندات ---
         function startGame() {
             switchScreen('screen-game');
             currentTargetIndex = null;
             document.getElementById('action-result').style.display = "none";
-            renderArena(); // رسم اللاعبين في الساحة
+            renderArena(); 
+            startNewRound(); // تشغيل الراوند الأول
         }
 
-        // رسم بطاقات اللاعبين الآخرين في الساحة
+        function startNewRound() {
+            // تصفير الإعدادات للراوند الجديد
+            roundTime = 30;
+            hasKilledThisRound = false;
+            currentTargetIndex = null;
+            renderArena(); // فك التحديد عن اللاعبين
+
+            // تفعيل زر القتل وتغيير لونه للوضع الطبيعي
+            const killBtn = document.getElementById('btn-kill');
+            killBtn.style.opacity = "1";
+            killBtn.style.cursor = "pointer";
+            
+            const timeDisplay = document.getElementById('round-time');
+            timeDisplay.style.color = "var(--primary)";
+            timeDisplay.innerText = roundTime;
+
+            const res = document.getElementById('action-result');
+            res.style.display = "block";
+            res.innerHTML = "بدأ راوند جديد! اختر ضحيتك بسرعة.";
+            res.style.color = "#00ff88";
+
+            // تشغيل المؤقت
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                roundTime--;
+                timeDisplay.innerText = roundTime;
+
+                // تحذير إذا بقى 10 ثواني
+                if (roundTime <= 10) {
+                    timeDisplay.style.color = "red";
+                }
+
+                // نهاية الوقت
+                if (roundTime <= 0) {
+                    clearInterval(timerInterval);
+                    endRound();
+                }
+            }, 1000);
+        }
+
+        function endRound() {
+            const res = document.getElementById('action-result');
+            res.style.display = "block";
+            res.innerHTML = "⏳ انتهى الوقت! سيبدأ الراوند التالي بعد قليل...";
+            res.style.color = "orange";
+
+            // انتظار 3 ثواني ثم بدء راوند جديد
+            setTimeout(() => {
+                startNewRound();
+            }, 3000);
+        }
+
         function renderArena() {
             const arenaGrid = document.getElementById('arena-players');
             arenaGrid.innerHTML = '';
 
-            // اللوب يبدأ من 1 لتخطي اللاعب نفسه (لأنه في الإندكس 0)
             for (let i = 1; i < playersList.length; i++) {
                 const p = playersList[i];
                 const isSelected = currentTargetIndex === i ? 'selected-target' : '';
@@ -712,34 +826,28 @@
                         <div class="dead-stamp">ميت</div>
                         <img src="${p.avatar}" class="target-avatar-img">
                         <h3 style="margin:0;">${p.name}</h3>
-                        <p style="margin:5px 0; font-size:14px; color:gold;">المستوى: ${p.level}</p>
-                        
-                        <!-- ظهر البطاقة المخفي -->
+                        <p style="margin:5px 0; font-size:12px; color:gold;">المستوى: ${p.level}</p>
                         <div class="hidden-card">؟ بطاقة مخفية ؟</div>
                     </div>
                 `;
             }
         }
 
-        // عند الضغط على لاعب في الساحة
         function selectTarget(index) {
-            // لا يمكنك تحديد لاعب ميت
             if (playersList[index].isDead) return;
 
             currentTargetIndex = index;
-            renderArena(); // تحديث الساحة لإظهار الإطار الأحمر
+            renderArena(); 
             
             const res = document.getElementById('action-result');
             res.style.display = "block";
             res.style.color = "white";
-            res.innerHTML = `تم تحديد الهدف: <strong>${playersList[index].name}</strong>`;
+            res.innerHTML = `تم تحديد: <strong>${playersList[index].name}</strong>`;
         }
 
-        // استخدام القدرات (القتل / الاستجواب)
         function useAbility(type) {
             const res = document.getElementById('action-result');
             
-            // التأكد من تحديد لاعب أولاً
             if(currentTargetIndex === null) {
                 res.style.display = "block";
                 res.innerHTML = "⚠️ الرجاء تحديد لاعب من الساحة أولاً!";
@@ -750,19 +858,33 @@
             const target = playersList[currentTargetIndex];
 
             if(type === 'kill') {
-                target.isDead = true; // قتل اللاعب
-                res.innerHTML = `💀 لقد قمت بقتل <strong>${target.name}</strong> بنجاح!`;
+                // التحقق إذا كان اللاعب قد قتل مسبقاً في هذا الراوند
+                if (hasKilledThisRound) {
+                    res.style.display = "block";
+                    res.innerHTML = "🚫 لا يمكنك القتل أكثر من مرة! انتظر الراوند القادم.";
+                    res.style.color = "orange";
+                    return;
+                }
+
+                target.isDead = true; 
+                hasKilledThisRound = true; // تسجيل أنه تم القتل
+                
+                // تعطيل زر القتل شكلياً
+                const killBtn = document.getElementById('btn-kill');
+                killBtn.style.opacity = "0.4";
+                killBtn.style.cursor = "not-allowed";
+
+                res.innerHTML = `💀 تم اغتيال <strong>${target.name}</strong>! انتظر الراوند القادم.`;
                 res.style.color = "#ff4444";
                 
-                // تأثير بصري للقتل (تغيير لون الشاشة لحظياً)
                 document.body.style.backgroundColor = "#3a0000";
                 setTimeout(() => document.body.style.backgroundColor = "var(--bg-color)", 300);
 
-                currentTargetIndex = null; // إزالة التحديد
-                renderArena(); // إعادة رسم الساحة لإظهار ختم الموت
+                currentTargetIndex = null; 
+                renderArena(); 
 
             } else if (type === 'investigate') {
-                res.innerHTML = `🔍 قمت باستجواب <strong>${target.name}</strong>... النتيجة: هو مواطن بريء!`;
+                res.innerHTML = `🔍 <strong>${target.name}</strong> ... النتيجة: مواطن بريء!`;
                 res.style.color = "#00ff88";
             }
         }
