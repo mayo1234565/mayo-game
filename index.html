@@ -50,8 +50,9 @@
             position: fixed; top: 20px; right: 20px; display: none; align-items: center; gap: 15px;
             background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 15px;
             border: 1px solid #333; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.5s; cursor: pointer; transition: 0.3s;
         }
+        .top-profile:hover { transform: scale(1.05); border-color: var(--neon-red); }
         .top-profile.active { display: flex; }
         .top-profile .info h3 { margin: 0; font-size: 18px; color: #fff; }
         .top-profile .info p { margin: 0; font-size: 14px; color: var(--gold); }
@@ -100,7 +101,6 @@
         /* --- تصميم داخل اللعبة --- */
         .game-layout { display: flex; gap: 20px; width: 100%; align-items: stretch; height: 80vh; }
         
-        /* 1. قسم الدردشة */
         .chat-section { flex: 1; display: flex; flex-direction: column; padding: 15px; border-color: rgba(255,255,255,0.1); }
         .chat-box { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 8px 12px; border-radius: 8px; font-size: 14px; max-width: 85%; width: fit-content; }
@@ -110,7 +110,6 @@
         .chat-input-area { display: flex; gap: 10px; }
         .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #111; color: white; outline: none; }
 
-        /* 2. قسم الساحة */
         .arena-section { flex: 2; padding: 20px; display: flex; flex-direction: column; text-align: center; }
         .phase-banner { padding: 15px; border-radius: 10px; font-size: 24px; font-weight: bold; margin-bottom: 20px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.3); transition: 0.5s; }
         body.day-mode .phase-banner { border-color: var(--day-blue); box-shadow: 0 0 20px rgba(52, 152, 219, 0.3); color: var(--day-blue); }
@@ -124,7 +123,6 @@
         .vote-badge { position: absolute; top: -10px; right: -10px; background: var(--neon-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; display: none; z-index: 5; }
         .target-avatar-icon { width: 60px; height: 60px; font-size: 30px; margin: 0 auto 10px; border-radius: 50%; background: #000; border: 2px solid #444; display: flex; align-items: center; justify-content: center; }
 
-        /* 3. قسم بطاقتي (بدون خلفية) */
         .my-section { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; justify-content: center; }
         .role-icon { font-size: 100px; color: var(--neon-red); text-shadow: 0 0 40px rgba(255,0,60,0.8); margin-bottom: 5px; animation: float 3s infinite ease-in-out; }
         .role-title { color: #fff; font-size: 32px; text-shadow: 0 0 15px var(--neon-red), 0 0 30px var(--neon-red); margin-bottom: 5px; }
@@ -145,6 +143,18 @@
         .target-card.dead .blood-slash { display: block; animation: slashIn 0.3s ease; }
         @keyframes slashIn { from { transform: scale(2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+        /* --- النوافذ المنبثقة (Modal) --- */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
+        .popup-box {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 1000; padding: 40px; text-align: center; min-width: 350px;
+            flex-direction: column; align-items: center; gap: 20px;
+            background: var(--glass-bg); border: 1px solid rgba(255,0,60,0.3); border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9); animation: fadeIn 0.3s;
+        }
+        .close-btn { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 24px; color: #fff; transition: 0.3s; }
+        .close-btn:hover { color: var(--neon-red); transform: scale(1.1); }
+
         @media (max-width: 1000px) {
             .game-layout { flex-direction: column; height: auto; }
             .chat-section { height: 300px; }
@@ -157,8 +167,30 @@
 <body>
 
     <div class="sun-overlay"></div>
+    <div class="overlay" id="overlay" onclick="closePopups()"></div>
 
-    <div class="top-profile" id="top-profile">
+    <div class="popup-box" id="profile-popup">
+        <div class="close-btn" onclick="closePopups()"><i class="fa-solid fa-xmark"></i></div>
+        <div class="avatar-icon" style="font-size: 50px; cursor: default; border-color: var(--neon-red);" id="popup-icon"></div>
+        <h2 id="popup-name" style="font-size: 32px; color: #fff; margin: 0;"></h2>
+        <p style="font-size: 20px; color: var(--gold); margin: 0;">المستوى: <span id="popup-level">7</span></p>
+        
+        <div style="width: 100%; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; border: 1px solid #333;">
+            <p style="text-align: right; margin-bottom: 10px; font-size: 14px; color: #ccc;">نقاط الخبرة (XP): 75%</p>
+            <div style="width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden;">
+                <div style="width: 75%; height: 100%; background: linear-gradient(90deg, var(--blood-dark), var(--neon-red));"></div>
+            </div>
+            <p style="color: #888; font-size: 13px; margin-top: 15px;">إحصائيات: 14 عملية اغتيال ناجحة 🔪</p>
+        </div>
+    </div>
+
+    <div class="popup-box" id="endgame-popup" style="min-width: 450px; padding: 50px;">
+        <h1 id="endgame-title" style="font-size: 40px; margin-bottom: 10px;"></h1>
+        <p id="endgame-desc" style="font-size: 20px; color: #ccc; margin-bottom: 20px; line-height: 1.5;"></p>
+        <button class="btn" onclick="location.reload()" style="font-size: 22px; padding: 12px 40px;">لعب مرة أخرى <i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+
+    <div class="top-profile" id="top-profile" onclick="openProfile()">
         <div class="info">
             <h3 id="tp-name">الاسم</h3>
             <p>LVL: <span>7</span></p>
@@ -205,8 +237,7 @@
         <h2 style="font-size: 30px; margin-bottom: 10px;">كود الغرفة السري:</h2>
         <div class="glass-panel" style="padding: 10px 40px; font-size: 40px; color: var(--neon-red); letter-spacing: 5px; border: 2px dashed var(--neon-red); margin-bottom: 30px;" id="room-code">ABCD12</div>
         
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; width: 100%; max-width: 800px;" id="waiting-players">
-            </div>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; width: 100%; max-width: 800px;" id="waiting-players"></div>
 
         <button class="btn" onclick="startGame()" style="font-size: 26px; padding: 15px 50px;">بدء اللعبة <i class="fa-solid fa-play"></i></button>
     </div>
@@ -229,16 +260,13 @@
                 <div class="phase-banner" id="phase-display">
                     🌙 الليل: المافيا تختار ضحيتها (<span id="timer">15</span>ث)
                 </div>
-                <div class="arena-grid" id="arena-players">
-                    </div>
+                <div class="arena-grid" id="arena-players"></div>
             </div>
 
             <div class="my-section">
                 <div class="role-icon" id="in-game-icon"><i class="fa-solid fa-user-secret"></i></div>
                 <h2 class="role-title">أنت المافيا</h2>
-                <p class="role-desc">
-                    اقتل في الليل، وشتت انتباههم في الصباح.<br>لا تدعهم يكشفون هويتك الحقيقية.
-                </p>
+                <p class="role-desc">اقتل في الليل، وشتت انتباههم في الصباح.<br>لا تدعهم يكشفون هويتك الحقيقية.</p>
                 <button class="btn" id="btn-action" onclick="confirmAction()" style="margin-top: 25px; font-size: 20px; padding: 15px 30px;">
                     <i class="fa-solid fa-khanda"></i> اغتيال الهدف
                 </button>
@@ -277,17 +305,54 @@
             document.getElementById(id).classList.add('active');
         }
 
+        // --- النوافذ المنبثقة (البروفايل والنهاية) ---
+        function openProfile() {
+            document.getElementById('popup-icon').innerHTML = `<i class="fa-solid ${myIcon}"></i>`;
+            document.getElementById('popup-name').innerText = myName;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('profile-popup').style.display = 'flex';
+        }
+
+        function showEndGame(title, desc) {
+            clearInterval(timerInterval);
+            document.getElementById('endgame-title').innerHTML = title;
+            document.getElementById('endgame-desc').innerText = desc;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('endgame-popup').style.display = 'flex';
+        }
+
+        function closePopups() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('profile-popup').style.display = 'none';
+            document.getElementById('endgame-popup').style.display = 'none';
+        }
+
+        // --- نظام الفوز والخسارة المحدث ---
+        function checkWinState() {
+            let aliveTown = players.filter(p => p.role === 'town' && !p.isDead).length;
+            let isMafiaDead = players[0].isDead;
+
+            if (isMafiaDead) {
+                // المافيا ماتت = المواطنين يفوزون
+                showEndGame("<span style='color:var(--day-blue);'><i class='fa-solid fa-handcuffs'></i> انتصار المواطنين</span>", "لقد كشفوا أمرك وتم إعدامك في ساحة المدينة. العدالة أخذت مجراها!");
+                return true;
+            } else if (aliveTown <= 1) { 
+                // المافيا قتلت 3 (باقي 1 بس) = المافيا تفوز
+                showEndGame("<span style='color:var(--neon-red);'><i class='fa-solid fa-skull'></i> انتصار المافيا</span>", "تمت تصفية أغلبية الأبرياء! السفينة الآن تحت سيطرتك بالكامل، لا أحد يستطيع إيقافك.");
+                return true;
+            }
+            return false;
+        }
+
+        // --- التنقلات واللعبة ---
         function goToMenu() {
             myName = document.getElementById('p-name').value.trim() || "شبح الظلام";
             players[0].name = myName;
             players[0].icon = myIcon;
 
-            // تحديث البروفايل اللي فوق يمين
             document.getElementById('tp-name').innerText = myName;
             document.getElementById('tp-icon').innerHTML = `<i class="fa-solid ${myIcon}"></i>`;
             document.getElementById('top-profile').classList.add('active');
-            
-            // تحديث بطاقتي باللعبة
             document.getElementById('in-game-icon').innerHTML = `<i class="fa-solid ${myIcon}"></i>`;
 
             switchScreen('screen-menu');
@@ -300,7 +365,6 @@
             const wp = document.getElementById('waiting-players');
             wp.innerHTML = `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid ${myIcon}"></i></div> <b>${myName} (أنت)</b></div>`;
             
-            // دخول البوتات الوهمي للغرفة
             setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-ghost"></i></div> <b>Ghost</b></div>`; }, 1000);
             setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-mask"></i></div> <b>Viper</b></div>`; }, 2500);
             setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-skull"></i></div> <b>Reaper</b></div>`; }, 4000);
@@ -338,7 +402,7 @@
             renderArena();
         }
 
-        /* --- الذكاء الاصطناعي للدردشة (البوتات يردون عليك) --- */
+        // --- الدردشة ---
         function handleChat(e) { if(e.key === 'Enter') sendMessage(); }
         function sendMessage(msgText = null, sender = 'me', senderName = '') {
             const input = document.getElementById('chat-input');
@@ -350,7 +414,7 @@
             if(sender === 'me') {
                 chat.innerHTML += `<div class="msg me"><strong>أنت:</strong> ${text}</div>`;
                 input.value = '';
-                checkBotReply(text); // البوت يحلل كلامك ويرد
+                checkBotReply(text);
             } else if(sender === 'sys') {
                 chat.innerHTML += `<div class="msg sys">${text}</div>`;
             } else {
@@ -361,8 +425,7 @@
         function sysMsg(text) { sendMessage(text, 'sys'); }
 
         function checkBotReply(text) {
-            if(phase === 'night') return; // مافي سوالف بالليل
-            
+            if(phase === 'night') return;
             const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
             if(aliveBots.length === 0) return;
 
@@ -384,7 +447,7 @@
             }
         }
 
-        /* --- دورة اللعبة --- */
+        // --- دورة اللعبة ---
         function startNight() {
             phase = "night"; timeLeft = 15; actionDone = false; currentTarget = null;
             document.body.classList.remove('day-mode');
@@ -409,7 +472,6 @@
                 document.getElementById('btn-action').disabled = true;
                 sysMsg(`💀 قمت باغتيال ${players[currentTarget].name}!`);
                 
-                // تأثير الاهتزاز والدم
                 document.body.classList.add('screen-shake');
                 setTimeout(() => document.body.classList.remove('screen-shake'), 400);
                 
@@ -425,12 +487,14 @@
         }
 
         function endNight() {
-            startDay();
+            if(!checkWinState()) {
+                startDay();
+            }
         }
 
         function startDay() {
             phase = "day"; timeLeft = 25; 
-            document.body.classList.add('day-mode'); // يشغل تأثير الشمس
+            document.body.classList.add('day-mode');
             
             document.getElementById('phase-display').innerHTML = `☀️ النهار: نقاش واتهامات (<span id="timer">${timeLeft}</span>ث)`;
             document.getElementById('btn-action').disabled = true;
@@ -438,7 +502,6 @@
             sysMsg("أشرقت الشمس... استيقظت المدينة.");
             renderArena();
 
-            // سوالف بوتات عشوائية تفتح السالفة
             setTimeout(() => {
                 const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
                 if(aliveBots.length > 0) {
@@ -485,11 +548,6 @@
             if(executedPlayer && !tie && highestVotes > 0) {
                 executedPlayer.isDead = true;
                 sysMsg(`⚖️ تم إعدام [ ${executedPlayer.name} ] بالأغلبية!`);
-                if(executedPlayer.id === 0) {
-                    alert("تم كشفك وإعدامك! لقد خسرت."); location.reload();
-                } else if(players.filter(p => p.role === 'town' && !p.isDead).length === 0) {
-                    alert("انتصرت المافيا! لقد أبحت بالجميع."); location.reload();
-                }
             } else {
                 sysMsg("⚖️ تعادل! لم يتم إعدام أحد.");
             }
@@ -497,7 +555,9 @@
             renderArena();
             setTimeout(() => {
                 document.querySelectorAll('.vote-badge').forEach(b => b.style.display = 'none');
-                startNight();
+                if(!checkWinState()) {
+                    startNight();
+                }
             }, 3000);
         }
 
