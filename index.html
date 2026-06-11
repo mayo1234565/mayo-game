@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reverse Mafia | سفينة الظلام 🩸</title>
     
-    <!-- خطوط عربية -->
     <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -85,11 +84,11 @@
 
         /* --- الأفاتار --- */
         .avatar-icon {
-            width: 80px; height: 80px; border-radius: 15px; background: #111; border: 2px solid #333;
+            width: 80px; height: 80px; border-radius: 15px; background: rgba(0,0,0,0.6); border: 2px solid #444;
             display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .avatar-icon:hover, .avatar-icon.selected { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.5); transform: scale(1.1); }
+        .avatar-icon:hover, .avatar-icon.selected { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.5); transform: scale(1.1); background: #111;}
 
         /* --- اللوبي والقوائم --- */
         .lobby-actions { display: flex; gap: 30px; margin-top: 30px; }
@@ -159,7 +158,6 @@
 
     <div class="sun-overlay"></div>
 
-    <!-- بروفايلك الثابت فوق يمين -->
     <div class="top-profile" id="top-profile">
         <div class="info">
             <h3 id="tp-name">الاسم</h3>
@@ -168,15 +166,14 @@
         <div class="icon" id="tp-icon"><i class="fa-solid fa-user-secret"></i></div>
     </div>
 
-    <!-- 1. شاشة التسجيل -->
     <div id="screen-setup" class="screen active">
-        <div class="glass-panel" style="padding: 40px; width: 100%; max-width: 500px; text-align: center;">
-            <h1 style="color: var(--neon-red); margin-bottom: 30px; font-size: 40px; text-shadow: 0 0 15px var(--neon-red);">سفينة الظلام</h1>
+        <div style="width: 100%; max-width: 500px; text-align: center; margin-top: 50px;">
+            <h1 style="color: var(--neon-red); margin-bottom: 40px; font-size: 55px; text-shadow: 0 0 25px rgba(0,0,0,0.8), 0 0 15px var(--neon-red);">سفينة الظلام</h1>
             
-            <input type="text" id="p-name" placeholder="أدخل اسمك المرعب..." style="width: 100%; padding: 15px; border-radius: 10px; background: #111; border: 1px solid #444; color: white; font-size: 18px; margin-bottom: 20px;" autocomplete="off">
+            <input type="text" id="p-name" placeholder="أدخل اسمك المرعب..." style="width: 100%; padding: 18px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,0,60,0.3); color: white; font-size: 20px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);" autocomplete="off">
             
-            <p style="text-align: right; margin-bottom: 10px; color: #aaa;">اختر قناعك:</p>
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;" id="avatar-grid">
+            <p style="text-align: right; margin-bottom: 15px; color: #fff; font-size: 18px; text-shadow: 2px 2px 5px #000; font-weight: bold;">اختر قناعك:</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;" id="avatar-grid">
                 <div class="avatar-icon selected" data-icon="fa-user-secret"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="avatar-icon" data-icon="fa-user-ninja"><i class="fa-solid fa-user-ninja"></i></div>
                 <div class="avatar-icon" data-icon="fa-mask"><i class="fa-solid fa-mask"></i></div>
@@ -184,11 +181,10 @@
                 <div class="avatar-icon" data-icon="fa-skull"><i class="fa-solid fa-skull"></i></div>
             </div>
 
-            <button class="btn" onclick="goToMenu()" style="width: 100%; font-size: 22px;">دخول <i class="fa-solid fa-right-to-bracket"></i></button>
+            <button class="btn" onclick="goToMenu()" style="width: 100%; font-size: 24px; padding: 15px;">دخول <i class="fa-solid fa-right-to-bracket"></i></button>
         </div>
     </div>
 
-    <!-- 2. القائمة الرئيسية (اللوبي) -->
     <div id="screen-menu" class="screen">
         <h1 style="font-size: 40px; text-shadow: 0 0 20px #000;">القائمة الرئيسية</h1>
         <div class="lobby-actions">
@@ -205,23 +201,19 @@
         </div>
     </div>
 
-    <!-- 3. غرفة الانتظار -->
     <div id="screen-room" class="screen">
         <h2 style="font-size: 30px; margin-bottom: 10px;">كود الغرفة السري:</h2>
         <div class="glass-panel" style="padding: 10px 40px; font-size: 40px; color: var(--neon-red); letter-spacing: 5px; border: 2px dashed var(--neon-red); margin-bottom: 30px;" id="room-code">ABCD12</div>
         
         <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; width: 100%; max-width: 800px;" id="waiting-players">
-            <!-- لاعبين الغرفة -->
-        </div>
+            </div>
 
         <button class="btn" onclick="startGame()" style="font-size: 26px; padding: 15px 50px;">بدء اللعبة <i class="fa-solid fa-play"></i></button>
     </div>
 
-    <!-- 4. ساحة اللعب الرئيسية -->
     <div id="screen-game" class="screen" style="max-width: 1500px;">
         <div class="game-layout">
             
-            <!-- الدردشة -->
             <div class="chat-section glass-panel">
                 <h3 style="margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-comments"></i> الساحة العامة</h3>
                 <div class="chat-box" id="chat-messages">
@@ -233,17 +225,14 @@
                 </div>
             </div>
 
-            <!-- الساحة وحالة الوقت -->
             <div class="arena-section glass-panel">
                 <div class="phase-banner" id="phase-display">
                     🌙 الليل: المافيا تختار ضحيتها (<span id="timer">15</span>ث)
                 </div>
                 <div class="arena-grid" id="arena-players">
-                    <!-- الأهداف -->
-                </div>
+                    </div>
             </div>
 
-            <!-- بطاقتي وقدراتي (طافية في الجو بدون مربع) -->
             <div class="my-section">
                 <div class="role-icon" id="in-game-icon"><i class="fa-solid fa-user-secret"></i></div>
                 <h2 class="role-title">أنت المافيا</h2>
