@@ -5,710 +5,472 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reverse Mafia | سفينة الظلام 🩸</title>
     
+    <!-- خطوط عربية -->
     <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-color: #030305;
-            --glass-bg: rgba(15, 15, 25, 0.4);
-            --glass-border: rgba(255, 0, 60, 0.15);
+            --bg-night: #020205;
+            --bg-day: #1a1a24;
+            --glass-bg: rgba(10, 10, 15, 0.7);
             --neon-red: #ff003c;
             --blood-dark: #6e0015;
+            --day-blue: #4a90e2;
             --text-main: #f4f4f9;
             --text-muted: #888899;
             --gold: #ffb703;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Changa', sans-serif;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Changa', sans-serif; user-select: none; }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-night);
             color: var(--text-main);
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-color 1s ease;
         }
 
-        /* --- تأثيرات الخلفية السينمائية --- */
-        .bg-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #150005 0%, var(--bg-color) 100%);
-            overflow: hidden;
-        }
+        body.day-mode { background-color: var(--bg-day); }
 
-        .ambient-light {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 60vw; height: 60vw;
-            background: radial-gradient(circle, rgba(255,0,60,0.05) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: pulse-light 8s infinite alternate;
-        }
-
-        @keyframes pulse-light {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-        }
-
-        .particles {
-            position: absolute;
-            width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,0,60,0.3)"/></svg>');
-            animation: floatUp 20s linear infinite;
-        }
-
-        @keyframes floatUp {
-            from { background-position: 0 100vh; }
-            to { background-position: 0 0; }
-        }
-
-        /* --- حاويات الزجاج الفاخر --- */
+        /* --- التصميم الزجاجي --- */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255,0,60,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 60, 0.15);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
         }
 
-        /* --- أزرار النيون --- */
+        /* --- الأزرار --- */
         .btn {
             background: linear-gradient(135deg, var(--neon-red), var(--blood-dark));
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            font-size: 20px;
-            font-weight: 800;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            box-shadow: 0 5px 20px rgba(255, 0, 60, 0.4);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
+            color: white; border: none; padding: 12px 25px; font-size: 18px; font-weight: 700;
+            border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 0, 60, 0.4);
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
         }
-
-        .btn::after {
-            content: ''; position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(45deg) translateY(-100%);
-            transition: 0.5s;
-        }
-
-        .btn:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(255, 0, 60, 0.6);
-        }
-
-        .btn:hover::after {
-            transform: rotate(45deg) translateY(100%);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #2a2a35, #111118);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-            background: linear-gradient(135deg, #3a3a45, #1a1a25);
-        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 0, 60, 0.6); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .btn-day { background: linear-gradient(135deg, #2c3e50, #3498db); box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4); }
+        .btn-day:hover { box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6); }
 
         /* --- الشاشات --- */
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 1400px;
-            min-height: 100vh;
-            padding: 40px 20px;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: screenFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .screen { display: none; width: 100%; max-width: 1400px; padding: 20px; flex-direction: column; align-items: center; animation: fadeIn 0.5s; }
         .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes screenFade {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); filter: blur(5px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        /* --- الأفاتار المظلم (بدال الكيوت) --- */
+        .avatar-icon {
+            width: 80px; height: 80px; border-radius: 15px; background: #111; border: 2px solid #333;
+            display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff;
+            cursor: pointer; transition: 0.3s;
         }
+        .avatar-icon:hover, .avatar-icon.selected { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.5); transform: scale(1.1); }
+        .target-avatar-icon { width: 60px; height: 60px; font-size: 30px; margin: 0 auto 10px; border-radius: 50%; background: #000; border: 2px solid #444; display: flex; align-items: center; justify-content: center; }
 
-        /* --- شاشة التسجيل --- */
-        .setup-container { width: 100%; max-width: 600px; }
+        /* --- تصميم داخل اللعبة --- */
+        .game-layout { display: flex; gap: 20px; width: 100%; align-items: stretch; margin-top: 20px; height: 85vh; }
         
-        .setup-container h1 {
-            text-align: center;
-            font-size: 60px;
-            margin-bottom: 40px;
-            color: #fff;
-            text-shadow: 0 0 10px var(--neon-red), 0 0 30px var(--neon-red);
-            font-weight: 800;
-            letter-spacing: 2px;
-            animation: glitch 3s infinite;
-        }
+        /* 1. قسم الدردشة */
+        .chat-section { flex: 1; display: flex; flex-direction: column; padding: 15px; border-color: rgba(255,255,255,0.1); }
+        .chat-box { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 8px 12px; border-radius: 8px; font-size: 14px; max-width: 85%; width: fit-content; }
+        .msg.sys { background: transparent; color: var(--gold); text-align: center; width: 100%; font-weight: bold; max-width: 100%; border-bottom: 1px dashed #555; border-radius: 0; }
+        .msg.other { background: #222; border-left: 3px solid #555; }
+        .msg.me { background: #3a0010; border-right: 3px solid var(--neon-red); align-self: flex-end; }
+        .chat-input-area { display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #111; color: white; outline: none; }
 
-        @keyframes glitch {
-            0%, 100% { text-shadow: 0 0 10px var(--neon-red); }
-            50% { text-shadow: -3px 0 15px var(--neon-red), 3px 0 15px #00f0ff; }
-        }
-
-        .input-group { margin-bottom: 30px; }
-        .input-group label {
-            display: block; font-size: 18px; margin-bottom: 12px; color: var(--text-muted);
-            text-transform: uppercase; font-weight: 700; letter-spacing: 1px;
-        }
-        .input-group input {
-            width: 100%; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1);
-            padding: 18px 25px; border-radius: 15px; color: white; font-size: 20px;
-            outline: none; transition: 0.3s; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .input-group input:focus {
-            border-color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.3), inset 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* شبكات الاختيار */
-        .selection-grid { display: flex; gap: 20px; overflow-x: auto; padding: 10px 5px 25px; }
-        .selection-grid::-webkit-scrollbar { height: 6px; }
-        .selection-grid::-webkit-scrollbar-thumb { background: var(--neon-red); border-radius: 10px; }
+        /* 2. قسم الساحة */
+        .arena-section { flex: 2; padding: 20px; display: flex; flex-direction: column; text-align: center; }
+        .phase-banner { padding: 15px; border-radius: 10px; font-size: 24px; font-weight: bold; margin-bottom: 20px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.3); }
+        body.day-mode .phase-banner { border-color: var(--day-blue); box-shadow: 0 0 20px rgba(52, 152, 219, 0.3); color: var(--day-blue); }
         
-        .avatar-option {
-            width: 100px; height: 100px; border-radius: 20px; cursor: pointer;
-            border: 3px solid transparent; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #111; padding: 5px; filter: grayscale(50%);
-        }
-        .avatar-option:hover, .avatar-option.selected {
-            border-color: var(--neon-red); transform: translateY(-10px) scale(1.1);
-            box-shadow: 0 15px 30px rgba(255,0,60,0.4); filter: grayscale(0%); background: #222;
-        }
+        .arena-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
+        .target-card { background: rgba(20,20,25,0.8); border: 2px solid #333; border-radius: 15px; padding: 15px 10px; cursor: pointer; transition: 0.3s; position: relative; }
+        .target-card:hover { transform: translateY(-5px); border-color: #666; }
+        .target-card.selected { border-color: var(--neon-red); box-shadow: 0 0 15px rgba(255,0,60,0.5); }
+        body.day-mode .target-card.selected { border-color: var(--day-blue); box-shadow: 0 0 15px rgba(52, 152, 219, 0.5); }
+        .target-card.dead { filter: grayscale(100%) opacity(0.5); pointer-events: none; border-color: #000; }
+        .vote-badge { position: absolute; top: -10px; right: -10px; background: var(--neon-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; display: none; }
 
-        .card-option {
-            min-width: 140px; height: 80px; border-radius: 15px; cursor: pointer;
-            border: 2px solid transparent; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; transition: 0.3s; font-size: 16px; opacity: 0.6;
-        }
-        .card-option.selected, .card-option:hover {
-            border-color: #fff; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); opacity: 1;
-        }
+        /* 3. قسم بطاقتي */
+        .my-section { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; border-color: var(--neon-red); }
+        .role-icon { font-size: 80px; color: var(--neon-red); text-shadow: 0 0 30px rgba(255,0,60,0.6); margin-bottom: 10px; }
+        .role-title { color: var(--neon-red); font-size: 28px; }
 
-        .c-blood { background: linear-gradient(135deg, #4a0000, #1a0000); border-bottom: 4px solid #ff003c; }
-        .c-shadow { background: linear-gradient(135deg, #1a1a24, #0a0a0f); border-bottom: 4px solid #888; }
-        .c-ocean { background: linear-gradient(135deg, #001a33, #00050a); border-bottom: 4px solid #00f0ff; }
-        .c-gold { background: linear-gradient(135deg, #332700, #1a1400); border-bottom: 4px solid var(--gold); }
+        /* شاشة النهاية */
+        #end-screen h1 { font-size: 60px; margin-bottom: 20px; }
+        .win-mafia { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red); }
+        .win-town { color: var(--day-blue); text-shadow: 0 0 20px var(--day-blue); }
 
-        /* --- البار العلوي --- */
-        .top-bar {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); z-index: 10;
-        }
-
-        .player-card {
-            display: flex; align-items: center; gap: 15px; padding: 12px 20px;
-            border-radius: 18px; min-width: 280px; transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .player-card::before {
-            content:''; position: absolute; top:0; left:0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-        }
-        .player-card img { width: 65px; height: 65px; border-radius: 14px; background: rgba(0,0,0,0.5); padding: 5px; }
-        .player-card .info h3 { margin: 0; font-size: 20px; color: #fff; font-weight: 800; }
-        .player-card .info p { margin: 5px 0 0; color: var(--gold); font-size: 14px; font-weight: 700; }
-
-        /* --- اللوبي الرئيسي --- */
-        .lobby-actions { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-top: 60px; }
-        .action-box {
-            width: 300px; padding: 50px 30px; display: flex; flex-direction: column; align-items: center;
-            gap: 20px; cursor: pointer; text-align: center; background: rgba(20,20,30,0.5);
-            border: 1px solid rgba(255,255,255,0.05); border-radius: 30px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .action-box i { font-size: 70px; color: var(--text-muted); transition: 0.4s; }
-        .action-box h2 { font-size: 30px; margin: 0; color: #fff; }
-        .action-box p { color: var(--text-muted); margin: 0; font-size: 16px; }
-        
-        .action-box:hover {
-            transform: translateY(-15px); border-color: var(--neon-red);
-            background: rgba(255,0,60,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-        .action-box:hover i { transform: scale(1.2); color: var(--neon-red); filter: drop-shadow(0 0 15px var(--neon-red)); }
-
-        /* --- داخل اللعبة --- */
-        .game-layout {
-            display: flex; gap: 40px; width: 100%; align-items: stretch; margin-top: 80px;
-        }
-
-        .my-section { flex: 0 0 380px; display: flex; flex-direction: column; gap: 20px; }
-        
-        .role-card {
-            background: linear-gradient(180deg, #150005 0%, #050002 100%);
-            border: 1px solid var(--glass-border); border-radius: 30px;
-            padding: 40px 30px; text-align: center; position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(255,0,60,0.1);
-        }
-        .role-card::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%;
-            background: linear-gradient(180deg, rgba(255,0,60,0.1) 0%, transparent 100%);
-            border-radius: 30px; pointer-events: none;
-        }
-        .role-image {
-            width: 220px; height: 220px; margin: 0 auto 25px; border-radius: 20px;
-            background: url('https://api.dicebear.com/7.x/bottts/svg?seed=Mafia') center/cover #111;
-            box-shadow: 0 0 30px rgba(255,0,60,0.3); border: 4px solid #222;
-        }
-        .role-title { font-size: 38px; color: var(--neon-red); margin-bottom: 10px; font-weight: 800; text-transform: uppercase; }
-        .role-desc { font-size: 16px; color: var(--text-muted); line-height: 1.6; }
-
-        .game-actions { display: flex; gap: 15px; }
-        .game-actions .btn { flex: 1; padding: 18px 10px; font-size: 18px; }
-
-        .arena-section {
-            flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 30px;
-        }
-
-        .timer-badge {
-            align-self: center; background: rgba(0,0,0,0.6); border: 2px solid #333;
-            padding: 15px 40px; border-radius: 50px; font-size: 28px; font-weight: 800;
-            display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        #round-time { color: var(--neon-red); font-size: 36px; min-width: 50px; text-align: center; }
-        .timer-warning { animation: pulse-time 0.5s infinite alternate; border-color: var(--neon-red) !important; color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,60,0.5); }
-        @keyframes pulse-time { from { transform: scale(1); } to { transform: scale(1.05); } }
-
-        .arena-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;
-        }
-
-        .target-card {
-            background: rgba(20,20,25,0.6); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer;
-            position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
-        }
-        .target-card::before {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
-        }
-        .target-card:hover { transform: translateY(-10px); border-color: rgba(255,255,255,0.2); background: rgba(30,30,40,0.8); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        .target-card.selected-target {
-            border-color: var(--neon-red); transform: translateY(-15px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(255,0,60,0.4); background: rgba(40,10,15,0.8);
-        }
-        .target-avatar-img {
-            width: 80px; height: 80px; border-radius: 20px; border: 2px solid #444; margin-bottom: 15px;
-            background: #111; padding: 5px; transition: 0.3s;
-        }
-        .target-card.selected-target .target-avatar-img { border-color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.5); }
-
-        .hidden-card {
-            margin-top: 15px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px dashed #555;
-            border-radius: 10px; font-size: 13px; color: var(--text-muted); font-weight: 700;
-        }
-
-        /* تأثير القتل والموت */
-        .target-card.dead { filter: grayscale(100%) opacity(0.4); pointer-events: none; border-color: #111; box-shadow: none; transform: scale(0.95); }
-        
-        .blood-slash {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="10" x2="90" y2="90" stroke="red" stroke-width="8" opacity="0.8"/></svg>') no-repeat center/contain;
-            z-index: 10; display: none;
-        }
-        .target-card.dead .blood-slash { display: block; animation: slashIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes slashIn { from { transform: scale(2) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
-
-        /* اهتزاز الشاشة */
-        .screen-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-2px, 2px, 0); }
-            20%, 80% { transform: translate3d(4px, -4px, 0); }
-            30%, 50%, 70% { transform: translate3d(-6px, 4px, 0); }
-            40%, 60% { transform: translate3d(6px, -2px, 0); }
-        }
-
-        /* --- نظام الإشعارات (Toast) --- */
-        #toast-container {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; gap: 10px; z-index: 9999;
-        }
-        .toast {
-            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid #333;
-            color: #fff; padding: 15px 30px; border-radius: 12px; font-size: 16px; font-weight: 700;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; align-items: center; gap: 12px;
-            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastOut 0.4s 2.6s forwards;
-        }
-        .toast.success { border-bottom: 3px solid #00f0ff; }
-        .toast.error { border-bottom: 3px solid var(--neon-red); }
-        .toast.warning { border-bottom: 3px solid var(--gold); }
-        
-        @keyframes toastIn { from { transform: translateY(50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        @keyframes toastOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
-
-        /* استجابة الجوال */
         @media (max-width: 1000px) {
-            .game-layout { flex-direction: column; margin-top: 40px; }
-            .my-section { flex: auto; max-width: 100%; }
-            .role-card { padding: 25px 15px; }
-            .top-bar { padding: 15px 20px; position: static; background: transparent; margin-bottom: -30px; }
-            .arena-section { padding: 20px 0; }
+            .game-layout { flex-direction: column; height: auto; }
+            .chat-section { height: 300px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-container">
-        <div class="ambient-light"></div>
-        <div class="particles"></div>
-    </div>
-
-    <div id="toast-container"></div>
-
+    <!-- 1. شاشة التسجيل -->
     <div id="screen-setup" class="screen active">
-        <div class="setup-container glass-panel" style="padding: 50px;">
-            <h1>سفينة الظلام</h1>
+        <div class="glass-panel" style="padding: 40px; width: 100%; max-width: 500px; text-align: center;">
+            <h1 style="color: var(--neon-red); margin-bottom: 30px; font-size: 40px;">المافيا العكسية</h1>
             
-            <div class="input-group">
-                <label>الاسم السري:</label>
-                <input type="text" id="p-name" placeholder="أدخل اسمك المرعب..." autocomplete="off">
+            <input type="text" id="p-name" placeholder="أدخل اسمك..." style="width: 100%; padding: 15px; border-radius: 10px; background: #111; border: 1px solid #444; color: white; font-size: 18px; margin-bottom: 20px;">
+            
+            <p style="text-align: right; margin-bottom: 10px; color: #aaa;">اختر قناعك:</p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;" id="avatar-grid">
+                <!-- الأيقونات المظلمة -->
+                <div class="avatar-icon selected" data-icon="fa-user-secret"><i class="fa-solid fa-user-secret"></i></div>
+                <div class="avatar-icon" data-icon="fa-user-ninja"><i class="fa-solid fa-user-ninja"></i></div>
+                <div class="avatar-icon" data-icon="fa-mask"><i class="fa-solid fa-mask"></i></div>
+                <div class="avatar-icon" data-icon="fa-crow"><i class="fa-solid fa-crow"></i></div>
+                <div class="avatar-icon" data-icon="fa-skull"><i class="fa-solid fa-skull"></i></div>
             </div>
 
-            <div class="input-group">
-                <label>الهوية (الأفاتار):</label>
-                <div class="selection-grid" id="avatar-grid"></div>
-            </div>
-
-            <div class="input-group">
-                <label>بطاقة الدخول (Calling Card):</label>
-                <div class="selection-grid" id="card-grid">
-                    <div class="card-option c-blood selected" data-class="c-blood">سفك الدماء</div>
-                    <div class="card-option c-shadow" data-class="c-shadow">ظلام دامس</div>
-                    <div class="card-option c-ocean" data-class="c-ocean">أعماق باردة</div>
-                    <div class="card-option c-gold" data-class="c-gold">نخبة المافيا</div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="goToLobby()" style="width: 100%; margin-top: 15px;">
-                <i class="fa-solid fa-right-to-bracket"></i> دخول العالم السفلي
-            </button>
+            <button class="btn" onclick="startGame()" style="width: 100%;">صعود السفينة <i class="fa-solid fa-ship"></i></button>
         </div>
     </div>
 
-    <div id="screen-main-lobby" class="screen">
-        <div class="top-bar">
-            <div id="my-calling-card" class="player-card glass-panel c-blood">
-                <img id="my-avatar" src="" alt="Avatar">
-                <div class="info">
-                    <h3 id="my-name">الاسم</h3>
-                    <p><i class="fa-solid fa-star"></i> السمعة: <span id="my-level">1</span></p>
-                </div>
-            </div>
-            <button class="btn btn-secondary" style="padding: 12px 20px;" onclick="location.reload()"><i class="fa-solid fa-power-off"></i></button>
-        </div>
-
-        <div class="lobby-actions">
-            <div class="action-box glass-panel" onclick="createRoom()">
-                <i class="fa-solid fa-skull-crossbones"></i>
-                <h2>تأسيس عصابة</h2>
-                <p>قم بإنشاء غرفة وكن الزعيم</p>
-            </div>
-            <div class="action-box glass-panel" onclick="joinRoomPrompt()">
-                <i class="fa-solid fa-mask"></i>
-                <h2>الانضمام لعصابة</h2>
-                <p>أدخل الكود السري للغرفة</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-room" class="screen">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h2 style="font-size: 24px; color: var(--text-muted); margin-bottom: 15px;">الكود السري للغرفة</h2>
-            <div class="glass-panel" style="display:inline-block; padding: 15px 40px; font-size: 50px; font-weight: 800; color: var(--neon-red); letter-spacing: 10px; border: 2px dashed var(--neon-red);" id="display-room-code">----</div>
-        </div>
-
-        <div class="selection-grid" id="room-players" style="width: 100%; max-width: 1000px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
-            </div>
-
-        <button class="btn" id="start-game-btn" onclick="startGame()" style="font-size: 28px; padding: 20px 60px;">
-            <i class="fa-solid fa-play"></i> بدء المذبحة
-        </button>
-    </div>
-
+    <!-- 2. ساحة اللعب الرئيسية -->
     <div id="screen-game" class="screen">
         <div class="game-layout">
             
-            <div class="my-section">
-                <div class="role-card">
-                    <div class="role-image"></div>
-                    <h2 class="role-title">محقق المافيا</h2>
-                    <p class="role-desc">
-                        أنت محقق فاسد بعت روحك للظلام.<br>
-                        <strong>مهمتك:</strong> تصفية الأبرياء دون أن يتم كشفك.<br>
-                        <span style="color: var(--neon-red); font-size: 13px; display:block; margin-top:10px; font-weight:700;">(يحق لك تصفية هدف واحد في كل جولة)</span>
-                    </p>
+            <!-- الدردشة -->
+            <div class="chat-section glass-panel">
+                <h3 style="margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-comments"></i> الساحة العامة</h3>
+                <div class="chat-box" id="chat-messages">
+                    <div class="msg sys">مرحباً بك في سفينة الظلام. لا تثق بأحد.</div>
                 </div>
-
-                <div class="game-actions">
-                    <button class="btn" id="btn-kill" onclick="useAbility('kill')">
-                        <i class="fa-solid fa-khanda"></i> تصفية
-                    </button>
-                    <button class="btn btn-secondary" onclick="useAbility('investigate')">
-                        <i class="fa-solid fa-fingerprint"></i> تحقيق
-                    </button>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="اكتب رسالتك..." onkeypress="handleChat(event)">
+                    <button class="btn" style="padding: 10px;" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
 
+            <!-- الساحة وحالة الوقت -->
             <div class="arena-section glass-panel">
-                <div class="timer-badge">
-                    <i class="fa-regular fa-clock"></i> <span id="round-time">30</span>
+                <div class="phase-banner" id="phase-display">
+                    🌙 الليل: المافيا تختار ضحيتها (<span id="timer">15</span>ث)
                 </div>
-                
-                <h2 style="color: #fff; font-size: 24px; margin: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">الأهداف المتاحة:</h2>
-                
                 <div class="arena-grid" id="arena-players">
-                    </div>
+                    <!-- سيتم إضافة اللاعبين هنا -->
+                </div>
             </div>
-            
+
+            <!-- بطاقتي وقدراتي -->
+            <div class="my-section glass-panel">
+                <div class="role-icon"><i class="fa-solid fa-user-secret"></i></div>
+                <h2 class="role-title">أنت المافيا</h2>
+                <p style="color: #ccc; text-align: center; font-size: 14px;">
+                    اقتل المواطنين في الليل، واكذب في النهار لتبعد الشبهات عنك.
+                </p>
+                <div style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn" id="btn-action" onclick="confirmAction()">
+                        <i class="fa-solid fa-khanda"></i> اغتيال الهدف
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- 3. شاشة النهاية -->
+    <div id="screen-end" class="screen">
+        <div class="glass-panel" style="padding: 50px; text-align: center;" id="end-content">
+            <!-- رسالة الفوز -->
+        </div>
+        <button class="btn" style="margin-top: 20px;" onclick="location.reload()">لعب مرة أخرى</button>
+    </div>
+
     <script>
-        // --- البيانات الأساسية ---
-        const avatars = [
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=b6e3f4',
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&backgroundColor=ffdfbf',
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoro&backgroundColor=c0aede',
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Ryuko&backgroundColor=ffdfbf',
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Levi&backgroundColor=b6e3f4',
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=Mikasa&backgroundColor=c0aede'
+        // المتغيرات
+        let myName = "مجهول";
+        let myIcon = "fa-user-secret";
+        let phase = "night"; // night, day, vote
+        let timeLeft = 15;
+        let timerInterval;
+        let currentTarget = null;
+        let actionDone = false;
+
+        // اللاعبين (1 مافيا "أنت" و 4 مواطنين)
+        let players = [
+            { id: 0, name: "أنت", icon: "", role: "mafia", isDead: false, votes: 0 },
+            { id: 1, name: "Ghost", icon: "fa-ghost", role: "town", isDead: false, votes: 0 },
+            { id: 2, name: "Viper", icon: "fa-mask", role: "town", isDead: false, votes: 0 },
+            { id: 3, name: "Reaper", icon: "fa-skull", role: "town", isDead: false, votes: 0 },
+            { id: 4, name: "Shadow", icon: "fa-crow", role: "town", isDead: false, votes: 0 }
         ];
 
-        let selectedAvatar = avatars[0];
-        let selectedCardClass = 'c-blood';
-        let playerLevel = 7;
-        let playersList = []; 
-        let currentTargetIndex = null; 
-        let roundTime = 30;
-        let timerInterval;
-        let hasKilledThisRound = false;
-
-        // تهيئة واجهة المستخدم (التسجيل)
-        const avatarGrid = document.getElementById('avatar-grid');
-        avatars.forEach((url, index) => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = `avatar-option ${index === 0 ? 'selected' : ''}`;
-            img.onclick = () => {
-                document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-                img.classList.add('selected');
-                selectedAvatar = url;
-            };
-            avatarGrid.appendChild(img);
-        });
-
-        document.querySelectorAll('.card-option').forEach(card => {
-            card.onclick = () => {
-                document.querySelectorAll('.card-option').forEach(el => el.classList.remove('selected'));
-                card.classList.add('selected');
-                selectedCardClass = card.getAttribute('data-class');
+        // اختيار القناع
+        document.querySelectorAll('.avatar-icon').forEach(el => {
+            el.onclick = () => {
+                document.querySelectorAll('.avatar-icon').forEach(i => i.classList.remove('selected'));
+                el.classList.add('selected');
+                myIcon = el.getAttribute('data-icon');
             };
         });
 
-        // نظام التنبيهات المنبثقة (Toast)
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            let icon = type === 'error' ? '<i class="fa-solid fa-circle-exclamation" style="color:var(--neon-red)"></i>' : 
-                       type === 'warning' ? '<i class="fa-solid fa-triangle-exclamation" style="color:var(--gold)"></i>' : 
-                       '<i class="fa-solid fa-circle-check" style="color:#00f0ff"></i>';
-            
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            container.appendChild(toast);
-            
-            setTimeout(() => { toast.remove(); }, 3000);
-        }
-
-        // التنقلات
-        function switchScreen(screenId) {
+        function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
 
-        function goToLobby() {
-            const name = document.getElementById('p-name').value.trim() || 'شبح الساحة';
-            document.getElementById('my-name').innerText = name;
-            document.getElementById('my-avatar').src = selectedAvatar;
-            document.getElementById('my-level').innerText = playerLevel;
-            document.getElementById('my-calling-card').className = `player-card glass-panel ${selectedCardClass}`;
-            switchScreen('screen-main-lobby');
-            showToast('تم تسجيل الدخول للعالم السفلي بنجاح');
-        }
-
-        function createRoom() {
-            playersList = []; 
-            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-            document.getElementById('display-room-code').innerText = code;
-            document.getElementById('room-players').innerHTML = ""; 
-            
-            addFakePlayer(document.getElementById('my-name').innerText, selectedAvatar, selectedCardClass, playerLevel, true);
-            switchScreen('screen-room');
-
-            // محاكاة دخول لاعبين آخرين
-            setTimeout(() => { addFakePlayer('DarkSoul', avatars[2], 'c-shadow', 15, false); showToast('DarkSoul انضم للغرفة', 'warning'); }, 1500);
-            setTimeout(() => { addFakePlayer('Viper', avatars[1], 'c-gold', 22, false); showToast('Viper انضم للغرفة', 'warning'); }, 3000);
-            setTimeout(() => { addFakePlayer('Ghost', avatars[3], 'c-ocean', 8, false); showToast('Ghost انضم للغرفة', 'warning'); }, 4500);
-        }
-
-        function joinRoomPrompt() {
-            showToast('هذه الميزة غير متاحة في النسخة التجريبية الحالية', 'warning');
-        }
-
-        function addFakePlayer(name, avatar, card, level, isHost) {
-            playersList.push({ name, avatar, card, level, isHost, isDead: false });
-            const grid = document.getElementById('room-players');
-            grid.innerHTML += `
-                <div class="player-card glass-panel ${card}" style="min-width: 200px;">
-                    <img src="${avatar}">
-                    <div class="info">
-                        <h3>${name} ${isHost ? '<i class="fa-solid fa-crown" style="color:var(--gold); font-size:14px; margin-right:5px;"></i>' : ''}</h3>
-                        <p>Lvl: ${level}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- نظام اللعب والراوندات ---
+        // بدء اللعبة
         function startGame() {
-            if(playersList.length < 3) {
-                showToast('تحتاج على الأقل 3 لاعبين لبدء المذبحة!', 'error');
-                return;
-            }
+            myName = document.getElementById('p-name').value.trim() || "شبح";
+            players[0].name = myName;
+            players[0].icon = myIcon;
+            
             switchScreen('screen-game');
-            startNewRound();
+            startNight();
         }
 
-        function startNewRound() {
-            roundTime = 30;
-            hasKilledThisRound = false;
-            currentTargetIndex = null;
+        // رسم الساحة
+        function renderArena() {
+            const arena = document.getElementById('arena-players');
+            arena.innerHTML = '';
+            
+            players.forEach(p => {
+                if(p.id === 0) return; // لا تظهر نفسك في قائمة الأهداف
+
+                const isDead = p.isDead ? 'dead' : '';
+                const isSelected = currentTarget === p.id ? 'selected' : '';
+                
+                arena.innerHTML += `
+                    <div class="target-card ${isDead} ${isSelected}" onclick="selectTarget(${p.id})">
+                        <div class="vote-badge" id="vote-${p.id}">${p.votes}</div>
+                        <div class="target-avatar-icon"><i class="fa-solid ${p.icon}"></i></div>
+                        <h3 style="color: white; font-size: 16px;">${p.name}</h3>
+                        ${p.isDead ? '<p style="color:red; font-size:12px; font-weight:bold;">ميت 💀</p>' : ''}
+                    </div>
+                `;
+            });
+        }
+
+        function selectTarget(id) {
+            if(players[id].isDead || actionDone) return;
+            currentTarget = id;
+            renderArena();
+        }
+
+        // --- نظام الدردشة ---
+        function handleChat(e) { if(e.key === 'Enter') sendMessage(); }
+        function sendMessage(msgText = null, sender = 'me', senderName = '') {
+            const input = document.getElementById('chat-input');
+            const text = msgText || input.value.trim();
+            if(!text && sender === 'me') return;
+            if(players[0].isDead && sender === 'me') { sysMsg("لا يمكن للموتى التحدث!"); return; }
+
+            const chat = document.getElementById('chat-messages');
+            if(sender === 'me') {
+                chat.innerHTML += `<div class="msg me"><strong>أنت:</strong> ${text}</div>`;
+                input.value = '';
+            } else if(sender === 'sys') {
+                chat.innerHTML += `<div class="msg sys">${text}</div>`;
+            } else {
+                chat.innerHTML += `<div class="msg other"><strong>${senderName}:</strong> ${text}</div>`;
+            }
+            chat.scrollTop = chat.scrollHeight;
+        }
+        function sysMsg(text) { sendMessage(text, 'sys'); }
+
+        // --- محرك اللعبة (Game Loop) ---
+
+        function startNight() {
+            phase = "night";
+            timeLeft = 15;
+            actionDone = false;
+            currentTarget = null;
+            document.body.classList.remove('day-mode');
+            
+            document.getElementById('phase-display').innerHTML = `🌙 الليل: المافيا تختار ضحيتها (<span id="timer">${timeLeft}</span>ث)`;
+            
+            const btn = document.getElementById('btn-action');
+            btn.className = 'btn';
+            btn.innerHTML = '<i class="fa-solid fa-khanda"></i> اغتيال الهدف';
+            btn.disabled = false;
+
+            sysMsg("المدينة تنام... المافيا تستيقظ للقتل.");
+            renderArena();
+            runTimer(endNight);
+        }
+
+        function confirmAction() {
+            if(currentTarget === null) { alert("حدد هدفاً أولاً!"); return; }
+            if(actionDone) return;
+
+            if(phase === 'night') {
+                // المافيا تقتل
+                players[currentTarget].isDead = true;
+                actionDone = true;
+                document.getElementById('btn-action').disabled = true;
+                sysMsg(`قمت بتحديد ${players[currentTarget].name} للاغتيال.`);
+            } else if(phase === 'vote') {
+                // المافيا تصوت
+                players[currentTarget].votes++;
+                actionDone = true;
+                document.getElementById('btn-action').disabled = true;
+                sysMsg(`قمت بالتصويت ضد ${players[currentTarget].name}.`);
+                renderArena();
+            }
+        }
+
+        function endNight() {
+            if(!checkWin()) startDay();
+        }
+
+        function startDay() {
+            phase = "day";
+            timeLeft = 20; // 20 ثانية للنقاش
+            document.body.classList.add('day-mode');
+            
+            document.getElementById('phase-display').innerHTML = `☀️ النهار: نقاش واتهامات (<span id="timer">${timeLeft}</span>ث)`;
+            document.getElementById('btn-action').disabled = true;
+
+            sysMsg("أشرقت الشمس... تم العثور على جثة!");
             renderArena();
 
-            const killBtn = document.getElementById('btn-kill');
-            killBtn.style.opacity = "1";
-            killBtn.style.cursor = "pointer";
+            // محاكاة بوتات تتحدث في الدردشة
+            setTimeout(() => { simulateBotChat(); }, 2000);
             
-            const timeDisplay = document.getElementById('round-time');
-            const timerBadge = document.querySelector('.timer-badge');
-            timeDisplay.style.color = "var(--text-main)";
-            timerBadge.classList.remove('timer-warning');
-            timeDisplay.innerText = roundTime;
+            runTimer(startVote);
+        }
 
-            showToast('بدأت جولة جديدة! الوقت يداهمك.', 'success');
+        function simulateBotChat() {
+            const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
+            if(aliveBots.length === 0) return;
+            
+            const bot1 = aliveBots[Math.floor(Math.random() * aliveBots.length)];
+            sendMessage("أنا شاك في هذا اللاعب الجديد 🧐", 'other', bot1.name);
+            
+            setTimeout(() => {
+                const bot2 = aliveBots[Math.floor(Math.random() * aliveBots.length)];
+                if(bot2) sendMessage("والله ما أدري، بس نحتاج نصوت على أحد!", 'other', bot2.name);
+            }, 5000);
+        }
 
+        function startVote() {
+            phase = "vote";
+            timeLeft = 15;
+            actionDone = false;
+            currentTarget = null;
+            players.forEach(p => p.votes = 0); // تصفير الأصوات
+            
+            document.getElementById('phase-display').innerHTML = `⚖️ التصويت: من هو الخائن؟ (<span id="timer">${timeLeft}</span>ث)`;
+            
+            const btn = document.getElementById('btn-action');
+            btn.className = 'btn btn-day';
+            btn.innerHTML = '<i class="fa-solid fa-gavel"></i> تصويت للإعدام';
+            btn.disabled = players[0].isDead; // إذا كنت ميت ما تصوت
+
+            sysMsg("حان وقت التصويت! حدد المشتبه به.");
+            renderArena();
+            
+            // محاكاة تصويت البوتات (تصويت عشوائي)
+            setTimeout(() => { simulateBotVotes(); }, 5000);
+
+            runTimer(endVote);
+        }
+
+        function simulateBotVotes() {
+            const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
+            const allAlive = players.filter(p => !p.isDead);
+            
+            aliveBots.forEach(bot => {
+                // البوت يصوت لشخص عشوائي حي
+                const randomTarget = allAlive[Math.floor(Math.random() * allAlive.length)];
+                randomTarget.votes++;
+            });
+            renderArena();
+            // إظهار البادج
+            document.querySelectorAll('.vote-badge').forEach(b => {
+                if(b.innerText !== "0") b.style.display = 'flex';
+            });
+        }
+
+        function endVote() {
+            // حساب من حصل على أعلى أصوات
+            let highestVotes = -1;
+            let executedPlayer = null;
+            let tie = false;
+
+            players.forEach(p => {
+                if(p.votes > highestVotes) {
+                    highestVotes = p.votes;
+                    executedPlayer = p;
+                    tie = false;
+                } else if (p.votes === highestVotes && highestVotes > 0) {
+                    tie = true;
+                }
+            });
+
+            if(executedPlayer && !tie && highestVotes > 0) {
+                executedPlayer.isDead = true;
+                sysMsg(`⚖️ تم إعدام [ ${executedPlayer.name} ] بالأغلبية!`);
+                if(executedPlayer.id === 0) {
+                    sysMsg("لقد تم إعدامك! المافيا سقطت.");
+                } else {
+                    sysMsg(`${executedPlayer.name} كان مواطناً بريئاً...`);
+                }
+            } else {
+                sysMsg("⚖️ لم يتم الاتفاق على إعدام أحد (تعادل أو لا يوجد تصويت).");
+            }
+
+            renderArena();
+            setTimeout(() => {
+                document.querySelectorAll('.vote-badge').forEach(b => b.style.display = 'none');
+                if(!checkWin()) startNight();
+            }, 3000);
+        }
+
+        function checkWin() {
+            const aliveTown = players.filter(p => p.role === 'town' && !p.isDead).length;
+            const mafiaDead = players[0].isDead; // لأنك أنت المافيا الوحيدة حالياً
+
+            if(mafiaDead) {
+                showEndScreen('town'); return true;
+            } else if (aliveTown === 0) {
+                showEndScreen('mafia'); return true;
+            }
+            return false;
+        }
+
+        function showEndScreen(winner) {
             clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                roundTime--;
-                timeDisplay.innerText = roundTime;
-
-                if (roundTime <= 10 && roundTime > 0) {
-                    timerBadge.classList.add('timer-warning');
-                }
-
-                if (roundTime <= 0) {
-                    clearInterval(timerInterval);
-                    timerBadge.classList.remove('timer-warning');
-                    endRound();
-                }
-            }, 1000);
-        }
-
-        function endRound() {
-            showToast('⏳ انتهى وقت الجولة! تجهز للجولة القادمة...', 'warning');
-            setTimeout(startNewRound, 4000);
-        }
-
-        function renderArena() {
-            const arenaGrid = document.getElementById('arena-players');
-            arenaGrid.innerHTML = '';
-
-            for (let i = 1; i < playersList.length; i++) {
-                const p = playersList[i];
-                const isSelected = currentTargetIndex === i ? 'selected-target' : '';
-                const isDead = p.isDead ? 'dead' : '';
-
-                arenaGrid.innerHTML += `
-                    <div class="target-card ${isSelected} ${isDead}" onclick="selectTarget(${i})">
-                        <div class="blood-slash"></div>
-                        <img src="${p.avatar}" class="target-avatar-img">
-                        <h3 style="margin:0; font-size: 18px; color: #fff;">${p.name}</h3>
-                        <p style="margin:8px 0; font-size:12px; color:var(--gold); font-weight:bold;">السمعة: ${p.level}</p>
-                        <div class="hidden-card">؟ هوية مجهولة ؟</div>
-                    </div>
+            switchScreen('screen-end');
+            const box = document.getElementById('end-content');
+            
+            if(winner === 'mafia') {
+                box.innerHTML = `
+                    <h1 class="win-mafia"><i class="fa-solid fa-skull"></i> المافيا تنتصر</h1>
+                    <p style="font-size:20px;">نجحت في القضاء على جميع المواطنين وتضليل العدالة.</p>
+                `;
+            } else {
+                box.innerHTML = `
+                    <h1 class="win-town"><i class="fa-solid fa-dove"></i> المواطنون ينتصرون</h1>
+                    <p style="font-size:20px;">تم كشفك وإعدامك. العدالة أخذت مجراها.</p>
                 `;
             }
         }
 
-        function selectTarget(index) {
-            if (playersList[index].isDead) return;
-            currentTargetIndex = index;
-            renderArena(); 
-        }
-
-        function useAbility(type) {
-            if(currentTargetIndex === null) {
-                showToast('حدد ضحيتك من الساحة أولاً!', 'error');
-                return;
-            }
-
-            const target = playersList[currentTargetIndex];
-
-            if(type === 'kill') {
-                if (hasKilledThisRound) {
-                    showToast('لقد سفكت دماءً كافية هذه الجولة! انتظر.', 'error');
-                    return;
+        function runTimer(callback) {
+            clearInterval(timerInterval);
+            const tDisplay = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                tDisplay.innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    callback();
                 }
-
-                target.isDead = true; 
-                hasKilledThisRound = true;
-                
-                const killBtn = document.getElementById('btn-kill');
-                killBtn.style.opacity = "0.3";
-                killBtn.style.cursor = "not-allowed";
-
-                // تأثير الشاشة والدم
-                document.body.classList.add('screen-shake');
-                document.querySelector('.bg-container').style.background = 'radial-gradient(circle at 50% 50%, #400000 0%, #030305 100%)';
-                
-                setTimeout(() => {
-                    document.body.classList.remove('screen-shake');
-                    document.querySelector('.bg-container').style.background = 'radial-gradient(circle at 50% 50%, #150005 0%, var(--bg-color) 100%)';
-                }, 400);
-
-                showToast(`💀 تم تصفية ${target.name} بنجاح!`, 'error');
-                
-                currentTargetIndex = null; 
-                renderArena(); 
-
-            } else if (type === 'investigate') {
-                showToast(`🔍 نتيجة التحقيق: ${target.name} يبدو كمواطن عادي...`, 'success');
-            }
+            }, 1000);
         }
     </script>
 </body>
