@@ -31,13 +31,13 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden;
+            overflow-x: hidden;
             height: 100vh;
         }
 
         /* --- الخلفية السينمائية --- */
         .bg-container {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: radial-gradient(circle at center, #111424 0%, #05050a 100%);
@@ -104,7 +104,7 @@
         .screen {
             display: none;
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             padding: 30px;
             flex-direction: column;
             align-items: center;
@@ -193,6 +193,7 @@
             justify-content: center;
             font-weight: bold;
             transition: 0.3s;
+            text-align: center;
         }
         .card-option.selected {
             border-color: white;
@@ -284,16 +285,26 @@
         /* --- داخل اللعبة (In-Game) --- */
         .game-layout {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: row;
             gap: 30px;
             width: 100%;
+            max-width: 1300px;
+            align-items: flex-start;
         }
 
-        /* بطاقة الهوية */
+        /* القسم الأيسر: بطاقتي وقدراتي */
+        .my-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 350px;
+        }
+
         .role-card {
-            width: 300px;
-            height: 450px;
+            width: 100%;
+            max-width: 350px;
+            height: auto;
             border-radius: 20px;
             background: linear-gradient(180deg, #1a0000 0%, #000 100%);
             border: 2px solid var(--primary);
@@ -304,27 +315,138 @@
             box-shadow: 0 0 50px rgba(217, 37, 37, 0.4);
             position: relative;
             overflow: hidden;
+            margin-bottom: 20px;
         }
         
         .role-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--primary);
         }
 
+        /* تم التعديل هنا لعرض صورة الأنمي المظلمة التي أرسلتها */
         .role-image {
-            width: 150px; height: 150px;
-            background: url('https://api.dicebear.com/7.x/bottts/svg?seed=evilHat') center/cover;
-            border-radius: 50%;
+            width: 200px; height: 200px;
+            background-image: url('dark-anime-pictures-iwmu3b0sun9r6789.webp');
+            background-position: center;
+            background-size: cover;
+            border-radius: 15px;
             border: 3px solid #fff;
             margin-bottom: 20px;
             background-color: #222;
+            box-shadow: 0 0 20px rgba(255,0,0,0.5);
         }
 
         .role-title { font-size: 32px; color: var(--primary); margin-bottom: 10px; }
-        .role-desc { text-align: center; font-size: 18px; color: #ccc; }
+        .role-desc { text-align: center; font-size: 16px; color: #ccc; }
 
         .game-actions {
             display: flex;
-            gap: 20px;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .game-actions .btn {
+            flex: 1;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        /* القسم الأيمن: ساحة اللاعبين الآخرين */
+        .arena-section {
+            flex: 2;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+        }
+
+        .arena-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        /* بطاقة اللاعب الآخر في الساحة */
+        .target-card {
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .target-card:hover {
+            border-color: #666;
+            transform: translateY(-5px);
+        }
+
+        /* عند تحديد اللاعب */
+        .target-card.selected-target {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(217, 37, 37, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* شكل البطاقة من الخلف */
+        .hidden-card {
+            margin-top: 15px;
+            height: 70px;
+            background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px);
+            border: 1px solid #444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* عند موت اللاعب */
+        .target-card.dead {
+            filter: grayscale(100%);
+            opacity: 0.5;
+            pointer-events: none; /* يمنع الضغط عليه */
+        }
+
+        .dead-stamp {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            color: #ff0000;
+            border: 4px solid #ff0000;
+            font-size: 30px;
+            font-weight: 900;
+            padding: 5px 15px;
+            background: rgba(0,0,0,0.8);
+            z-index: 10;
+            display: none;
+            letter-spacing: 2px;
+        }
+
+        .target-card.dead .dead-stamp {
+            display: block;
+        }
+        
+        .target-avatar-img {
+            width: 70px; height: 70px; border-radius: 50%; border: 2px solid #555; margin-bottom: 10px;
+        }
+
+        /* الاستجابة للشاشات الصغيرة */
+        @media (max-width: 900px) {
+            .game-layout {
+                flex-direction: column;
+            }
+            .my-section {
+                width: 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -418,33 +540,43 @@
         </button>
     </div>
 
-    <!-- 4. داخل اللعبة (واجهة البطاقة والقدرات) -->
+    <!-- 4. داخل اللعبة (واجهة البطاقة والقدرات واللاعبين) -->
     <div id="screen-game" class="screen">
+        <h1 style="font-size: 35px; text-shadow: 0 0 10px var(--primary); margin-bottom: 20px;">القيم بدأ - ابحث عن ضحيتك</h1>
+        
         <div class="game-layout">
-            <h1 style="font-size: 40px; text-shadow: 0 0 10px var(--primary);">تم توزيع الأدوار!</h1>
-            
-            <!-- بطاقة دورك -->
-            <div class="role-card">
-                <div class="role-image"></div>
-                <h2 class="role-title">محقق (مافيا)</h2>
-                <p class="role-desc">
-                    أنت محقق فاسد تعمل مع المافيا.<br><br>
-                    <strong>مهمتك:</strong> استخدم قدرتك لكشف أدوار الآخرين وقتل المواطنين الأبرياء.<br><br>
-                    <span style="color: #ff4444; font-size: 14px;">تحذير: إذا المافيا قتلوا 3 منهم بالغلط، تخسرون!</span>
-                </p>
+            <!-- القسم الأيسر: بطاقتك وقدراتك -->
+            <div class="my-section">
+                <div class="role-card">
+                    <!-- الصورة المظلمة التي أرسلتها -->
+                    <div class="role-image"></div>
+                    <h2 class="role-title">محقق (مافيا)</h2>
+                    <p class="role-desc">
+                        أنت محقق فاسد تعمل مع المافيا.<br><br>
+                        <strong>مهمتك:</strong> حدد لاعباً من الساحة لاغتياله أو استجوابه.<br><br>
+                        <span style="color: #ff4444; font-size: 14px;">تحذير: إذا المافيا قتلوا 3 منهم بالغلط، تخسرون!</span>
+                    </p>
+                </div>
+
+                <div class="game-actions">
+                    <button class="btn" onclick="useAbility('kill')">
+                        <i class="fa-solid fa-skull"></i> قتل
+                    </button>
+                    <button class="btn btn-secondary" onclick="useAbility('investigate')">
+                        <i class="fa-solid fa-magnifying-glass"></i> استجواب
+                    </button>
+                </div>
+                
+                <p id="action-result" style="color: #ffcc00; font-size: 18px; margin-top: 20px; text-align: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; width: 100%; display: none;"></p>
             </div>
 
-            <!-- قدراتك -->
-            <div class="game-actions">
-                <button class="btn" onclick="useAbility('kill')">
-                    <i class="fa-solid fa-skull"></i> قتل شخص
-                </button>
-                <button class="btn btn-secondary" onclick="useAbility('investigate')">
-                    <i class="fa-solid fa-magnifying-glass"></i> استجواب شخص
-                </button>
+            <!-- القسم الأيمن: اللاعبون الآخرون -->
+            <div class="arena-section">
+                <h2 style="margin-bottom: 20px; color: white;">اللاعبون في الساحة: <span style="font-size:16px; color:#aaa;">(اضغط على بطاقة لتحديدها)</span></h2>
+                <div class="arena-grid" id="arena-players">
+                    <!-- سيتم إضافة اللاعبين (الأهداف) هنا -->
+                </div>
             </div>
-            
-            <p id="action-result" style="color: #ffcc00; font-size: 22px; height: 30px;"></p>
         </div>
     </div>
 
@@ -463,6 +595,9 @@
         let selectedAvatar = avatars[0];
         let selectedCardClass = 'c-blood';
         let playerLevel = localStorage.getItem('rm_level') || 1;
+        
+        let playersList = []; // مصفوفة لحفظ جميع اللاعبين في الغرفة
+        let currentTargetIndex = null; // يحفظ رقم اللاعب المحدد في ساحة اللعب
 
         // ملء شبكة الصور
         const avatarGrid = document.getElementById('avatar-grid');
@@ -510,24 +645,20 @@
 
         // إنشاء غرفة
         function createRoom() {
+            playersList = []; // تفريغ القائمة عند إنشاء غرفة جديدة
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             document.getElementById('display-room-code').innerText = code;
+            document.getElementById('room-players').innerHTML = ""; // تفريغ واجهة اللوبي
             
-            // محاكاة إضافة اللاعب نفسه
-            renderPlayersInRoom([{
-                name: document.getElementById('my-name').innerText,
-                avatar: selectedAvatar,
-                card: selectedCardClass,
-                level: playerLevel,
-                isHost: true
-            }]);
+            // إضافة اللاعب نفسه
+            addFakePlayer(document.getElementById('my-name').innerText, selectedAvatar, selectedCardClass, playerLevel, true);
 
             switchScreen('screen-room');
 
             // محاكاة دخول لاعبين آخرين بعد ثواني
-            setTimeout(() => addFakePlayer('DarkKnight', avatars[2], 'c-shadow', 5), 2000);
-            setTimeout(() => addFakePlayer('Slayer99', avatars[1], 'c-gold', 12), 4000);
-            setTimeout(() => addFakePlayer('InnocentBoy', avatars[3], 'c-ocean', 2), 5500);
+            setTimeout(() => addFakePlayer('DarkKnight', avatars[2], 'c-shadow', 5, false), 2000);
+            setTimeout(() => addFakePlayer('Slayer99', avatars[1], 'c-gold', 12, false), 4000);
+            setTimeout(() => addFakePlayer('InnocentBoy', avatars[3], 'c-ocean', 2, false), 5500);
         }
 
         function joinRoomPrompt() {
@@ -541,41 +672,97 @@
         }
 
         // رسم اللاعبين في اللوبي
-        const playersList = [];
-        function renderPlayersInRoom(players) {
+        function addFakePlayer(name, avatar, card, level, isHost) {
+            // إضافة اللاعب للمصفوفة (مع إضافة خاصية isDead عشان نظام القتل)
+            playersList.push({ name, avatar, card, level, isHost, isDead: false });
+            
             const grid = document.getElementById('room-players');
-            players.forEach(p => {
-                playersList.push(p);
-                grid.innerHTML += `
-                    <div class="player-card glass-panel ${p.card}">
-                        <img src="${p.avatar}">
-                        <div class="info">
-                            <h3>${p.name} ${p.isHost ? '<i class="fa-solid fa-crown" style="color:gold; font-size:14px;"></i>' : ''}</h3>
-                            <p>المستوى: ${p.level}</p>
-                        </div>
+            grid.innerHTML += `
+                <div class="player-card glass-panel ${card}">
+                    <img src="${avatar}">
+                    <div class="info">
+                        <h3>${name} ${isHost ? '<i class="fa-solid fa-crown" style="color:gold; font-size:14px;"></i>' : ''}</h3>
+                        <p>المستوى: ${level}</p>
                     </div>
-                `;
-            });
+                </div>
+            `;
         }
 
-        function addFakePlayer(name, avatar, card, level) {
-            renderPlayersInRoom([{ name, avatar, card, level }]);
-        }
-
-        // --- 3. بدء القيم ---
+        // --- 3. بدء القيم وساحة اللعب (In-Game) ---
         function startGame() {
             switchScreen('screen-game');
-            document.getElementById('action-result').innerText = "";
+            currentTargetIndex = null;
+            document.getElementById('action-result').style.display = "none";
+            renderArena(); // رسم اللاعبين في الساحة
         }
 
-        // استخدام القدرات (محاكاة)
+        // رسم بطاقات اللاعبين الآخرين في الساحة
+        function renderArena() {
+            const arenaGrid = document.getElementById('arena-players');
+            arenaGrid.innerHTML = '';
+
+            // اللوب يبدأ من 1 لتخطي اللاعب نفسه (لأنه في الإندكس 0)
+            for (let i = 1; i < playersList.length; i++) {
+                const p = playersList[i];
+                const isSelected = currentTargetIndex === i ? 'selected-target' : '';
+                const isDead = p.isDead ? 'dead' : '';
+
+                arenaGrid.innerHTML += `
+                    <div class="target-card ${isSelected} ${isDead}" onclick="selectTarget(${i})">
+                        <div class="dead-stamp">ميت</div>
+                        <img src="${p.avatar}" class="target-avatar-img">
+                        <h3 style="margin:0;">${p.name}</h3>
+                        <p style="margin:5px 0; font-size:14px; color:gold;">المستوى: ${p.level}</p>
+                        
+                        <!-- ظهر البطاقة المخفي -->
+                        <div class="hidden-card">؟ بطاقة مخفية ؟</div>
+                    </div>
+                `;
+            }
+        }
+
+        // عند الضغط على لاعب في الساحة
+        function selectTarget(index) {
+            // لا يمكنك تحديد لاعب ميت
+            if (playersList[index].isDead) return;
+
+            currentTargetIndex = index;
+            renderArena(); // تحديث الساحة لإظهار الإطار الأحمر
+            
+            const res = document.getElementById('action-result');
+            res.style.display = "block";
+            res.style.color = "white";
+            res.innerHTML = `تم تحديد الهدف: <strong>${playersList[index].name}</strong>`;
+        }
+
+        // استخدام القدرات (القتل / الاستجواب)
         function useAbility(type) {
             const res = document.getElementById('action-result');
+            
+            // التأكد من تحديد لاعب أولاً
+            if(currentTargetIndex === null) {
+                res.style.display = "block";
+                res.innerHTML = "⚠️ الرجاء تحديد لاعب من الساحة أولاً!";
+                res.style.color = "orange";
+                return;
+            }
+
+            const target = playersList[currentTargetIndex];
+
             if(type === 'kill') {
-                res.innerText = "🔫 لقد قمت باختيار لاعب للقتل. ننتظر تصويت باقي المافيا...";
+                target.isDead = true; // قتل اللاعب
+                res.innerHTML = `💀 لقد قمت بقتل <strong>${target.name}</strong> بنجاح!`;
                 res.style.color = "#ff4444";
+                
+                // تأثير بصري للقتل (تغيير لون الشاشة لحظياً)
+                document.body.style.backgroundColor = "#3a0000";
+                setTimeout(() => document.body.style.backgroundColor = "var(--bg-color)", 300);
+
+                currentTargetIndex = null; // إزالة التحديد
+                renderArena(); // إعادة رسم الساحة لإظهار ختم الموت
+
             } else if (type === 'investigate') {
-                res.innerText = "🔍 قمت باستجواب Slayer99... النتيجة: هو من المافيا!";
+                res.innerHTML = `🔍 قمت باستجواب <strong>${target.name}</strong>... النتيجة: هو مواطن بريء!`;
                 res.style.color = "#00ff88";
             }
         }
