@@ -12,11 +12,12 @@
     <style>
         :root {
             --bg-night: #020205;
-            --bg-day: #1a1a24;
+            --bg-day: #1a202c;
             --glass-bg: rgba(10, 10, 15, 0.7);
             --neon-red: #ff003c;
             --blood-dark: #6e0015;
             --day-blue: #4a90e2;
+            --sun-light: rgba(255, 240, 200, 0.15);
             --text-main: #f4f4f9;
             --text-muted: #888899;
             --gold: #ffb703;
@@ -32,17 +33,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 1s ease;
+            transition: background 1.5s ease;
+            position: relative;
         }
 
+        /* --- تأثير نور الصبح --- */
+        .sun-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top, var(--sun-light) 0%, transparent 70%);
+            opacity: 0; transition: opacity 1.5s ease; pointer-events: none; z-index: -1;
+        }
         body.day-mode { background-color: var(--bg-day); }
+        body.day-mode .sun-overlay { opacity: 1; }
 
-        /* --- التصميم الزجاجي --- */
+        /* --- بروفايل اللاعب (فوق يمين) --- */
+        .top-profile {
+            position: fixed; top: 20px; right: 20px; display: none; align-items: center; gap: 15px;
+            background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 15px;
+            border: 1px solid #333; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s;
+        }
+        .top-profile.active { display: flex; }
+        .top-profile .info h3 { margin: 0; font-size: 18px; color: #fff; }
+        .top-profile .info p { margin: 0; font-size: 14px; color: var(--gold); }
+        .top-profile .icon { width: 50px; height: 50px; background: #111; border: 2px solid var(--neon-red); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--neon-red); box-shadow: 0 0 10px rgba(255,0,60,0.3); }
+
+        /* --- التصميم الزجاجي العادي --- */
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 0, 60, 0.15);
-            border-radius: 15px;
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 60, 0.15); border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
         }
 
@@ -60,21 +79,27 @@
         .btn-day:hover { box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6); }
 
         /* --- الشاشات --- */
-        .screen { display: none; width: 100%; max-width: 1400px; padding: 20px; flex-direction: column; align-items: center; animation: fadeIn 0.5s; }
+        .screen { display: none; width: 100%; max-width: 1400px; padding: 20px; flex-direction: column; align-items: center; animation: fadeIn 0.5s; margin-top: 50px; }
         .screen.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- الأفاتار المظلم (بدال الكيوت) --- */
+        /* --- الأفاتار --- */
         .avatar-icon {
             width: 80px; height: 80px; border-radius: 15px; background: #111; border: 2px solid #333;
             display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff;
             cursor: pointer; transition: 0.3s;
         }
         .avatar-icon:hover, .avatar-icon.selected { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.5); transform: scale(1.1); }
-        .target-avatar-icon { width: 60px; height: 60px; font-size: 30px; margin: 0 auto 10px; border-radius: 50%; background: #000; border: 2px solid #444; display: flex; align-items: center; justify-content: center; }
+
+        /* --- اللوبي والقوائم --- */
+        .lobby-actions { display: flex; gap: 30px; margin-top: 30px; }
+        .action-box { width: 250px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; text-align: center; border-radius: 20px; background: rgba(20,20,30,0.6); border: 1px solid #333; transition: 0.3s; }
+        .action-box i { font-size: 60px; color: var(--text-muted); transition: 0.3s; }
+        .action-box:hover { transform: translateY(-10px); border-color: var(--neon-red); box-shadow: 0 10px 30px rgba(255,0,60,0.3); }
+        .action-box:hover i { color: var(--neon-red); }
 
         /* --- تصميم داخل اللعبة --- */
-        .game-layout { display: flex; gap: 20px; width: 100%; align-items: stretch; margin-top: 20px; height: 85vh; }
+        .game-layout { display: flex; gap: 20px; width: 100%; align-items: stretch; height: 80vh; }
         
         /* 1. قسم الدردشة */
         .chat-section { flex: 1; display: flex; flex-direction: column; padding: 15px; border-color: rgba(255,255,255,0.1); }
@@ -88,45 +113,70 @@
 
         /* 2. قسم الساحة */
         .arena-section { flex: 2; padding: 20px; display: flex; flex-direction: column; text-align: center; }
-        .phase-banner { padding: 15px; border-radius: 10px; font-size: 24px; font-weight: bold; margin-bottom: 20px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.3); }
+        .phase-banner { padding: 15px; border-radius: 10px; font-size: 24px; font-weight: bold; margin-bottom: 20px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-red); box-shadow: 0 0 20px rgba(255,0,60,0.3); transition: 0.5s; }
         body.day-mode .phase-banner { border-color: var(--day-blue); box-shadow: 0 0 20px rgba(52, 152, 219, 0.3); color: var(--day-blue); }
         
         .arena-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
-        .target-card { background: rgba(20,20,25,0.8); border: 2px solid #333; border-radius: 15px; padding: 15px 10px; cursor: pointer; transition: 0.3s; position: relative; }
+        .target-card { background: rgba(20,20,25,0.8); border: 2px solid #333; border-radius: 15px; padding: 15px 10px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
         .target-card:hover { transform: translateY(-5px); border-color: #666; }
         .target-card.selected { border-color: var(--neon-red); box-shadow: 0 0 15px rgba(255,0,60,0.5); }
         body.day-mode .target-card.selected { border-color: var(--day-blue); box-shadow: 0 0 15px rgba(52, 152, 219, 0.5); }
         .target-card.dead { filter: grayscale(100%) opacity(0.5); pointer-events: none; border-color: #000; }
-        .vote-badge { position: absolute; top: -10px; right: -10px; background: var(--neon-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; display: none; }
+        .vote-badge { position: absolute; top: -10px; right: -10px; background: var(--neon-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; display: none; z-index: 5; }
+        .target-avatar-icon { width: 60px; height: 60px; font-size: 30px; margin: 0 auto 10px; border-radius: 50%; background: #000; border: 2px solid #444; display: flex; align-items: center; justify-content: center; }
 
-        /* 3. قسم بطاقتي */
-        .my-section { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; border-color: var(--neon-red); }
-        .role-icon { font-size: 80px; color: var(--neon-red); text-shadow: 0 0 30px rgba(255,0,60,0.6); margin-bottom: 10px; }
-        .role-title { color: var(--neon-red); font-size: 28px; }
+        /* 3. قسم بطاقتي (بدون خلفية) */
+        .my-section { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; justify-content: center; }
+        .role-icon { font-size: 100px; color: var(--neon-red); text-shadow: 0 0 40px rgba(255,0,60,0.8); margin-bottom: 5px; animation: float 3s infinite ease-in-out; }
+        .role-title { color: #fff; font-size: 32px; text-shadow: 0 0 15px var(--neon-red), 0 0 30px var(--neon-red); margin-bottom: 5px; }
+        .role-desc { color: #ccc; text-align: center; font-size: 16px; text-shadow: 1px 1px 5px #000; }
 
-        /* شاشة النهاية */
-        #end-screen h1 { font-size: 60px; margin-bottom: 20px; }
-        .win-mafia { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red); }
-        .win-town { color: var(--day-blue); text-shadow: 0 0 20px var(--day-blue); }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* --- مؤثرات القتل --- */
+        .screen-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 2px, 0); }
+            20%, 80% { transform: translate3d(4px, -4px, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 4px, 0); }
+            40%, 60% { transform: translate3d(6px, -2px, 0); }
+        }
+
+        .blood-slash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="10" x2="90" y2="90" stroke="red" stroke-width="8" opacity="0.8"/></svg>') no-repeat center/contain; z-index: 10; display: none; }
+        .target-card.dead .blood-slash { display: block; animation: slashIn 0.3s ease; }
+        @keyframes slashIn { from { transform: scale(2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         @media (max-width: 1000px) {
             .game-layout { flex-direction: column; height: auto; }
             .chat-section { height: 300px; }
+            .top-profile { top: 5px; right: 5px; padding: 5px 10px; }
+            .top-profile .info h3 { font-size: 14px; }
+            .top-profile .icon { width: 35px; height: 35px; font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
+    <div class="sun-overlay"></div>
+
+    <!-- بروفايلك الثابت فوق يمين -->
+    <div class="top-profile" id="top-profile">
+        <div class="info">
+            <h3 id="tp-name">الاسم</h3>
+            <p>LVL: <span>7</span></p>
+        </div>
+        <div class="icon" id="tp-icon"><i class="fa-solid fa-user-secret"></i></div>
+    </div>
+
     <!-- 1. شاشة التسجيل -->
     <div id="screen-setup" class="screen active">
         <div class="glass-panel" style="padding: 40px; width: 100%; max-width: 500px; text-align: center;">
-            <h1 style="color: var(--neon-red); margin-bottom: 30px; font-size: 40px;">المافيا العكسية</h1>
+            <h1 style="color: var(--neon-red); margin-bottom: 30px; font-size: 40px; text-shadow: 0 0 15px var(--neon-red);">سفينة الظلام</h1>
             
-            <input type="text" id="p-name" placeholder="أدخل اسمك..." style="width: 100%; padding: 15px; border-radius: 10px; background: #111; border: 1px solid #444; color: white; font-size: 18px; margin-bottom: 20px;">
+            <input type="text" id="p-name" placeholder="أدخل اسمك المرعب..." style="width: 100%; padding: 15px; border-radius: 10px; background: #111; border: 1px solid #444; color: white; font-size: 18px; margin-bottom: 20px;" autocomplete="off">
             
             <p style="text-align: right; margin-bottom: 10px; color: #aaa;">اختر قناعك:</p>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;" id="avatar-grid">
-                <!-- الأيقونات المظلمة -->
                 <div class="avatar-icon selected" data-icon="fa-user-secret"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="avatar-icon" data-icon="fa-user-ninja"><i class="fa-solid fa-user-ninja"></i></div>
                 <div class="avatar-icon" data-icon="fa-mask"><i class="fa-solid fa-mask"></i></div>
@@ -134,22 +184,51 @@
                 <div class="avatar-icon" data-icon="fa-skull"><i class="fa-solid fa-skull"></i></div>
             </div>
 
-            <button class="btn" onclick="startGame()" style="width: 100%;">صعود السفينة <i class="fa-solid fa-ship"></i></button>
+            <button class="btn" onclick="goToMenu()" style="width: 100%; font-size: 22px;">دخول <i class="fa-solid fa-right-to-bracket"></i></button>
         </div>
     </div>
 
-    <!-- 2. ساحة اللعب الرئيسية -->
-    <div id="screen-game" class="screen">
+    <!-- 2. القائمة الرئيسية (اللوبي) -->
+    <div id="screen-menu" class="screen">
+        <h1 style="font-size: 40px; text-shadow: 0 0 20px #000;">القائمة الرئيسية</h1>
+        <div class="lobby-actions">
+            <div class="action-box" onclick="createRoom()">
+                <i class="fa-solid fa-skull-crossbones"></i>
+                <h2 style="color:white;">إنشاء غرفة</h2>
+                <p style="color:#aaa;">تأسيس عصابة ودعوة الأصدقاء</p>
+            </div>
+            <div class="action-box" onclick="alert('سيرفرات الانضمام تحت الصيانة حالياً!')">
+                <i class="fa-solid fa-users"></i>
+                <h2 style="color:white;">انضمام لغرفة</h2>
+                <p style="color:#aaa;">أدخل كود صديقك</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. غرفة الانتظار -->
+    <div id="screen-room" class="screen">
+        <h2 style="font-size: 30px; margin-bottom: 10px;">كود الغرفة السري:</h2>
+        <div class="glass-panel" style="padding: 10px 40px; font-size: 40px; color: var(--neon-red); letter-spacing: 5px; border: 2px dashed var(--neon-red); margin-bottom: 30px;" id="room-code">ABCD12</div>
+        
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; width: 100%; max-width: 800px;" id="waiting-players">
+            <!-- لاعبين الغرفة -->
+        </div>
+
+        <button class="btn" onclick="startGame()" style="font-size: 26px; padding: 15px 50px;">بدء اللعبة <i class="fa-solid fa-play"></i></button>
+    </div>
+
+    <!-- 4. ساحة اللعب الرئيسية -->
+    <div id="screen-game" class="screen" style="max-width: 1500px;">
         <div class="game-layout">
             
             <!-- الدردشة -->
             <div class="chat-section glass-panel">
                 <h3 style="margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-comments"></i> الساحة العامة</h3>
                 <div class="chat-box" id="chat-messages">
-                    <div class="msg sys">مرحباً بك في سفينة الظلام. لا تثق بأحد.</div>
+                    <div class="msg sys">المدينة تنام، والقتلة يراقبون...</div>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="اكتب رسالتك..." onkeypress="handleChat(event)">
+                    <input type="text" id="chat-input" placeholder="اكتب رسالتك وتفاعل معهم..." onkeypress="handleChat(event)">
                     <button class="btn" style="padding: 10px;" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
@@ -160,46 +239,34 @@
                     🌙 الليل: المافيا تختار ضحيتها (<span id="timer">15</span>ث)
                 </div>
                 <div class="arena-grid" id="arena-players">
-                    <!-- سيتم إضافة اللاعبين هنا -->
+                    <!-- الأهداف -->
                 </div>
             </div>
 
-            <!-- بطاقتي وقدراتي -->
-            <div class="my-section glass-panel">
-                <div class="role-icon"><i class="fa-solid fa-user-secret"></i></div>
+            <!-- بطاقتي وقدراتي (طافية في الجو بدون مربع) -->
+            <div class="my-section">
+                <div class="role-icon" id="in-game-icon"><i class="fa-solid fa-user-secret"></i></div>
                 <h2 class="role-title">أنت المافيا</h2>
-                <p style="color: #ccc; text-align: center; font-size: 14px;">
-                    اقتل المواطنين في الليل، واكذب في النهار لتبعد الشبهات عنك.
+                <p class="role-desc">
+                    اقتل في الليل، وشتت انتباههم في الصباح.<br>لا تدعهم يكشفون هويتك الحقيقية.
                 </p>
-                <div style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                    <button class="btn" id="btn-action" onclick="confirmAction()">
-                        <i class="fa-solid fa-khanda"></i> اغتيال الهدف
-                    </button>
-                </div>
+                <button class="btn" id="btn-action" onclick="confirmAction()" style="margin-top: 25px; font-size: 20px; padding: 15px 30px;">
+                    <i class="fa-solid fa-khanda"></i> اغتيال الهدف
+                </button>
             </div>
 
         </div>
-    </div>
-
-    <!-- 3. شاشة النهاية -->
-    <div id="screen-end" class="screen">
-        <div class="glass-panel" style="padding: 50px; text-align: center;" id="end-content">
-            <!-- رسالة الفوز -->
-        </div>
-        <button class="btn" style="margin-top: 20px;" onclick="location.reload()">لعب مرة أخرى</button>
     </div>
 
     <script>
-        // المتغيرات
         let myName = "مجهول";
         let myIcon = "fa-user-secret";
-        let phase = "night"; // night, day, vote
+        let phase = "night";
         let timeLeft = 15;
         let timerInterval;
         let currentTarget = null;
         let actionDone = false;
 
-        // اللاعبين (1 مافيا "أنت" و 4 مواطنين)
         let players = [
             { id: 0, name: "أنت", icon: "", role: "mafia", isDead: false, votes: 0 },
             { id: 1, name: "Ghost", icon: "fa-ghost", role: "town", isDead: false, votes: 0 },
@@ -208,7 +275,6 @@
             { id: 4, name: "Shadow", icon: "fa-crow", role: "town", isDead: false, votes: 0 }
         ];
 
-        // اختيار القناع
         document.querySelectorAll('.avatar-icon').forEach(el => {
             el.onclick = () => {
                 document.querySelectorAll('.avatar-icon').forEach(i => i.classList.remove('selected'));
@@ -222,33 +288,56 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // بدء اللعبة
-        function startGame() {
-            myName = document.getElementById('p-name').value.trim() || "شبح";
+        function goToMenu() {
+            myName = document.getElementById('p-name').value.trim() || "شبح الظلام";
             players[0].name = myName;
             players[0].icon = myIcon;
+
+            // تحديث البروفايل اللي فوق يمين
+            document.getElementById('tp-name').innerText = myName;
+            document.getElementById('tp-icon').innerHTML = `<i class="fa-solid ${myIcon}"></i>`;
+            document.getElementById('top-profile').classList.add('active');
             
+            // تحديث بطاقتي باللعبة
+            document.getElementById('in-game-icon').innerHTML = `<i class="fa-solid ${myIcon}"></i>`;
+
+            switchScreen('screen-menu');
+        }
+
+        function createRoom() {
+            document.getElementById('room-code').innerText = Math.random().toString(36).substring(2, 8).toUpperCase();
+            switchScreen('screen-room');
+            
+            const wp = document.getElementById('waiting-players');
+            wp.innerHTML = `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid ${myIcon}"></i></div> <b>${myName} (أنت)</b></div>`;
+            
+            // دخول البوتات الوهمي للغرفة
+            setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-ghost"></i></div> <b>Ghost</b></div>`; }, 1000);
+            setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-mask"></i></div> <b>Viper</b></div>`; }, 2500);
+            setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-skull"></i></div> <b>Reaper</b></div>`; }, 4000);
+            setTimeout(() => { wp.innerHTML += `<div class="glass-panel" style="padding:15px; display:flex; align-items:center; gap:10px;"><div style="font-size:24px;"><i class="fa-solid fa-crow"></i></div> <b>Shadow</b></div>`; }, 5000);
+        }
+
+        function startGame() {
             switchScreen('screen-game');
             startNight();
         }
 
-        // رسم الساحة
         function renderArena() {
             const arena = document.getElementById('arena-players');
             arena.innerHTML = '';
             
             players.forEach(p => {
-                if(p.id === 0) return; // لا تظهر نفسك في قائمة الأهداف
-
+                if(p.id === 0) return;
                 const isDead = p.isDead ? 'dead' : '';
                 const isSelected = currentTarget === p.id ? 'selected' : '';
                 
                 arena.innerHTML += `
                     <div class="target-card ${isDead} ${isSelected}" onclick="selectTarget(${p.id})">
+                        <div class="blood-slash"></div>
                         <div class="vote-badge" id="vote-${p.id}">${p.votes}</div>
                         <div class="target-avatar-icon"><i class="fa-solid ${p.icon}"></i></div>
                         <h3 style="color: white; font-size: 16px;">${p.name}</h3>
-                        ${p.isDead ? '<p style="color:red; font-size:12px; font-weight:bold;">ميت 💀</p>' : ''}
                     </div>
                 `;
             });
@@ -260,18 +349,19 @@
             renderArena();
         }
 
-        // --- نظام الدردشة ---
+        /* --- الذكاء الاصطناعي للدردشة (البوتات يردون عليك) --- */
         function handleChat(e) { if(e.key === 'Enter') sendMessage(); }
         function sendMessage(msgText = null, sender = 'me', senderName = '') {
             const input = document.getElementById('chat-input');
             const text = msgText || input.value.trim();
             if(!text && sender === 'me') return;
-            if(players[0].isDead && sender === 'me') { sysMsg("لا يمكن للموتى التحدث!"); return; }
+            if(players[0].isDead && sender === 'me') { sysMsg("الموتى لا يتحدثون..."); return; }
 
             const chat = document.getElementById('chat-messages');
             if(sender === 'me') {
                 chat.innerHTML += `<div class="msg me"><strong>أنت:</strong> ${text}</div>`;
                 input.value = '';
+                checkBotReply(text); // البوت يحلل كلامك ويرد
             } else if(sender === 'sys') {
                 chat.innerHTML += `<div class="msg sys">${text}</div>`;
             } else {
@@ -281,23 +371,41 @@
         }
         function sysMsg(text) { sendMessage(text, 'sys'); }
 
-        // --- محرك اللعبة (Game Loop) ---
+        function checkBotReply(text) {
+            if(phase === 'night') return; // مافي سوالف بالليل
+            
+            const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
+            if(aliveBots.length === 0) return;
 
+            const speaker = aliveBots[Math.floor(Math.random() * aliveBots.length)];
+            const targets = players.filter(p => !p.isDead && p.id !== speaker.id);
+            const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+
+            let reply = "";
+            if(text.includes('مين') || text.includes('من') || text.includes('رايكم')) {
+                reply = `أنا أقول ${randomTarget.name} شكله مشبوه حيل!`;
+            } else if (text.includes('ليه') || text.includes('ليش') || text.includes('كيف')) {
+                reply = `والله ما أدري بس لازم نصوت على أحد قبل لا يذبحنا المافيا.`;
+            } else if (text.includes('انا') || text.includes('بريء')) {
+                reply = `كل المافيا يقولون كذا يا ${myName} 🧐`;
+            }
+
+            if(reply) {
+                setTimeout(() => { sendMessage(reply, 'other', speaker.name); }, 1500 + Math.random() * 2000);
+            }
+        }
+
+        /* --- دورة اللعبة --- */
         function startNight() {
-            phase = "night";
-            timeLeft = 15;
-            actionDone = false;
-            currentTarget = null;
+            phase = "night"; timeLeft = 15; actionDone = false; currentTarget = null;
             document.body.classList.remove('day-mode');
             
             document.getElementById('phase-display').innerHTML = `🌙 الليل: المافيا تختار ضحيتها (<span id="timer">${timeLeft}</span>ث)`;
             
             const btn = document.getElementById('btn-action');
-            btn.className = 'btn';
-            btn.innerHTML = '<i class="fa-solid fa-khanda"></i> اغتيال الهدف';
-            btn.disabled = false;
+            btn.className = 'btn'; btn.innerHTML = '<i class="fa-solid fa-khanda"></i> اغتيال الهدف'; btn.disabled = false;
 
-            sysMsg("المدينة تنام... المافيا تستيقظ للقتل.");
+            sysMsg("المدينة تنام... اختر ضحيتك بهدوء.");
             renderArena();
             runTimer(endNight);
         }
@@ -307,169 +415,109 @@
             if(actionDone) return;
 
             if(phase === 'night') {
-                // المافيا تقتل
                 players[currentTarget].isDead = true;
                 actionDone = true;
                 document.getElementById('btn-action').disabled = true;
-                sysMsg(`قمت بتحديد ${players[currentTarget].name} للاغتيال.`);
+                sysMsg(`💀 قمت باغتيال ${players[currentTarget].name}!`);
+                
+                // تأثير الاهتزاز والدم
+                document.body.classList.add('screen-shake');
+                setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+                
+                renderArena();
+
             } else if(phase === 'vote') {
-                // المافيا تصوت
                 players[currentTarget].votes++;
                 actionDone = true;
                 document.getElementById('btn-action').disabled = true;
-                sysMsg(`قمت بالتصويت ضد ${players[currentTarget].name}.`);
+                sysMsg(`⚖️ قمت بالتصويت ضد ${players[currentTarget].name}.`);
                 renderArena();
             }
         }
 
         function endNight() {
-            if(!checkWin()) startDay();
+            startDay();
         }
 
         function startDay() {
-            phase = "day";
-            timeLeft = 20; // 20 ثانية للنقاش
-            document.body.classList.add('day-mode');
+            phase = "day"; timeLeft = 25; 
+            document.body.classList.add('day-mode'); // يشغل تأثير الشمس
             
             document.getElementById('phase-display').innerHTML = `☀️ النهار: نقاش واتهامات (<span id="timer">${timeLeft}</span>ث)`;
             document.getElementById('btn-action').disabled = true;
 
-            sysMsg("أشرقت الشمس... تم العثور على جثة!");
+            sysMsg("أشرقت الشمس... استيقظت المدينة.");
             renderArena();
 
-            // محاكاة بوتات تتحدث في الدردشة
-            setTimeout(() => { simulateBotChat(); }, 2000);
+            // سوالف بوتات عشوائية تفتح السالفة
+            setTimeout(() => {
+                const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
+                if(aliveBots.length > 0) {
+                    const speaker = aliveBots[Math.floor(Math.random() * aliveBots.length)];
+                    sendMessage("يا جماعة في أحد مات؟ شكل المافيا بيننا!", 'other', speaker.name);
+                }
+            }, 3000);
             
             runTimer(startVote);
         }
 
-        function simulateBotChat() {
-            const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
-            if(aliveBots.length === 0) return;
-            
-            const bot1 = aliveBots[Math.floor(Math.random() * aliveBots.length)];
-            sendMessage("أنا شاك في هذا اللاعب الجديد 🧐", 'other', bot1.name);
-            
-            setTimeout(() => {
-                const bot2 = aliveBots[Math.floor(Math.random() * aliveBots.length)];
-                if(bot2) sendMessage("والله ما أدري، بس نحتاج نصوت على أحد!", 'other', bot2.name);
-            }, 5000);
-        }
-
         function startVote() {
-            phase = "vote";
-            timeLeft = 15;
-            actionDone = false;
-            currentTarget = null;
-            players.forEach(p => p.votes = 0); // تصفير الأصوات
+            phase = "vote"; timeLeft = 15; actionDone = false; currentTarget = null;
+            players.forEach(p => p.votes = 0); 
             
             document.getElementById('phase-display').innerHTML = `⚖️ التصويت: من هو الخائن؟ (<span id="timer">${timeLeft}</span>ث)`;
             
             const btn = document.getElementById('btn-action');
-            btn.className = 'btn btn-day';
-            btn.innerHTML = '<i class="fa-solid fa-gavel"></i> تصويت للإعدام';
-            btn.disabled = players[0].isDead; // إذا كنت ميت ما تصوت
+            btn.className = 'btn btn-day'; btn.innerHTML = '<i class="fa-solid fa-gavel"></i> إعدام';
+            btn.disabled = players[0].isDead; 
 
-            sysMsg("حان وقت التصويت! حدد المشتبه به.");
+            sysMsg("حان وقت التصويت! حدد المشتبه به واضغط إعدام.");
             renderArena();
             
-            // محاكاة تصويت البوتات (تصويت عشوائي)
-            setTimeout(() => { simulateBotVotes(); }, 5000);
+            setTimeout(() => {
+                players.filter(p => !p.isDead && p.id !== 0).forEach(bot => {
+                    const allAlive = players.filter(p => !p.isDead);
+                    allAlive[Math.floor(Math.random() * allAlive.length)].votes++;
+                });
+                renderArena();
+                document.querySelectorAll('.vote-badge').forEach(b => { if(b.innerText !== "0") b.style.display = 'flex'; });
+            }, 5000);
 
             runTimer(endVote);
         }
 
-        function simulateBotVotes() {
-            const aliveBots = players.filter(p => !p.isDead && p.id !== 0);
-            const allAlive = players.filter(p => !p.isDead);
-            
-            aliveBots.forEach(bot => {
-                // البوت يصوت لشخص عشوائي حي
-                const randomTarget = allAlive[Math.floor(Math.random() * allAlive.length)];
-                randomTarget.votes++;
-            });
-            renderArena();
-            // إظهار البادج
-            document.querySelectorAll('.vote-badge').forEach(b => {
-                if(b.innerText !== "0") b.style.display = 'flex';
-            });
-        }
-
         function endVote() {
-            // حساب من حصل على أعلى أصوات
-            let highestVotes = -1;
-            let executedPlayer = null;
-            let tie = false;
-
+            let highestVotes = -1; let executedPlayer = null; let tie = false;
             players.forEach(p => {
-                if(p.votes > highestVotes) {
-                    highestVotes = p.votes;
-                    executedPlayer = p;
-                    tie = false;
-                } else if (p.votes === highestVotes && highestVotes > 0) {
-                    tie = true;
-                }
+                if(p.votes > highestVotes) { highestVotes = p.votes; executedPlayer = p; tie = false; } 
+                else if (p.votes === highestVotes && highestVotes > 0) { tie = true; }
             });
 
             if(executedPlayer && !tie && highestVotes > 0) {
                 executedPlayer.isDead = true;
                 sysMsg(`⚖️ تم إعدام [ ${executedPlayer.name} ] بالأغلبية!`);
                 if(executedPlayer.id === 0) {
-                    sysMsg("لقد تم إعدامك! المافيا سقطت.");
-                } else {
-                    sysMsg(`${executedPlayer.name} كان مواطناً بريئاً...`);
+                    alert("تم كشفك وإعدامك! لقد خسرت."); location.reload();
+                } else if(players.filter(p => p.role === 'town' && !p.isDead).length === 0) {
+                    alert("انتصرت المافيا! لقد أبحت بالجميع."); location.reload();
                 }
             } else {
-                sysMsg("⚖️ لم يتم الاتفاق على إعدام أحد (تعادل أو لا يوجد تصويت).");
+                sysMsg("⚖️ تعادل! لم يتم إعدام أحد.");
             }
 
             renderArena();
             setTimeout(() => {
                 document.querySelectorAll('.vote-badge').forEach(b => b.style.display = 'none');
-                if(!checkWin()) startNight();
+                startNight();
             }, 3000);
-        }
-
-        function checkWin() {
-            const aliveTown = players.filter(p => p.role === 'town' && !p.isDead).length;
-            const mafiaDead = players[0].isDead; // لأنك أنت المافيا الوحيدة حالياً
-
-            if(mafiaDead) {
-                showEndScreen('town'); return true;
-            } else if (aliveTown === 0) {
-                showEndScreen('mafia'); return true;
-            }
-            return false;
-        }
-
-        function showEndScreen(winner) {
-            clearInterval(timerInterval);
-            switchScreen('screen-end');
-            const box = document.getElementById('end-content');
-            
-            if(winner === 'mafia') {
-                box.innerHTML = `
-                    <h1 class="win-mafia"><i class="fa-solid fa-skull"></i> المافيا تنتصر</h1>
-                    <p style="font-size:20px;">نجحت في القضاء على جميع المواطنين وتضليل العدالة.</p>
-                `;
-            } else {
-                box.innerHTML = `
-                    <h1 class="win-town"><i class="fa-solid fa-dove"></i> المواطنون ينتصرون</h1>
-                    <p style="font-size:20px;">تم كشفك وإعدامك. العدالة أخذت مجراها.</p>
-                `;
-            }
         }
 
         function runTimer(callback) {
             clearInterval(timerInterval);
             const tDisplay = document.getElementById('timer');
             timerInterval = setInterval(() => {
-                timeLeft--;
-                tDisplay.innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    callback();
-                }
+                timeLeft--; tDisplay.innerText = timeLeft;
+                if(timeLeft <= 0) { clearInterval(timerInterval); callback(); }
             }, 1000);
         }
     </script>
