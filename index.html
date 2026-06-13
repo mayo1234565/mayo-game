@@ -3,626 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حلبة السبعة | Arena of The Seven</title>
+    <title>Nexus Gaming | متجر الألعاب</title>
     
-    <!-- خطوط عربية فخمة -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- خطوط عربية وإنجليزية -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-dark: #0b0c10;
-            --primary: #45a29e;
-            --primary-glow: rgba(69, 162, 158, 0.6);
-            --accent: #66fcf1;
+            --bg-dark: #0a0a0f;
+            --bg-card: #151520;
+            --primary-neon: #00f3ff;
+            --secondary-neon: #b026ff;
+            --text-main: #ffffff;
+            --text-muted: #888899;
             --danger: #ff0055;
-            --glass: rgba(31, 40, 51, 0.85);
-            --text-main: #c5c6c7;
-            --gold: #ffd700;
+            --success: #00ff88;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
 
         body {
-            background-color: var(--bg-dark); color: var(--text-main);
-            min-height: 100vh; overflow-x: hidden; position: relative;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(176, 38, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.08), transparent 25%);
         }
 
-        /* --- الخلفية المتحركة السحرية --- */
-        .animated-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1f2833 0%, #0b0c10 100%);
-            overflow: hidden;
+        /* --- التصميم الزجاجي --- */
+        .glass {
+            background: rgba(21, 21, 32, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .particle {
-            position: absolute; border-radius: 50%;
-            background: var(--accent); box-shadow: 0 0 10px var(--accent);
-            animation: floatUp linear infinite; opacity: 0.5;
+
+        /* --- الهيدر (شريط التنقل) --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+            padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
         }
-        @keyframes floatUp {
-            from { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            50% { opacity: 0.8; }
-            to { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 28px; color: #fff; text-shadow: 0 0 10px var(--primary-neon); letter-spacing: 2px; }
+        .logo span { color: var(--primary-neon); }
+
+        nav { display: flex; gap: 30px; align-items: center; }
+        nav a { color: var(--text-main); text-decoration: none; font-size: 18px; font-weight: 700; transition: 0.3s; }
+        nav a:hover { color: var(--primary-neon); text-shadow: 0 0 10px var(--primary-neon); }
+
+        .cart-icon { position: relative; font-size: 24px; cursor: pointer; transition: 0.3s; }
+        .cart-icon:hover { color: var(--secondary-neon); }
+        .cart-badge {
+            position: absolute; top: -8px; right: -12px; background: var(--danger);
+            color: white; font-size: 12px; font-weight: bold; padding: 2px 6px;
+            border-radius: 50%; box-shadow: 0 0 10px var(--danger);
         }
 
         /* --- الأزرار --- */
         .btn {
-            background: transparent; color: var(--accent); border: 2px solid var(--accent);
-            padding: 12px 25px; font-size: 18px; font-weight: 700; border-radius: 10px;
-            cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px;
-            box-shadow: 0 0 10px rgba(102, 252, 241, 0.2);
+            background: transparent; color: var(--text-main); border: 2px solid var(--primary-neon);
+            padding: 10px 25px; font-size: 16px; font-weight: 700; border-radius: 8px;
+            cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;
         }
-        .btn:hover { background: var(--accent); color: var(--bg-dark); box-shadow: 0 0 20px var(--accent); transform: translateY(-3px); }
-        .btn-danger { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 10px rgba(255,0,85,0.2); }
-        .btn-danger:hover { background: var(--danger); color: white; box-shadow: 0 0 20px var(--danger); }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn:hover { background: var(--primary-neon); color: var(--bg-dark); box-shadow: 0 0 20px var(--primary-neon); }
+        .btn-secondary { border-color: var(--secondary-neon); color: var(--secondary-neon); }
+        .btn-secondary:hover { background: var(--secondary-neon); color: white; box-shadow: 0 0 20px var(--secondary-neon); }
+        .btn-full { width: 100%; justify-content: center; padding: 15px; font-size: 18px; }
 
-        /* --- الزجاج --- */
-        .glass-panel { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(102, 252, 241, 0.2); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        /* --- قسم البانر (Hero) --- */
+        .hero {
+            padding: 150px 50px 80px; text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), var(--bg-dark)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .hero h1 { font-size: 60px; margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .hero p { font-size: 20px; color: #ccc; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
 
-        /* --- الشاشات --- */
-        .screen { display: none; width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px; flex-direction: column; align-items: center; animation: fadeIn 0.5s; min-height: 100vh; justify-content: center; }
-        .screen.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        /* --- قسم المتجر --- */
+        .shop-section { padding: 50px; max-width: 1400px; margin: 0 auto; }
+        .section-title { font-size: 32px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+        .section-title i { color: var(--secondary-neon); }
 
-        /* --- الأيقونات والأفاتار --- */
-        .avatar-picker { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
-        .avatar-icon { width: 80px; height: 80px; border-radius: 15px; background: #111; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; cursor: pointer; transition: 0.3s; }
-        .avatar-icon:hover, .avatar-icon.selected { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px var(--primary-glow); transform: scale(1.1); }
+        .filters { display: flex; gap: 15px; margin-bottom: 40px; justify-content: center; flex-wrap: wrap; }
+        .filter-btn { background: var(--bg-card); border: 1px solid #333; color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary-neon); color: var(--bg-dark); border-color: var(--primary-neon); box-shadow: 0 0 15px rgba(0,243,255,0.4); }
 
-        /* --- القائمة العلوية (البروفايل) --- */
-        .top-nav { position: fixed; top: 0; left: 0; width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
-        .mini-profile { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; padding: 10px; border-radius: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; }
-        .mini-profile:hover { border-color: var(--accent); }
-        .mini-profile .icon { font-size: 24px; color: var(--accent); width: 45px; height: 45px; background: #111; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        /* --- شبكة المنتجات --- */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card {
+            background: var(--bg-card); border-radius: 15px; overflow: hidden;
+            border: 1px solid #222; transition: all 0.4s ease; position: relative;
+        }
+        .product-card:hover { transform: translateY(-10px); border-color: var(--primary-neon); box-shadow: 0 10px 30px rgba(0,243,255,0.15); }
+        .product-img { width: 100%; height: 300px; object-fit: cover; border-bottom: 1px solid #222; transition: 0.5s; }
+        .product-card:hover .product-img { transform: scale(1.05); }
+        .product-info { padding: 20px; position: relative; background: var(--bg-card); z-index: 2; }
+        .product-category { font-size: 12px; color: var(--secondary-neon); text-transform: uppercase; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        .product-title { font-size: 22px; margin: 5px 0 15px; font-weight: 700; }
+        .product-price { font-size: 24px; color: var(--success); font-family: 'Orbitron', sans-serif; font-weight: bold; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+
+        /* --- سلة المشتريات (Sidebar) --- */
+        .cart-sidebar {
+            position: fixed; top: 0; left: -400px; width: 400px; height: 100vh;
+            background: #0f0f15; border-right: 1px solid rgba(0,243,255,0.2);
+            z-index: 1000; padding: 20px; display: flex; flex-direction: column;
+            transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+        }
+        .cart-sidebar.open { left: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .close-cart { font-size: 24px; cursor: pointer; color: var(--text-muted); transition: 0.3s; }
+        .close-cart:hover { color: var(--danger); }
         
-        /* --- الليدربورد (لوحة الصدارة) --- */
-        .leaderboard-list { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .lb-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.6); border-radius: 12px; border-right: 4px solid var(--accent); }
-        .lb-item.me { border-right-color: var(--gold); background: rgba(255, 215, 0, 0.1); }
+        .cart-items { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+        .cart-item { display: flex; gap: 15px; background: var(--bg-card); padding: 10px; border-radius: 10px; border: 1px solid #222; align-items: center; }
+        .cart-item img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
+        .cart-item-info { flex: 1; }
+        .cart-item-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .cart-item-price { color: var(--success); font-family: 'Orbitron'; font-size: 14px;}
+        .cart-item-actions { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+        .qty-btn { background: #333; border: none; color: white; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; }
+        .remove-btn { color: var(--danger); cursor: pointer; font-size: 18px; margin-right: auto; }
 
-        /* --- ساحة اللعب --- */
-        .game-header { text-align: center; margin-top: 60px; margin-bottom: 30px; }
-        .arena { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; margin-bottom: 40px; }
-        
-        .char-card { background: rgba(20,20,30,0.9); border: 2px solid #333; border-radius: 15px; padding: 15px; text-align: center; position: relative; transition: 0.3s; cursor: pointer; }
-        .char-card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .char-card.selected { border-color: var(--danger); box-shadow: 0 0 20px rgba(255,0,85,0.4); transform: scale(1.05); }
-        .char-card.dead { filter: grayscale(100%); opacity: 0.4; pointer-events: none; border-color: #000; }
-        
-        .char-icon { font-size: 40px; margin-bottom: 10px; color: #fff; }
-        .hp-bar-bg { width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden; margin-top: 10px; border: 1px solid #000; }
-        .hp-bar-fill { height: 100%; background: #00ff88; transition: width 0.4s ease, background-color 0.4s; }
-        
-        .my-char-area { width: 100%; max-width: 600px; border: 2px solid var(--accent); display: flex; flex-direction: column; gap: 15px; }
-        .action-bar { display: flex; gap: 10px; justify-content: center; }
+        .cart-footer { border-top: 1px solid #333; padding-top: 20px; margin-top: 10px; }
+        .cart-total { display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; margin-bottom: 20px; }
+        .cart-total span:last-child { color: var(--primary-neon); font-family: 'Orbitron'; }
 
-        /* --- سجل المعركة (Logs) --- */
-        .battle-log { width: 100%; max-width: 900px; height: 150px; overflow-y: auto; background: rgba(0,0,0,0.8); border-radius: 10px; padding: 10px; font-size: 14px; border: 1px solid #333; display: flex; flex-direction: column; gap: 5px; }
-        .log-entry { padding: 5px 10px; border-radius: 5px; background: #111; }
-        .log-entry.damage { color: var(--danger); border-right: 3px solid var(--danger); }
-        .log-entry.heal { color: #00ff88; border-right: 3px solid #00ff88; }
-        .log-entry.system { color: var(--gold); text-align: center; background: transparent; }
+        /* --- النوافذ المنبثقة (Modals) --- */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1001; }
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100%; max-width: 500px; padding: 30px; border-radius: 15px; z-index: 1002;
+            border: 1px solid var(--secondary-neon); box-shadow: 0 0 40px rgba(176, 38, 255, 0.2);
+        }
+        .modal h2 { margin-bottom: 20px; color: var(--primary-neon); text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #ccc; font-size: 14px; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid #444;
+            color: white; border-radius: 8px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: var(--primary-neon); box-shadow: 0 0 10px rgba(0,243,255,0.2); }
 
-        /* --- مؤثرات قتالية --- */
-        .shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shakeAnim { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
-        
-        .floating-text { position: absolute; font-size: 24px; font-weight: bold; z-index: 10; animation: floatUpText 1s forwards; pointer-events: none; text-shadow: 0 0 5px #000; }
-        @keyframes floatUpText { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-50px) scale(1.5); opacity: 0; } }
+        /* --- التنبيهات (Toasts) --- */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: var(--glass); border-right: 4px solid var(--success); padding: 15px 20px;
+            border-radius: 8px; color: white; font-weight: bold; display: flex; align-items: center; gap: 10px;
+            animation: slideIn 0.3s forwards, fadeOut 0.3s 2.5s forwards; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        /* --- النوافذ المنبثقة --- */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: var(--glass); border: 1px solid var(--accent); padding: 30px; border-radius: 20px; text-align: center; min-width: 350px; box-shadow: 0 0 50px rgba(102, 252, 241, 0.2); }
-        .modal-close { position: absolute; top: 15px; left: 15px; font-size: 24px; cursor: pointer; color: #fff; }
-        .modal-close:hover { color: var(--danger); }
-
-        /* شريط الـ XP */
-        .xp-container { width: 100%; background: #111; height: 20px; border-radius: 10px; margin-top: 15px; overflow: hidden; border: 1px solid #333; position: relative; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, #b8860b, var(--gold)); transition: width 0.5s; width: 0%; }
-        .xp-text { position: absolute; width: 100%; text-align: center; top: 0; font-size: 12px; font-weight: bold; line-height: 20px; color: #fff; text-shadow: 1px 1px 2px #000; }
-
-        @media (max-width: 800px) {
-            .arena { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .hero h1 { font-size: 40px; }
+            .shop-section { padding: 30px 20px; }
+            .cart-sidebar { width: 100%; left: -100%; border-right: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- الخلفية المتحركة -->
-    <div class="animated-bg" id="bg-particles"></div>
+    <!-- التنبيهات -->
+    <div id="toast-container"></div>
 
-    <!-- النافذة العلوية (البروفايل والرجوع) -->
-    <div class="top-nav" id="top-nav" style="display: none;">
-        <div class="mini-profile" onclick="showProfile()">
-            <div class="icon" id="nav-icon"><i class="fa-solid fa-user"></i></div>
-            <div>
-                <h4 id="nav-name" style="margin: 0;">الاسم</h4>
-                <p style="margin: 0; font-size: 12px; color: var(--gold);">المستوى: <span id="nav-lvl">1</span></p>
-            </div>
-        </div>
-        <button class="btn" style="padding: 8px 15px; font-size: 14px;" onclick="switchScreen('screen-menu')"><i class="fa-solid fa-house"></i></button>
-    </div>
-
-    <!-- الظلال للـ Modals -->
-    <div class="overlay" id="overlay" onclick="closeModals()"></div>
-
-    <!-- نافذة البروفايل -->
-    <div class="modal" id="modal-profile">
-        <i class="fa-solid fa-xmark modal-close" onclick="closeModals()"></i>
-        <div class="avatar-icon" style="margin: 0 auto 15px; border-color: var(--accent); font-size: 50px;" id="prof-icon"></div>
-        <h2 id="prof-name" style="color: #fff; margin-bottom: 5px;">الاسم</h2>
-        <h3 style="color: var(--gold); margin-bottom: 20px;">المستوى <span id="prof-lvl">1</span></h3>
-        
-        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; text-align: right;">
-            <p>الانتصارات: <span id="prof-wins" style="color: var(--accent); font-weight:bold;">0</span></p>
-            <div class="xp-container">
-                <div class="xp-fill" id="prof-xp-fill"></div>
-                <div class="xp-text" id="prof-xp-text">0 / 100 XP</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة نهاية اللعبة -->
-    <div class="modal" id="modal-end">
-        <h1 id="end-title" style="font-size: 40px; margin-bottom: 10px;">نتيجة المعركة</h1>
-        <p id="end-desc" style="color: #ccc; margin-bottom: 20px; font-size: 18px;"></p>
-        <button class="btn" onclick="goToMenu()">العودة للقائمة</button>
-    </div>
-
-    <!-- 1. شاشة التسجيل -->
-    <div class="screen active" id="screen-setup">
-        <h1 style="font-size: 50px; color: var(--accent); text-shadow: 0 0 20px var(--primary-glow); margin-bottom: 10px;">حلبة السبعة</h1>
-        <p style="margin-bottom: 30px; color: #888;">أثبت قوتك وكن الناجي الوحيد.</p>
-
-        <div class="glass-panel" style="width: 100%; max-width: 500px; padding: 40px; text-align: center;">
-            <input type="text" id="player-name" placeholder="أدخل اسم البطل..." style="width: 100%; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--primary); color: white; font-size: 18px; outline: none;" autocomplete="off">
-            
-            <p style="margin-top: 20px; color: #ccc;">اختر تجسيدك:</p>
-            <div class="avatar-picker" id="avatar-grid">
-                <div class="avatar-icon selected" data-icon="fa-user-ninja"><i class="fa-solid fa-user-ninja"></i></div>
-                <div class="avatar-icon" data-icon="fa-hat-wizard"><i class="fa-solid fa-hat-wizard"></i></div>
-                <div class="avatar-icon" data-icon="fa-dragon"><i class="fa-solid fa-dragon"></i></div>
-                <div class="avatar-icon" data-icon="fa-ghost"><i class="fa-solid fa-ghost"></i></div>
-                <div class="avatar-icon" data-icon="fa-skull"><i class="fa-solid fa-skull"></i></div>
-            </div>
-
-            <button class="btn" style="width: 100%; justify-content: center; font-size: 22px;" onclick="initProfile()">دخول الحلبة <i class="fa-solid fa-khanda"></i></button>
-        </div>
-    </div>
-
-    <!-- 2. القائمة الرئيسية -->
-    <div class="screen" id="screen-menu">
-        <h1 style="font-size: 50px; color: var(--accent); text-shadow: 0 0 20px var(--primary-glow); margin-bottom: 40px;">القائمة الرئيسية</h1>
-        
-        <div style="display: flex; gap: 20px; flex-direction: column; width: 100%; max-width: 400px;">
-            <button class="btn" style="padding: 20px; font-size: 24px; justify-content: center;" onclick="startMatch()">
-                <i class="fa-solid fa-play"></i> بدء معركة جديدة
+    <!-- شريط التنقل -->
+    <header class="glass">
+        <div class="logo">NEXUS<span>.</span></div>
+        <nav>
+            <a href="#home">الرئيسية</a>
+            <a href="#shop">المتجر</a>
+            <button class="btn btn-secondary" onclick="openModal('sell-modal')" style="padding: 8px 15px; font-size: 14px;">
+                <i class="fa-solid fa-tags"></i> بيع لعبتك
             </button>
-            <button class="btn" style="padding: 15px; justify-content: center; border-color: var(--gold); color: var(--gold);" onclick="showLeaderboard()">
-                <i class="fa-solid fa-trophy"></i> لوحة الصدارة
-            </button>
-            <button class="btn" style="padding: 15px; justify-content: center; border-color: #888; color: #888;" onclick="showProfile()">
-                <i class="fa-solid fa-id-card"></i> ملفي الشخصي
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- البانر الرئيسي -->
+    <section class="hero" id="home">
+        <h1>مستقبلك في عالم الألعاب يبدأ هنا</h1>
+        <p>اكتشف أحدث الألعاب، أجهزة الكونسول، والإكسسوارات الاحترافية. أو قم ببيع ألعابك القديمة بأسعار تنافسية.</p>
+        <button class="btn" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})" style="padding: 15px 40px; font-size: 20px;">
+            تصفح المتجر <i class="fa-solid fa-arrow-down"></i>
+        </button>
+    </section>
+
+    <!-- قسم المتجر -->
+    <section class="shop-section" id="shop">
+        <h2 class="section-title"><i class="fa-solid fa-gamepad"></i> منتجاتنا المميزة</h2>
+        
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-filter="all">الكل</button>
+            <button class="filter-btn" data-filter="games">ألعاب</button>
+            <button class="filter-btn" data-filter="consoles">أجهزة (Consoles)</button>
+            <button class="filter-btn" data-filter="gear">إكسسوارات</button>
+        </div>
+
+        <div class="products-grid" id="products-container">
+            <!-- سيتم إضافة المنتجات هنا عبر الجافاسكربت -->
+        </div>
+    </section>
+
+    <!-- سلة المشتريات الجانبية -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2><i class="fa-solid fa-bag-shopping"></i> سلة المشتريات</h2>
+            <i class="fa-solid fa-xmark close-cart" onclick="toggleCart()"></i>
+        </div>
+        
+        <div class="cart-items" id="cart-items">
+            <!-- عناصر السلة -->
+            <p style="text-align: center; color: var(--text-muted); margin-top: 50px;">السلة فارغة حالياً</p>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn btn-full" onclick="openModal('checkout-modal')" id="checkout-btn" disabled>
+                إتمام الطلب <i class="fa-solid fa-credit-card"></i>
             </button>
         </div>
     </div>
 
-    <!-- 3. شاشة لوحة الصدارة -->
-    <div class="screen" id="screen-leaderboard">
-        <h1 style="font-size: 40px; color: var(--gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); margin-bottom: 10px;">لوحة الصدارة</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">أعظم 7 محاربين في الحلبة</p>
-        
-        <div class="glass-panel leaderboard-list" id="lb-container" style="padding: 20px;">
-            <!-- يتم تعبئتها برمجياً -->
-        </div>
+    <!-- طبقة التظليل للخلفية -->
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
 
-        <button class="btn" style="margin-top: 30px;" onclick="switchScreen('screen-menu')"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+    <!-- نافذة إتمام الطلب (Checkout) -->
+    <div class="modal glass" id="checkout-modal">
+        <h2>إتمام عملية الدفع</h2>
+        <form onsubmit="processCheckout(event)">
+            <div class="input-group">
+                <label>الاسم الكامل</label>
+                <input type="text" required placeholder="محمد أحمد...">
+            </div>
+            <div class="input-group">
+                <label>العنوان (للتوصيل)</label>
+                <input type="text" required placeholder="الرياض، حي الملقا...">
+            </div>
+            <div class="input-group">
+                <label>طريقة الدفع</label>
+                <select required>
+                    <option value="card">بطاقة ائتمان / مدى</option>
+                    <option value="stc">STC Pay</option>
+                    <option value="cash">الدفع عند الاستلام</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-full" style="margin-top: 10px;">تأكيد الدفع</button>
+        </form>
     </div>
 
-    <!-- 4. ساحة اللعب -->
-    <div class="screen" id="screen-game" style="justify-content: flex-start;">
-        <div class="game-header">
-            <h2 style="color: var(--danger); text-shadow: 0 0 10px var(--danger);">المعركة الملكية (البقاء للأقوى)</h2>
-            <p style="color: #ccc;">اختر هدفاً ثم نفذ هجومك!</p>
-        </div>
-
-        <!-- الأعداء (6 بوتات) -->
-        <div class="arena" id="enemies-grid"></div>
-
-        <!-- سجّل المعركة -->
-        <div class="battle-log" id="battle-log">
-            <div class="log-entry system">بدأت المعركة! كن مستعداً.</div>
-        </div>
-
-        <!-- بطاقتي وأزرار التحكم -->
-        <div class="glass-panel my-char-area" style="padding: 20px; margin-top: 20px;" id="player-area">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div class="avatar-icon" style="width: 60px; height: 60px; font-size: 30px; border-color: var(--accent);" id="my-game-icon"></div>
-                    <div>
-                        <h3 id="my-game-name">أنت</h3>
-                        <p style="color: var(--gold); font-size: 14px;">مستوى <span id="my-game-lvl"></span></p>
-                    </div>
-                </div>
-                <div style="text-align: left; width: 50%;">
-                    <span style="font-weight: bold; color: #00ff88;" id="my-hp-text">100 / 100 HP</span>
-                    <div class="hp-bar-bg"><div class="hp-bar-fill" id="my-hp-bar"></div></div>
-                </div>
+    <!-- نافذة "بيع لعبتك" -->
+    <div class="modal glass" id="sell-modal">
+        <h2 style="color: var(--secondary-neon);">اعرض لعبتك للبيع</h2>
+        <p style="color: #ccc; font-size: 14px; text-align: center; margin-bottom: 20px;">أدخل تفاصيل اللعبة التي ترغب ببيعها للمتجر وسنقوم بتقييمها والتواصل معك.</p>
+        <form onsubmit="processSellRequest(event)">
+            <div class="input-group">
+                <label>اسم اللعبة</label>
+                <input type="text" required placeholder="مثال: The Last of Us Part II">
             </div>
-
-            <div class="action-bar">
-                <button class="btn btn-danger" id="btn-attack" onclick="playerAction('attack')"><i class="fa-solid fa-khanda"></i> هجوم</button>
-                <button class="btn" style="border-color: #00ff88; color: #00ff88;" id="btn-heal" onclick="playerAction('heal')"><i class="fa-solid fa-notes-medical"></i> علاج</button>
+            <div class="input-group">
+                <label>المنصة (الجهاز)</label>
+                <select required>
+                    <option value="ps5">PlayStation 5</option>
+                    <option value="ps4">PlayStation 4</option>
+                    <option value="xbox">Xbox Series X|S</option>
+                    <option value="nintendo">Nintendo Switch</option>
+                </select>
             </div>
-        </div>
+            <div class="input-group">
+                <label>حالة الشريط</label>
+                <select required>
+                    <option value="new">جديد بتغليفة الوكالة</option>
+                    <option value="like-new">مستعمل - كالجديد</option>
+                    <option value="good">مستعمل - جيد</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-full" style="margin-top: 10px;">إرسال الطلب</button>
+        </form>
     </div>
 
     <script>
-        // --- إنشاء جزيئات الخلفية ---
-        const bg = document.getElementById('bg-particles');
-        for(let i=0; i<30; i++) {
-            let p = document.createElement('div');
-            p.className = 'particle';
-            let size = Math.random() * 5 + 2;
-            p.style.width = size + 'px'; p.style.height = size + 'px';
-            p.style.left = Math.random() * 100 + 'vw';
-            p.style.animationDuration = (Math.random() * 10 + 5) + 's';
-            p.style.animationDelay = Math.random() * 5 + 's';
-            bg.appendChild(p);
+        // --- قاعدة بيانات وهمية للمنتجات ---
+        const products = [
+            { id: 1, name: "Cyberpunk 2077: Phantom Liberty", price: 39.99, category: "games", img: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+            { id: 2, name: "PlayStation 5 Console", price: 499.99, category: "consoles", img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+            { id: 3, name: "Nexus Pro Wireless Headset", price: 129.50, category: "gear", img: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+            { id: 4, name: "Elden Ring", price: 59.99, category: "games", img: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+            { id: 5, name: "Xbox Series X", price: 499.99, category: "consoles", img: "https://images.unsplash.com/photo-1605901302636-b52b21cf57db?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+            { id: 6, name: "Elite Controller V2", price: 179.99, category: "gear", img: "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" }
+        ];
+
+        let cart = [];
+
+        // --- عرض المنتجات ---
+        const productsContainer = document.getElementById('products-container');
+
+        function renderProducts(filter = "all") {
+            productsContainer.innerHTML = "";
+            const filteredProducts = filter === "all" ? products : products.filter(p => p.category === filter);
+            
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.img}" alt="${product.name}" class="product-img">
+                    <div class="product-info">
+                        <span class="product-category">${product.category}</span>
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="card-footer">
+                            <span class="product-price">$${product.price.toFixed(2)}</span>
+                            <button class="btn" onclick="addToCart(${product.id})">
+                                <i class="fa-solid fa-cart-plus"></i> إضافة
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productsContainer.appendChild(card);
+            });
         }
 
-        // --- البيانات والنظام الأساسي ---
-        let user = { name: '', icon: '', level: 1, xp: 0, wins: 0 };
-        
-        // الأعداء الوهميين
-        const botNames = ["Shadow", "Reaper", "Viper", "Ghost", "Titan", "Rogue", "Mage", "Knight"];
-        const botIcons = ["fa-user-ninja", "fa-skull", "fa-mask", "fa-ghost", "fa-dragon", "fa-crow", "fa-hat-wizard", "fa-chess-knight"];
-        
-        let matchPlayers = []; // أنت + 6 بوتات
-        let selectedTargetId = null;
-        let isPlayerTurn = true;
-
-        // تحميل البيانات من المتصفح
-        function loadData() {
-            const saved = localStorage.getItem('arena_user');
-            if(saved) {
-                user = JSON.parse(saved);
-                document.getElementById('screen-setup').classList.remove('active');
-                updateTopNav();
-                switchScreen('screen-menu');
-            }
-        }
-        function saveData() { localStorage.setItem('arena_user', JSON.stringify(user)); }
-
-        // --- إعداد البروفايل لأول مرة ---
-        let selectedIcon = "fa-user-ninja";
-        document.querySelectorAll('#avatar-grid .avatar-icon').forEach(el => {
-            el.onclick = () => {
-                document.querySelectorAll('#avatar-grid .avatar-icon').forEach(i => i.classList.remove('selected'));
-                el.classList.add('selected');
-                selectedIcon = el.getAttribute('data-icon');
-            };
+        // --- نظام الفلاتر ---
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                renderProducts(e.target.getAttribute('data-filter'));
+            });
         });
 
-        function initProfile() {
-            const name = document.getElementById('player-name').value.trim();
-            if(!name) { alert("أدخل اسم البطل!"); return; }
-            user.name = name;
-            user.icon = selectedIcon;
-            saveData();
-            updateTopNav();
-            switchScreen('screen-menu');
-        }
+        // --- نظام سلة المشتريات ---
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existingItem = cart.find(item => item.id === id);
 
-        // --- التحديثات والتنقل ---
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
             
-            if(id === 'screen-setup') document.getElementById('top-nav').style.display = 'none';
-            else document.getElementById('top-nav').style.display = 'flex';
+            showToast(`تم إضافة ${product.name} للسلة!`);
+            updateCartUI();
         }
 
-        function updateTopNav() {
-            document.getElementById('nav-name').innerText = user.name;
-            document.getElementById('nav-lvl').innerText = user.level;
-            document.getElementById('nav-icon').innerHTML = `<i class="fa-solid ${user.icon}"></i>`;
+        function updateCartQty(id, change) {
+            const item = cart.find(item => item.id === id);
+            if(item) {
+                item.qty += change;
+                if(item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCartUI();
         }
 
-        function showProfile() {
-            document.getElementById('prof-name').innerText = user.name;
-            document.getElementById('prof-lvl').innerText = user.level;
-            document.getElementById('prof-wins').innerText = user.wins;
-            document.getElementById('prof-icon').innerHTML = `<i class="fa-solid ${user.icon}"></i>`;
-            
-            let xpNeeded = user.level * 100;
-            let percent = (user.xp / xpNeeded) * 100;
-            document.getElementById('prof-xp-fill').style.width = percent + '%';
-            document.getElementById('prof-xp-text').innerText = `${user.xp} / ${xpNeeded} XP`;
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
 
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total-price');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            cartItemsContainer.innerHTML = "";
+            let total = 0;
+            let count = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); margin-top: 50px;">السلة فارغة حالياً</p>';
+                checkoutBtn.disabled = true;
+            } else {
+                checkoutBtn.disabled = false;
+                cart.forEach(item => {
+                    total += item.price * item.qty;
+                    count += item.qty;
+                    
+                    cartItemsContainer.innerHTML += `
+                        <div class="cart-item">
+                            <img src="${item.img}" alt="${item.name}">
+                            <div class="cart-item-info">
+                                <div class="cart-item-title">${item.name}</div>
+                                <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                                <div class="cart-item-actions">
+                                    <button class="qty-btn" onclick="updateCartQty(${item.id}, -1)">-</button>
+                                    <span>${item.qty}</span>
+                                    <button class="qty-btn" onclick="updateCartQty(${item.id}, 1)">+</button>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-trash remove-btn" onclick="removeFromCart(${item.id})"></i>
+                        </div>
+                    `;
+                });
+            }
+
+            cartCount.innerText = count;
+            cartTotal.innerText = `$${total.toFixed(2)}`;
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('cart-sidebar').classList.contains('open') ? 'block' : 'none';
+        }
+
+        // --- نظام النوافذ المنبثقة (Modals) ---
+        function openModal(id) {
+            document.getElementById('cart-sidebar').classList.remove('open');
             document.getElementById('overlay').style.display = 'block';
-            document.getElementById('modal-profile').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
         }
 
-        function closeModals() {
+        function closeAllModals() {
+            document.getElementById('cart-sidebar').classList.remove('open');
             document.getElementById('overlay').style.display = 'none';
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
 
-        function goToMenu() {
-            closeModals();
-            switchScreen('screen-menu');
+        // --- محاكاة العمليات (Checkout & Sell) ---
+        function processCheckout(e) {
+            e.preventDefault();
+            closeAllModals();
+            cart = [];
+            updateCartUI();
+            showToast("تم تأكيد طلبك بنجاح! شكراً لتسوقك معنا.", "success");
         }
 
-        // --- الليدربورد ---
-        function showLeaderboard() {
-            const container = document.getElementById('lb-container');
-            container.innerHTML = '';
-            
-            // تكوين ليدربورد وهمي وتضمين اللاعب فيه
-            let lb = [];
-            lb.push({ name: user.name, icon: user.icon, level: user.level, isMe: true });
-            
-            for(let i=0; i<6; i++) {
-                lb.push({
-                    name: botNames[i], icon: botIcons[i],
-                    level: Math.max(1, user.level + Math.floor(Math.random() * 5) - 2),
-                    isMe: false
-                });
-            }
-            
-            lb.sort((a, b) => b.level - a.level); // ترتيب تنازلي
-            
-            lb.forEach((p, index) => {
-                let rankColor = index === 0 ? 'var(--gold)' : (index === 1 ? '#c0c0c0' : (index === 2 ? '#cd7f32' : 'var(--text-main)'));
-                container.innerHTML += `
-                    <div class="lb-item ${p.isMe ? 'me' : ''}">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <strong style="color: ${rankColor}; font-size: 20px;">#${index+1}</strong>
-                            <div class="avatar-icon" style="width: 40px; height: 40px; font-size: 20px; border:none; background: #222;"><i class="fa-solid ${p.icon}"></i></div>
-                            <span style="font-weight:bold; font-size: 18px;">${p.name} ${p.isMe ? '(أنت)' : ''}</span>
-                        </div>
-                        <span style="color: var(--accent); font-weight:bold;">Lvl ${p.level}</span>
-                    </div>
-                `;
-            });
-            
-            switchScreen('screen-leaderboard');
+        function processSellRequest(e) {
+            e.preventDefault();
+            closeAllModals();
+            showToast("تم إرسال طلب البيع! سنتواصل معك قريباً لتقديم عرض السعر.", "success");
+            e.target.reset(); // تفريغ النموذج
         }
 
-        // --- نظام المعركة (Game Loop) ---
-        function startMatch() {
-            matchPlayers = [];
-            selectedTargetId = null;
-            isPlayerTurn = true;
-            document.getElementById('battle-log').innerHTML = '<div class="log-entry system">بدأت المعركة الملكية!</div>';
+        // --- نظام التنبيهات (Toast) ---
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> ${message}`;
+            container.appendChild(toast);
             
-            // إضافة اللاعب (ID 0)
-            matchPlayers.push({
-                id: 0, name: user.name, icon: user.icon, isPlayer: true,
-                maxHp: 100 + (user.level * 10), hp: 100 + (user.level * 10), isDead: false
-            });
-
-            // إضافة 6 بوتات
-            let shuffledNames = [...botNames].sort(() => 0.5 - Math.random());
-            let shuffledIcons = [...botIcons].sort(() => 0.5 - Math.random());
-
-            for(let i=1; i<=6; i++) {
-                let botLevel = Math.max(1, user.level + Math.floor(Math.random() * 3) - 1);
-                let botMaxHp = 80 + (botLevel * 10);
-                matchPlayers.push({
-                    id: i, name: shuffledNames[i], icon: shuffledIcons[i], isPlayer: false,
-                    maxHp: botMaxHp, hp: botMaxHp, isDead: false
-                });
-            }
-
-            renderArena();
-            updateMyHpUI();
-            switchScreen('screen-game');
-            toggleActionButtons(true);
-        }
-
-        function renderArena() {
-            const grid = document.getElementById('enemies-grid');
-            grid.innerHTML = '';
-            
-            matchPlayers.forEach(p => {
-                if(p.isPlayer) return; // لا تظهر نفسك فوق
-                
-                let hpPercent = Math.max(0, (p.hp / p.maxHp) * 100);
-                let hpColor = hpPercent > 50 ? '#00ff88' : (hpPercent > 20 ? '#ffb703' : '#ff0055');
-                
-                grid.innerHTML += `
-                    <div class="char-card ${p.isDead ? 'dead' : ''} ${selectedTargetId === p.id ? 'selected' : ''}" id="card-${p.id}" onclick="selectTarget(${p.id})">
-                        <div class="char-icon"><i class="fa-solid ${p.icon}"></i></div>
-                        <h4 style="margin-bottom: 5px;">${p.name}</h4>
-                        <div class="hp-bar-bg">
-                            <div class="hp-bar-fill" style="width: ${hpPercent}%; background-color: ${hpColor};"></div>
-                        </div>
-                        <p style="font-size: 12px; margin-top:5px; color: #aaa;">${Math.floor(p.hp)} HP</p>
-                    </div>
-                `;
-            });
-        }
-
-        function updateMyHpUI() {
-            let me = matchPlayers[0];
-            document.getElementById('my-game-name').innerText = me.name;
-            document.getElementById('my-game-lvl').innerText = user.level;
-            document.getElementById('my-game-icon').innerHTML = `<i class="fa-solid ${me.icon}"></i>`;
-            
-            let hpPercent = Math.max(0, (me.hp / me.maxHp) * 100);
-            let hpColor = hpPercent > 50 ? '#00ff88' : (hpPercent > 20 ? '#ffb703' : '#ff0055');
-            
-            document.getElementById('my-hp-text').innerText = `${Math.floor(me.hp)} / ${me.maxHp} HP`;
-            document.getElementById('my-hp-bar').style.width = hpPercent + '%';
-            document.getElementById('my-hp-bar').style.backgroundColor = hpColor;
-
-            if(me.hp <= 0) document.getElementById('player-area').style.filter = "grayscale(100%)";
-            else document.getElementById('player-area').style.filter = "none";
-        }
-
-        function selectTarget(id) {
-            if(!isPlayerTurn || matchPlayers[id].isDead) return;
-            selectedTargetId = id;
-            renderArena();
-        }
-
-        function logMsg(text, type = '') {
-            const log = document.getElementById('battle-log');
-            log.innerHTML += `<div class="log-entry ${type}">${text}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function showFloatingText(elementId, text, color) {
-            const el = document.getElementById(elementId);
-            if(!el) return;
-            el.classList.add('shake');
-            setTimeout(() => el.classList.remove('shake'), 400);
-
-            const float = document.createElement('div');
-            float.className = 'floating-text';
-            float.innerText = text;
-            float.style.color = color;
-            float.style.left = '50%'; float.style.top = '20%';
-            el.appendChild(float);
-            setTimeout(() => float.remove(), 1000);
-        }
-
-        function toggleActionButtons(enable) {
-            document.getElementById('btn-attack').disabled = !enable;
-            document.getElementById('btn-heal').disabled = !enable;
-        }
-
-        // --- حركات اللاعب ---
-        function playerAction(action) {
-            let me = matchPlayers[0];
-            if(me.isDead || !isPlayerTurn) return;
-
-            if(action === 'attack') {
-                if(selectedTargetId === null) { alert("اختر عدواً للهجوم عليه!"); return; }
-                let target = matchPlayers[selectedTargetId];
-                
-                let damage = Math.floor(Math.random() * 15) + 15 + (user.level * 2); // دمج عشوائي
-                target.hp -= damage;
-                
-                logMsg(`أنت هاجمت [${target.name}] وسببت ${damage} ضرر! ⚔️`, 'damage');
-                showFloatingText(`card-${target.id}`, `-${damage}`, '#ff0055');
-
-                if(target.hp <= 0) {
-                    target.hp = 0; target.isDead = true; selectedTargetId = null;
-                    logMsg(`💀 تم القضاء على [${target.name}]!`, 'system');
-                }
-            } else if (action === 'heal') {
-                let healAmount = 25 + (user.level * 3);
-                me.hp = Math.min(me.maxHp, me.hp + healAmount);
-                logMsg(`أنت عالجت نفسك واستعدت ${healAmount} نقطة صحة 💚`, 'heal');
-                showFloatingText(`player-area`, `+${healAmount}`, '#00ff88');
-            }
-
-            renderArena();
-            updateMyHpUI();
-            isPlayerTurn = false;
-            toggleActionButtons(false);
-            
-            if(!checkEndMatch()) {
-                setTimeout(botsTurn, 1000); // دور البوتات بعد ثانية
-            }
-        }
-
-        // --- ذكاء البوتات (تهاجم بعض وتهاجمك) ---
-        function botsTurn() {
-            let aliveBots = matchPlayers.filter(p => !p.isPlayer && !p.isDead);
-            let delay = 0;
-
-            aliveBots.forEach(bot => {
-                setTimeout(() => {
-                    if(bot.isDead || matchPlayers[0].isDead) return;
-
-                    // البوت يختار هدف عشوائي حي (أنت أو بوت ثاني)
-                    let possibleTargets = matchPlayers.filter(p => !p.isDead && p.id !== bot.id);
-                    if(possibleTargets.length === 0) return;
-                    
-                    let target = possibleTargets[Math.floor(Math.random() * possibleTargets.length)];
-                    let damage = Math.floor(Math.random() * 10) + 10;
-                    
-                    target.hp -= damage;
-                    
-                    if(target.isPlayer) {
-                        logMsg(`[${bot.name}] هاجمك وسبب لك ${damage} ضرر! ⚠️`, 'damage');
-                        showFloatingText(`player-area`, `-${damage}`, '#ff0055');
-                        updateMyHpUI();
-                    } else {
-                        logMsg(`[${bot.name}] هاجم [${target.name}] بـ ${damage} ضرر!`);
-                        showFloatingText(`card-${target.id}`, `-${damage}`, '#ffb703');
-                        renderArena();
-                    }
-
-                    if(target.hp <= 0) {
-                        target.hp = 0; target.isDead = true;
-                        logMsg(`💀 تم القضاء على [${target.name}] بواسطة [${bot.name}]!`, 'system');
-                        if(target.isPlayer) updateMyHpUI(); else renderArena();
-                    }
-
-                    checkEndMatch();
-
-                }, delay);
-                delay += 800; // كل بوت يضرب بعد الثاني بـ 800 ملي ثانية
-            });
-
-            // بعد ما يخلصون البوتات ضرب، يرجع الدور لك
             setTimeout(() => {
-                if(!matchPlayers[0].isDead && !checkEndMatch(true)) {
-                    isPlayerTurn = true;
-                    toggleActionButtons(true);
-                    logMsg("دورك الآن!", "system");
-                }
-            }, delay + 500);
+                toast.remove();
+            }, 3000);
         }
 
-        // --- فحص الفوز والخسارة ---
-        function checkEndMatch(silent = false) {
-            let me = matchPlayers[0];
-            let aliveEnemies = matchPlayers.filter(p => !p.isPlayer && !p.isDead).length;
-
-            if(me.isDead) {
-                if(!silent) showEndScreen("لقد سقطت في الحلبة 💀", "خسرت المعركة، تدرب أكثر وعد أقوى.", false);
-                return true;
-            } else if (aliveEnemies === 0) {
-                if(!silent) showEndScreen("أنت الناجي الوحيد! 🏆", "لقد سحقت جميع أعدائك. المجد لك!", true);
-                return true;
-            }
-            return false;
-        }
-
-        function showEndScreen(title, desc, isWin) {
-            document.getElementById('end-title').innerText = title;
-            document.getElementById('end-title').style.color = isWin ? 'var(--gold)' : 'var(--danger)';
-            document.getElementById('end-desc').innerText = desc;
-            
-            if(isWin) {
-                user.wins++;
-                let earnedXp = 40 + (user.level * 10);
-                user.xp += earnedXp;
-                document.getElementById('end-desc').innerText += `\nربحت ${earnedXp} نقطة خبرة!`;
-                
-                // فحص التلفيل (Level Up)
-                if(user.xp >= user.level * 100) {
-                    user.xp -= user.level * 100;
-                    user.level++;
-                    document.getElementById('end-desc').innerText += `\n🎉 مبروك! ارتفع مستواك إلى ${user.level} 🎉`;
-                }
-                saveData();
-                updateTopNav();
-            }
-
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('modal-end').style.display = 'block';
-        }
-
-        // بدء التشغيل
-        window.onload = loadData;
+        // تهيئة المتجر عند التحميل
+        window.onload = () => {
+            renderProducts();
+        };
     </script>
 </body>
 </html>
